@@ -1,0 +1,14 @@
+1- Utiliser la commande pour installer les dépendances de composer
+
+composer update
+
+2- Créer la base de donnée
+
+doctrine:database:create
+
+3- Installer le schema de notre application dans la base de donnée 
+
+doctrine:schema:update --force
+
+
+Voila :D 
