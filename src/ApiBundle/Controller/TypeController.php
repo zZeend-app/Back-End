@@ -4,10 +4,11 @@
 namespace ApiBundle\Controller;
 
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use UserBundle\Entity\User;
 
-class TypeController
+class TypeController extends Controller
 {
 
     public function serviceSearch(Request  $request){

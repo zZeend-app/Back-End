@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use UserBundle\Entity\AccountVerification;
 use UserBundle\Entity\User;
 
-class DefaultController extends Controller
+class UserController extends Controller
 {
     public function getCurrentUserAction()
     {

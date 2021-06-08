@@ -1,6 +1,6 @@
 register:
     path:     /register
-    defaults: { _controller: ApiBundle:Default:signUp }
+    defaults: { _controller: ApiBundle:Api:signUp }
     methods: [POST]
 
 service_search:

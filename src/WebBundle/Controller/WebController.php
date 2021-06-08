@@ -7,7 +7,7 @@ use UserBundle\Entity\AccountVerification;
 use UserBundle\Entity\PasswordForgot;
 use UserBundle\Entity\User;
 
-class DefaultController extends Controller
+class WebController extends Controller
 {
     public function emailVerificationAction($codeGen)
     {
