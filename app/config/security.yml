@@ -5,31 +5,35 @@ security:
         FOS\UserBundle\Model\UserInterface: bcrypt
 
     role_hierarchy:
-        ROLE_DIRECTEUR: ROLE_USER
-        ROLE_ADMIN: ROLE_USER
-        ROLE_FINANCEMENT: ROLE_USER
-        ROLE_SUPER_ADMIN: [ ROLE_USER, ROLE_ADMIN ]
+        ROLE_SEEKER: ROLE_USER
+        ROLE_OWNER:  ROLE_USER
+        ROLE_ADMIN:  [ROLE_SEEKER, ROLE_OWNER]
 
     providers:
         fos_userbundle:
             id: fos_user.user_provider.username_email
 
     firewalls:
-        api:
-            pattern: ^/endpoint/api*
-            anonymous: true
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
 
-        api_jwt_login:
-            pattern: ^/api-jwt/login
+        login:
+            pattern:  ^/api/login
+            stateless: true
             anonymous: true
             json_login:
-                provider: fos_userbundle
-                check_path: /api-jwt/login_check
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+                check_path:               /api/login_check
+                success_handler:          lexik_jwt_authentication.handler.authentication_success
+                failure_handler:          lexik_jwt_authentication.handler.authentication_failure
 
-        api_webapp:
-            pattern: ^/api-webapp
+        api_register:
+            pattern: ^/api/register
+            anonymous: true
+
+        api:
+            pattern:   ^/api
+            stateless: true
             guard:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
@@ -37,8 +41,8 @@ security:
         main:
             pattern: ^/
             remember_me:
-                secret: "%secret%"
-                path: /
+                secret:   "%secret%"
+                path:     /
                 always_remember_me: true
                 lifetime: 1209600 # 1 week in seconds
             anonymous: true
@@ -53,21 +57,6 @@ security:
                 #target: login
 
     access_control:
-        #        - { path: ^/api, role: ROLE_USER }
-        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/mdp, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/endpoint, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin/, role: ROLE_ADMIN }
-        - { path: ^/dev*, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/rdv/zoom*, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/automatisation/appels/[ 0-9 ]+/appeler/post, role: IS_AUTHENTICATED_ANONYMOUSLY } #Pour twilio
-        - { path: ^/automatisation/appels/call, role: IS_AUTHENTICATED_ANONYMOUSLY } #Cronjob Appels
-        - { path: ^/automatisation/sms/send, role: IS_AUTHENTICATED_ANONYMOUSLY } #Cronjob Textos
-        - { path: ^/automatisation/rappel/users/taches/send, role: IS_AUTHENTICATED_ANONYMOUSLY } #Cronjob rappel taches
-        - { path: ^/api/notification/update/meuble$, role: IS_AUTHENTICATED_ANONYMOUSLY } #Cronjob envois de email aux directeurs pour update leur dept. meubles
-        #        - { path: ^/patching/fix, role: IS_AUTHENTICATED_ANONYMOUSLY } #patch fix
-        - { path: ^/api-jwt/login_check, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api-webapp, role: IS_AUTHENTICATED_FULLY }
-        - { path: ^/, role: ROLE_USER }
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

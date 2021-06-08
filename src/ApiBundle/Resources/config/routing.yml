@@ -1,3 +1,9 @@
-signup:
-    resource: "@APIBundle/Resources/config/routing.yml"
-    prefix:   /api
+register:
+    path:     /register
+    defaults: { _controller: ApiBundle:Default:signUp }
+    methods: [POST]
+
+service_search:
+    path:     /service_search
+    defaults: { _controller: ApiBundle:Default:signUp }
+    methods: [POST]

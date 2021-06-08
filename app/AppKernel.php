@@ -23,10 +23,9 @@ class AppKernel extends Kernel
             new UserBundle\UserBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
-            new Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle(),
             new Nelmio\CorsBundle\NelmioCorsBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
-            new \AMM\SymfonyDynamicDataTableBundle\AMMSymfonyDynamicDataTableBundle()
+            new WebBundle\WebBundle(),
         ];
 
 

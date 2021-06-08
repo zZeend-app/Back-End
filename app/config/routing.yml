@@ -1,57 +1,15 @@
 api_login_check:
-    path: /api-jwt/login_check
-
-gesdinet_jwt_refresh_token:
-    path:     /api-jwt/login_check/token/refresh
-    defaults: { _controller: gesdinet.jwtrefreshtoken:refresh }
+    path: /api/login_check
 
 api:
-    resource: "@APIBundle/Resources/config/routing.yml"
-    prefix:   /api
+    path:
+    resource: "@ApiBundle/Resources/config/routing.yml"
+    prefix: /api
 
-rdv:
-    resource: "@RDVBundle/Resources/config/routing.yml"
-    prefix:   /rdv
-
-crm:
-    resource: "@CRMBundle/Resources/config/routing.yml"
-    prefix:   /
-
-user:
-    resource: "@UserBundle/Resources/config/routing.yml"
-    prefix:   /utilisateurs
+mailer:
+    resource: "@WebBundle/Resources/config/routing.yml"
+    prefix:   /web
 
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"
-
-crm_dev:
-    resource: "@CRMBundle/Resources/config/devRouting.yml"
-    prefix:   /dev
-
-twilio:
-    resource: "@TwilioBundle/Resources/config/routing.yml"
-    prefix:   /automatisation
-
-fos_user_profile_show:
-    path:     /
-
-fos_user_resetting_request:
-    path:     /mdp/reinitialiser
-    defaults: { _controller: fos_user.resetting.controller:requestAction }
-    methods: [GET]
-
-fos_user_resetting_send_email:
-    path:     /mdp/courriel
-    defaults: { _controller: fos_user.resetting.controller:sendEmailAction }
-    methods: [POST]
-
-fos_user_resetting_check_email:
-    path:     /mdp/verification
-    defaults: { _controller: fos_user.resetting.controller:checkEmailAction }
-    methods: [GET]
-
-fos_user_resetting_reset:
-    path:     /mdp/reinitialiser/{token}
-    defaults: { _controller: fos_user.resetting.controller:resetAction }
-    methods: [GET, POST]
 

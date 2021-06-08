@@ -5,9 +5,7 @@ namespace UserBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
-use CRMBundle\Entity\Transaction;
-use RDVBundle\Entity\QuartTravail;
-use RDVBundle\Entity\UserCalendrier;
+use UserBundle\Entity\AccountVerification;
 use JsonSerializable;
 
 /**
@@ -28,11 +26,11 @@ class User extends BaseUser implements JsonSerializable
     protected $id;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="ccountType", type="integer", length=255, unique=false)
+     * @ORM\Column(name="fullname", type="string", length=255, unique=false, nullable=false)
      */
-    private $accountType;
+    private $fullname;
 
     /**
      * @var string
@@ -95,6 +93,7 @@ class User extends BaseUser implements JsonSerializable
     {
         parent::__construct();
 
+        $this->accountVerification = new ArrayCollection();
     }
 
 
@@ -103,7 +102,7 @@ class User extends BaseUser implements JsonSerializable
         return in_array($role, $this->getRoles());
     }
 
-    function generatePassword($length = 20) {
+    function generateCode($length = 20) {
         $chars = 'abcdef#$%ghijklmno@#pqrstuvwxyzAB%CDEFG$%^KLMN22OPQRSTU()*#$VWXYZ0123456789!*_';
         $count = mb_strlen($chars);
 
@@ -127,28 +126,28 @@ class User extends BaseUser implements JsonSerializable
     }
 
     /**
-     * Set accountType.
+     * Set fullname.
      *
-     * @param string $accountType
+     * @param string $fullname
      *
      * @return User
      */
-    public function setAccountType($accountType)
+    public function setFullname($fullname)
     {
-        $this->accountType = $accountType;
+        $this->fullname = $fullname;
 
         return $this;
     }
 
 
     /**
-     * Get accountType.
+     * Get fullname.
      *
      * @return string
      */
-    public function getAccountType()
+    public function getFullname()
     {
-        return $this->accountType;
+        return $this->fullname;
     }
 
     /**
@@ -272,11 +271,36 @@ class User extends BaseUser implements JsonSerializable
 
     }
 
-        /**
-     * Get jobTitle.
+    /**
+     * Set zipCode.
+     *
+     * @param string $phoneNumber
+     *
+     * @return User
+     */
+    public function setPhoneNumber($phoneNumber)
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get phoneNumber.
      *
      * @return string
      */
+    public function getPhoneNumber()
+    {
+        return $this->phoneNumber;
+
+    }
+
+    /**
+    * Get jobTitle.
+    *
+    * @return string
+    */
     public function getJobTitle()
     {
         return $this->jobTitle;
@@ -320,6 +344,7 @@ class User extends BaseUser implements JsonSerializable
         return $this->jobDescription;
     }
 
+
     public function setEmail($email)
     {
         $email = is_null($email) ? '' : $email;
@@ -335,10 +360,6 @@ class User extends BaseUser implements JsonSerializable
         $json = [
             "id" => $this->id,
         ];
-
-        if(!$entityClass instanceof User || in_array("accountType",$include)){
-            $json["accountType"] = $this->accountType;
-        }
 
         if(!$entityClass instanceof User || in_array("image",$include)){
             $json["image"] = $this->image;

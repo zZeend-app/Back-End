@@ -1,0 +1,11 @@
+email_verification:
+    path:     /email_verification/{codeGen}
+    defaults: { _controller: WebBundle:Default:emailVerification }
+
+password_forgot:
+    path:     /password_forgot/{codeGen}
+    defaults: { _controller: WebBundle:Default:passwordForgot }
+
+new_password:
+    path:     /new_password/{codeGen}
+    defaults: { _controller: WebBundle:Default:newPassword }
