@@ -3,7 +3,17 @@ register:
     defaults: { _controller: ApiBundle:Api:signUp }
     methods: [POST]
 
-service_search:
+email-verification:
+    path:     /email-verification
+    defaults: { _controller: ApiBundle:Api:sendVerificationMail }
+    methods: [POST]
+
+current-user:
+    path:     /current-user
+    defaults: { _controller: ApiBundle:Api:getCurrentUser }
+    methods: [POST]
+
+service-search:
     path:     /service_search
     defaults: { _controller: ApiBundle:Default:signUp }
     methods: [POST]

@@ -11,7 +11,8 @@ class UserController extends Controller
 {
     public function getCurrentUserAction()
     {
-        return $this->getUser();
+        $user = $this->getUser();
+        return new JsonResponse($user);
     }
 
     public function newUserAction($email, $password, $fullname, $accountType, $image, $country, $city, $address, $zipCode, $phoneNumber, $jobTitle, $jobDescription){
@@ -133,9 +134,10 @@ class UserController extends Controller
         }
     }
 
-    public function sendVerificationmail($email){
+    public function sendVerificationMailAction($email){
+        $em = $this->getDoctrine()->getRepository(User::class);
+        $user = $em->FindByEmail($email);
         //generate a codeGen for email verification
-        $user = new User();
         $codeGen = $user->generateCode();
 
         //save codeGen

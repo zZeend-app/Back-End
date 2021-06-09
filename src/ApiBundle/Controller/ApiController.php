@@ -10,6 +10,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ApiController extends Controller
 {
+
+    public function getCurrentUserAction(){
+        return $this->forward("UserBundle:User:getCurrentUser");
+    }
+
     public function signUpAction(Request $request)
     {
         $response = array();
@@ -32,7 +37,7 @@ class ApiController extends Controller
                 $jobTitle = $data['jobTitle'];
                 $jobDescription = $data['jobDescription'];
 
-                $response = $this->forward("UserBundle:Default:newUser", [
+                $response = $this->forward("UserBundle:User:newUser", [
                     'email' => $email,
                     'password' => $password,
                     'fullname' => $fullname,
@@ -59,8 +64,12 @@ class ApiController extends Controller
         return $response;
     }
 
-    public function sendVerificationmail($email){
-        return $this->forward("UserBundle:Default:sendVerificationmail", [
+    public function sendVerificationMailAction(Request $request){
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $email = $data['email'];
+        return $this->forward("UserBundle:User:sendVerificationMail", [
             'email' => $email
         ]);
     }

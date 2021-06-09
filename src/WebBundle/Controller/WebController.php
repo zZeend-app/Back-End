@@ -47,7 +47,7 @@ class WebController extends Controller
 
         if($codeGenExists){
            $userId =  $codeGenExists->getUserId();
-           $response = $this->forward("UserBundle:Default:newPassword", [
+           $response = $this->forward("UserBundle:User:newPassword", [
                $userId,
                $newPassword
            ]);

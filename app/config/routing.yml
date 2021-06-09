@@ -2,7 +2,6 @@ api_login_check:
     path: /api/login_check
 
 api:
-    path:
     resource: "@ApiBundle/Resources/config/routing.yml"
     prefix: /api
 
