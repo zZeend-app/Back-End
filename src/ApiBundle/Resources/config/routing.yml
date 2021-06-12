@@ -24,11 +24,16 @@ email-check:
     methods: [GET]
 
 password-recovery:
-    path:     /password-recovery
-    defaults: { _controller: ApiBundle:Api:resetPassword }
-    methods: [POST]
+    path:     /password-recovery/{codeGen}
+    defaults: { _controller: ApiBundle:Api:resetPasswordRender }
+    methods: [GET]
 
 password-forgot:
     path:     /password-forgot
     defaults: { _controller: ApiBundle:Api:sendPasswordForgotMail }
+    methods: [POST]
+
+reset-password:
+    path:     /reset-password
+    defaults: { _controller: ApiBundle:Api:resetPassword }
     methods: [POST]

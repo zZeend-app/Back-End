@@ -102,4 +102,10 @@ class ApiController extends Controller
         ]);
     }
 
+    public function resetPasswordRenderAction(){
+
+        return $this->forward("WebBundle:Web:resetPasswordRender", [
+        ]);
+    }
+
 }

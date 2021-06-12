@@ -47,6 +47,10 @@ security:
             pattern: ^/api/password-recovery
             anonymous: true
 
+        reset-password:
+            pattern: ^/api/reset-password
+            anonymous: true
+
         api:
             pattern:   ^/api
             stateless: true
@@ -79,4 +83,5 @@ security:
         - { path: ^/api/email-check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/password-recovery, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/password-forgot, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/reset-password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

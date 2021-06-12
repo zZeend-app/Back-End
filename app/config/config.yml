@@ -10,7 +10,8 @@ imports:
 parameters:
     locale: fr
     site_name: "Nom de l'application" #TODO Change
-    site_url: " https://www.google.com" #TODO Change
+    site_url: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php" #TODO Change
+    baseUrl: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php/api"
 
 framework:
     #esi: ~
@@ -54,6 +55,7 @@ twig:
         format: d.m.Y, H:i:s
         interval_format: '%%d jours'
         timezone: America/Toronto
+
 
 # Doctrine Configuration
 doctrine:

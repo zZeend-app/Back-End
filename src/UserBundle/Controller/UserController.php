@@ -68,10 +68,11 @@ class UserController extends Controller
 
         $data = array(
             'name' => $user->getFullname(),
-            'codeGen' => $codeGen
+            'codeGen' => $codeGen,
+            'baseUrl' => $this->getParameter("baseUrl")
         );
 
-        $this->sendMail('zZeend - email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
+        $this->sendMail('Email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
 
         $response = array('code' => 'auth/registered');
         return new JsonResponse($response);
@@ -82,7 +83,7 @@ class UserController extends Controller
         //$from = array($this->getParameter('crm_mode') == 'prod' ? $this->getParameter('crm_sender_email_prod') : $this->getParameter('crm_sender_email_dev') => 'CRM Trévi');
         $message = '';
             $message = (new \Swift_Message($subject))
-                ->setFrom('no-reply@zzeend.com')
+                ->setFrom('zZeend-noreply@zzeend.com')
                 ->setTo($to)
                 ->setBody(
                     $this->renderView(
@@ -121,10 +122,11 @@ class UserController extends Controller
 
             $data = array(
                           'name' => $user->getFullname(),
-                          'codeGen' => $codeGen
+                          'codeGen' => $codeGen,
+                          'baseUrl' => $this->getParameter("baseUrl")
             );
 
-            $this->sendMail('zZeend - email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
+            $this->sendMail('Email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
 
             $response = array('code' => 'auth/email_verification_sent');
             return new JsonResponse($response);
@@ -149,10 +151,11 @@ class UserController extends Controller
 
             $data = array(
                 'name' => $user->getFullname(),
-                'codeGen' => $codeGen
+                'codeGen' => $codeGen,
+                'baseUrl' => $this->getParameter("baseUrl")
             );
 
-            $this->sendMail('zZeend - email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
+            $this->sendMail('Email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
 
             $response = array('code' => 'auth/email_verification_sent');
         }else{
@@ -182,10 +185,11 @@ class UserController extends Controller
 
             $data = array(
                 'name' => $user->getFullname(),
-                'codeGen' => $codeGen
+                'codeGen' => $codeGen,
+                'baseUrl' => $this->getParameter("baseUrl")
             );
 
-            $this->sendMail('zZeend - password recovery', null, $user->getEmailCanonical(), $data, '@User/Email/passwordForgot.twig');
+            $this->sendMail('Password recovery', null, $user->getEmailCanonical(), $data, '@User/Email/passwordForgot.twig');
 
             $response = array('code' => 'recovery_mail_sent');
 
@@ -229,15 +233,18 @@ class UserController extends Controller
                 $user->setEnabled(1);
                 $userManager->updateUser($user);
 
-                $response = array('code' => 'auth/account_enabled');
+                $response = $this->render("@Web/account-enebaled.html.twig",
+                ["code" => "auth/account_enabled"]);
             }else{
-                $response = array('code' => $codeGen);
+                $response = $this->render("@Web/account-enebaled.html.twig",
+                    ["code" => "auth/codeGen_error"]);
             }
         }else{
-            $response = array('code' => 'auth/codeGen_error');
+            $response = $this->render("@Web/account-enebaled.html.twig",
+                ["code" => "auth/codeGen_error"]);
         }
 
 
-        return new JsonResponse($response);
+        return $response;
     }
 }

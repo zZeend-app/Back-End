@@ -1,5 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
       xmlns:o="urn:schemas-microsoft-com:office:office" class="gr__themesanytime_com">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"
 <head>
     <title></title>
     <!--[if !mso]>-->
@@ -10,6 +11,11 @@
     <style type="text/css">
         #outlook a {
             padding: 0;
+        }
+
+        .logo-element{
+            width: 50px;
+            border-radius: 6px;
         }
 
         .ReadMsgBody {
@@ -27,7 +33,6 @@
         h1,h2,h3,h4,h5,h6{
             font-weight: bold;
         }
-
         body {
             margin: 0;
             padding: 0;
@@ -53,6 +58,14 @@
         p {
             display: block;
             margin: 13px 0;
+        }
+
+        .form-error{
+            border: 1px red solid
+        }
+
+        .form-correct{
+            border: 1px #ccc solid;
         }
 
     </style>
@@ -202,7 +215,8 @@
                             <td style="vertical-align:undefined;width:600px;">
                     <![endif]-->
                     <div style="cursor:auto;color:#000000;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:22px;text-align:center;">
-                        <a href="https://www.trevi.com/" class="ks-logo"><img src="https://www.trevi.com/App_Themes/Skin_1/images/logo.fr-CA.png" alt="zZeend" width="216"/></a></div>
+                       <img src="{{ asset('assets/img/180x180.jpg') }}"  class="logo-element" alt="zZeend" width="216"/>
+                        <h1>zZeend</h1>
                     <!--[if mso | IE]>
                     </td></tr></table>
                     <![endif]--></td>
@@ -275,7 +289,7 @@
                             <td style="vertical-align:undefined;width:300px;">
                     <![endif]-->
                     <div style="cursor:auto;color:#858585;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:12px;line-height:22px;text-align:center;">
-                        zZeend
+                        © All rights reserved <span class="start-dot-style">.</span> 2021 - 2022
                     </div>
                     <!--[if mso | IE]>
                     </td>
@@ -291,7 +305,82 @@
     <!--[if mso | IE]>
     </td></tr></table>
     <![endif]--></div>
+<script
+        src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function(){
+        $('.reset_password').submit(function(e) {
+            e.preventDefault()
+            $first_password = $('#first_password')
+            $second_password = $('#second_password')
+            $first_password_val = $first_password.val();
+            $second_password_val = $second_password.val();
 
+            if($first_password_val.trim() !== '' && $first_password_val.trim().length > 5){
+                $first_password.removeClass('form-error')
+                $first_password.addClass('form-correct')
+                if($second_password_val.trim() !== '' && $first_password_val.trim().length > 5){
+                    $second_password.removeClass('form-error')
+                    $second_password.addClass('form-correct')
+
+                    if($first_password_val.trim() === $second_password_val.trim()){
+                        $first_password.removeClass('form-error')
+                        $first_password.addClass('form-error')
+
+                        $second_password.removeClass('form-error')
+                        $second_password.addClass('form-error')
+                        const url = window.location.pathname
+                        const findIndex = url.indexOf('password-recovery')
+                        if(findIndex !== -1) {
+                            const from = findIndex + 18;
+                            const codeGen = url.substring(from)
+
+                            const data = {codeGen: codeGen, newPassword: $first_password_val}
+                            $('#submit_button').prop('disabled', true);
+                            $.post({
+                                url: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php/api/reset-password",
+                                data: JSON.stringify(data),
+                                success: function(data){
+                                    if(data.code == "auth/codeGen_error"){
+                                        alert("Invalid Url. Try to make a new password request.")
+                                        $('#submit_button').prop('disabled', true);
+                                    }
+
+                                    if(data.code == "auth/password_recovered"){
+                                     $('.reset-success-message').css('display', 'block')
+                                    }
+                                },
+                                error: function(error){
+                                    alert("An error occurred during the process. Please try agin..")
+                                    $('#submit_button').prop('disabled', true);
+                                }
+                            });
+                        }else{
+                            alert('Bad Url')
+                        }
+                    }else{
+                        $first_password.removeClass('form-correct')
+                        $first_password.addClass('form-error')
+
+                        $second_password.removeClass('form-correct')
+                        $second_password.addClass('form-error')
+                    }
+
+                }else{
+                    $second_password.removeClass('form-correct')
+                    $second_password.addClass('form-error')
+                }
+
+            }else{
+                $first_password.removeClass('form-correct')
+                $first_password.addClass('form-error')
+            }
+
+        })
+    })
+</script>
 </body>
 <loom-container id="lo-engage-ext-container">
     <loom-shadow classname="resolved"></loom-shadow>
