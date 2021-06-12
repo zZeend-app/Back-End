@@ -103,7 +103,7 @@ class User extends BaseUser implements JsonSerializable
     }
 
     function generateCode($length = 20) {
-        $chars = 'abcdef#$%ghijklmno@#pqrstuvwxyzAB%CDEFG$%^KLMN22OPQRSTU()*#$VWXYZ0123456789!*_';
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGKLMNOPQRSTUVWXYZ0123456789';
         $count = mb_strlen($chars);
 
         for ($i = 0, $result = ''; $i < $length; $i++) {
@@ -361,6 +361,10 @@ class User extends BaseUser implements JsonSerializable
             "id" => $this->id,
         ];
 
+        if(!$entityClass instanceof User || in_array("email",$include)){
+            $json["email"] = $this->email;
+        }
+
         if(!$entityClass instanceof User || in_array("image",$include)){
             $json["image"] = $this->image;
         }
@@ -391,6 +395,14 @@ class User extends BaseUser implements JsonSerializable
 
         if(!$entityClass instanceof User || in_array("phoneNumber",$include)){
             $json["phoneNumber"] = $this->phoneNumber;
+        }
+
+        if(!$entityClass instanceof User || in_array("roles",$include)){
+            $json["roles"] = $this->roles;
+        }
+
+        if(!$entityClass instanceof User || in_array("enabled",$include)){
+            $json["enabled"] = $this->enabled;
         }
 
         return $json;

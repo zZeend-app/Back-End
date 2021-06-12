@@ -74,4 +74,32 @@ class ApiController extends Controller
         ]);
     }
 
+    public function enableAccountAction($codeGen){
+        return $this->forward("UserBundle:User:enableAccount", [
+            'codeGen' => $codeGen
+        ]);
+    }
+
+    public function sendPasswordForgotMailAction(Request $request){
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $email = $data['email'];
+        return $this->forward("UserBundle:User:sendPasswordForgotMail", [
+            'email' => $email
+        ]);
+    }
+
+    public function resetPasswordAction(Request $request){
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $codeGen = $data['codeGen'];
+        $newPassword = $data['newPassword'];
+        return $this->forward("UserBundle:User:resetPassword", [
+            'codeGen' => $codeGen,
+            'newPassword' => $newPassword
+        ]);
+    }
+
 }

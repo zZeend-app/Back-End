@@ -7,7 +7,7 @@ security:
     role_hierarchy:
         ROLE_SEEKER: ROLE_USER
         ROLE_OWNER:  ROLE_USER
-        ROLE_ADMIN:  [ROLE_SEEKER, ROLE_OWNER]
+        ROLE_ADMIN:  [ROLE_USER, ROLE_SEEKER, ROLE_OWNER]
 
     providers:
         fos_userbundle:
@@ -33,6 +33,18 @@ security:
 
         email_verification:
             pattern: ^/api/email-verification
+            anonymous: true
+
+        email_check:
+            pattern: ^/api/email-check
+            anonymous: true
+
+        password-forgot:
+            pattern: ^/api/password-forgot
+            anonymous: true
+
+        password-recovery:
+            pattern: ^/api/password-recovery
             anonymous: true
 
         api:
@@ -64,4 +76,7 @@ security:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/email-verification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/email-check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/password-recovery, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/password-forgot, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

@@ -1,0 +1,4 @@
+services:
+#    zzeend.example:
+#        class: ZzeendBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

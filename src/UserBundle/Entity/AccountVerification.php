@@ -7,9 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * AccountVerification
- *
+ * @ORM\Entity
  * @ORM\Table(name="accountVerification")
- * @ORM\Entity(repositoryClass="UserBundle\Repository\AccountVerificationRepository")
+ *
  */
 class AccountVerification
 {

@@ -7,9 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * PasswordForgot
- *
+ * @ORM\Entity
  * @ORM\Table(name="passwordForgot")
- * @ORM\Entity(repositoryClass="UserBundle\Repository\PasswordForgotRepository")
+ *
  */
 class PasswordForgot
 {

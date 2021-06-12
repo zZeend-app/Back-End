@@ -3,6 +3,7 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: "@UserBundle/Resources/config/services.yml" }
+    - { resource: "@ZzeendBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -78,18 +79,22 @@ doctrine:
 
 # Swiftmailer Configuration
 swiftmailer:
+    disable_delivery: false
+    delivery_address: ['adjchel@gmail.com']
     transport: '%mailer_transport%'
     host: '%mailer_host%'
     username: '%mailer_user%'
     password: '%mailer_password%'
     port: '%mailer_port%'
     encryption: '%mailer_encryption%'
-    spool: { type: memory }
-    stream_options:
-        ssl:
-            allow_self_signed: true
-            verify_peer: false
-            verify_peer_name: false
+    auth_mode: login
+    local_domain: zzeend.com
+#    spool: { type: memory }
+#    stream_options:
+#        ssl:
+#            allow_self_signed: true
+#            verify_peer: false
+#            verify_peer_name: false
 
 sensio_framework_extra:
     router:

@@ -17,3 +17,18 @@ service-search:
     path:     /service_search
     defaults: { _controller: ApiBundle:Default:signUp }
     methods: [POST]
+
+email-check:
+    path:     /email-check/{codeGen}
+    defaults: { _controller: ApiBundle:Api:enableAccount }
+    methods: [GET]
+
+password-recovery:
+    path:     /password-recovery
+    defaults: { _controller: ApiBundle:Api:resetPassword }
+    methods: [POST]
+
+password-forgot:
+    path:     /password-forgot
+    defaults: { _controller: ApiBundle:Api:sendPasswordForgotMail }
+    methods: [POST]

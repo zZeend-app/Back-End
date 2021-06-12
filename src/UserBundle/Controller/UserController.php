@@ -5,13 +5,14 @@ namespace UserBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use UserBundle\Entity\AccountVerification;
+use UserBundle\Entity\PasswordForgot;
 use UserBundle\Entity\User;
 
 class UserController extends Controller
 {
     public function getCurrentUserAction()
     {
-        $user = $this->getUser();
+        $user = $this->getUser()->jsonSerialize();
         return new JsonResponse($user);
     }
 
@@ -36,9 +37,9 @@ class UserController extends Controller
         $user->setEnabled(0);
         $user->setPlainPassword($password);
 
-        if($accountType == '0'){
+        if($accountType == 0){
             $user->setRoles(['ROLE_SEEKER']);
-        }else if($accountType == '1'){
+        }else if($accountType == 1){
             $user->setRoles(['ROLE_OWNER']);
         }
         $user->setImage($image);
@@ -65,40 +66,31 @@ class UserController extends Controller
         $entityManager->persist($accountVerification);
         $entityManager->flush();
 
-        $this->sendMail('zZeend - email verification', 'no-reply@zzeend.com', $user->getEmailCanonical(), $user->getFullname(), $codeGen, 'email_verification');
+        $data = array(
+            'name' => $user->getFullname(),
+            'codeGen' => $codeGen
+        );
+
+        $this->sendMail('zZeend - email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
 
         $response = array('code' => 'auth/registered');
         return new JsonResponse($response);
     }
 
-    public function sendMail($subject, $from, $to, $fullname, $codeGen, $type)
+    public function sendMail($subject, $from, $to, $data, $template)
     {
+        //$from = array($this->getParameter('crm_mode') == 'prod' ? $this->getParameter('crm_sender_email_prod') : $this->getParameter('crm_sender_email_dev') => 'CRM Trévi');
         $message = '';
-        if ($type === 'email_verification') {
             $message = (new \Swift_Message($subject))
-                ->setFrom($from)
+                ->setFrom('no-reply@zzeend.com')
                 ->setTo($to)
                 ->setBody(
                     $this->renderView(
-                        '@User/Email/emailVerification.twig',
-                        array('email' => $to, 'codeGen' => $codeGen, 'name' => $fullname)
+                        $template,
+                        $data
                     )
                     , 'text/html'
                 );
-        }
-
-        if($type === 'password_forgot'){
-            $message = (new \Swift_Message($subject))
-                ->setFrom($from)
-                ->setTo($to)
-                ->setBody(
-                    $this->renderView(
-                        '@User/Email/passwordForgot.twig',
-                        array('email' => $to, 'codeGen' => $codeGen, 'name' => $fullname)
-                    )
-                    , 'text/html'
-                );
-        }
 
         $mailer = $this->get('mailer');
         $mailer->send($message);
@@ -127,7 +119,12 @@ class UserController extends Controller
             $entityManager->persist($accountVerification);
             $entityManager->flush();
 
-            $this->sendMail('zZeend - email verification', 'no-reply@zzeend.com', $user->getEmailCanonical(), $user->getFullname(), $codeGen, 'email_verification');
+            $data = array(
+                          'name' => $user->getFullname(),
+                          'codeGen' => $codeGen
+            );
+
+            $this->sendMail('zZeend - email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
 
             $response = array('code' => 'auth/email_verification_sent');
             return new JsonResponse($response);
@@ -137,42 +134,109 @@ class UserController extends Controller
     public function sendVerificationMailAction($email){
         $em = $this->getDoctrine()->getRepository(User::class);
         $user = $em->FindByEmail($email);
-        //generate a codeGen for email verification
-        $codeGen = $user->generateCode();
+        if($user !== null) {
+            //generate a codeGen for email verification
+            $codeGen = $user->generateCode();
 
-        //save codeGen
-        $entityManager = $this->getDoctrine()->getManager();
-        $accountVerification = new AccountVerification();
-        $accountVerification->setUserId($user->getId());
-        $accountVerification->setCodeGen($codeGen);
+            //save codeGen
+            $entityManager = $this->getDoctrine()->getManager();
+            $accountVerification = new AccountVerification();
+            $accountVerification->setUserId($user->getId());
+            $accountVerification->setCodeGen($codeGen);
 
-        $entityManager->persist($accountVerification);
-        $entityManager->flush();
+            $entityManager->persist($accountVerification);
+            $entityManager->flush();
 
-        $this->sendMail('zZeend - email verification', 'no-reply@zzeend.com', $user->getEmailCanonical(), $user->getFullname(), $codeGen, 'email_verification');
+            $data = array(
+                'name' => $user->getFullname(),
+                'codeGen' => $codeGen
+            );
 
-        $response = array('code' => 'auth/email_verification_sent');
+            $this->sendMail('zZeend - email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
+
+            $response = array('code' => 'auth/email_verification_sent');
+        }else{
+            $response = array('code' => 'auth/user_not_found');
+        }
         return new JsonResponse($response);
     }
 
-    public function passwordForgotAction($email, $fullname){
+    public function sendPasswordForgotMailAction($email){
         $response = array();
 
-        $user = new User();
-        //generate a codeGen for email verification
-        $codeGen = $user->generateCode();
-        $this->sendMail('zZeend - password recovery', 'no-reply@zzeend.com', $email, $fullname, $codeGen, 'password_forgot');
-
-        $response = array('code' => 'recovery_mail_sent');
-        return new JsonResponse($response);
-    }
-
-    public function newPasswordAction($userId, $newPassWord){
-        $response = array();
         $em = $this->getDoctrine()->getRepository(User::class);
-        $user = $em->find($userId);
-        $user->setPlainPassword($newPassWord);
-        $response = array('code' => 'password_recovered');
+        $user = $em->FindByEmail($email);
+        if($user !== null) {
+
+            //generate a codeGen for email verification
+            $codeGen = $user->generateCode();
+
+            //save codeGen
+            $entityManager = $this->getDoctrine()->getManager();
+            $passwordForgot = new PasswordForgot();
+            $passwordForgot->setUserId($user->getId());
+            $passwordForgot->setCodeGen($codeGen);
+
+            $entityManager->persist($passwordForgot);
+            $entityManager->flush();
+
+            $data = array(
+                'name' => $user->getFullname(),
+                'codeGen' => $codeGen
+            );
+
+            $this->sendMail('zZeend - password recovery', null, $user->getEmailCanonical(), $data, '@User/Email/passwordForgot.twig');
+
+            $response = array('code' => 'recovery_mail_sent');
+
+        }else{
+            $response = array('code' => 'auth/user_not_found');
+        }
+        return new JsonResponse($response);
+    }
+
+    public function resetPasswordAction($codeGen, $newPassword){
+        $response = array();
+
+        $entityManager = $this->getDoctrine()->getRepository(PasswordForgot::class);
+        $passwordForgotObject = $entityManager->findOneBy(["codeGen" => $codeGen]);
+        if($passwordForgotObject !== null) {
+            $userId = $passwordForgotObject->getUserId();
+
+            $userManager = $this->get('fos_user.user_manager');
+            $user =  $userManager->findUserBy(array('id'=> $userId));
+            $user->setPlainPassword($newPassword);
+            $userManager->updateUser($user);
+
+            $response = array('code' => 'auth/password_recovered');
+        }else{
+            $response = array('code' => 'auth/codeGen_error');
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function enableAccountAction($codeGen){
+        $response = array();
+        if(isset($codeGen)){
+            $entityManager = $this->getDoctrine()->getRepository(AccountVerification::class);
+            $accountVerificationObject = $entityManager->findOneBy(["codeGen" => $codeGen]);
+            if($accountVerificationObject !== null){
+                $userId = $accountVerificationObject->getUserId();
+
+                $userManager = $this->get('fos_user.user_manager');
+                $user =  $userManager->findUserBy(array('id'=> $userId));
+                $user->setEnabled(1);
+                $userManager->updateUser($user);
+
+                $response = array('code' => 'auth/account_enabled');
+            }else{
+                $response = array('code' => $codeGen);
+            }
+        }else{
+            $response = array('code' => 'auth/codeGen_error');
+        }
+
 
         return new JsonResponse($response);
     }
