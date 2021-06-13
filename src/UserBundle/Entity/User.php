@@ -361,6 +361,10 @@ class User extends BaseUser implements JsonSerializable
             "id" => $this->id,
         ];
 
+        if(!$entityClass instanceof User || in_array("fullname",$include)){
+            $json["fullname"] = $this->fullname;
+        }
+
         if(!$entityClass instanceof User || in_array("email",$include)){
             $json["email"] = $this->email;
         }

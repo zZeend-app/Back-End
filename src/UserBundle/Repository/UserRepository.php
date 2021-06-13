@@ -36,29 +36,41 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
     public function WhereKeywordLike(QueryBuilder $queryBuilder, $keyword){
       return $queryBuilder
-          ->andWhere('jobTitle Like :keyword')
-          ->setParameter('keyword', $keyword)
-          ->andWhere('jobDescription Like :keyword')
-          ->setParameter('keyword', $keyword);
+          ->andWhere('u.jobTitle Like :keyword')
+          ->setParameter('keyword', '%'.$keyword.'%');
     }
 
     public function WhereCountryLike(QueryBuilder $queryBuilder, $country){
         return $queryBuilder
-            ->andWhere('country Like :country')
-            ->setParameter('country', $country);
+            ->andWhere('u.country Like :country')
+            ->setParameter('country', '%'.$country.'%');
     }
 
     public function WhereCityLike(QueryBuilder $queryBuilder, $city){
         return $queryBuilder
-            ->andWhere('city Like :city')
-            ->setParameter('city', $city);
+            ->andWhere('u.city Like :city')
+            ->setParameter('city', '%'.$city.'%');
     }
 
-    public function WhereAreaLike(QueryBuilder $queryBuilder, $address){
+    public function WhereAreaLike(QueryBuilder $queryBuilder, $area){
         return $queryBuilder
-            ->andWhere('address Like :address')
-            ->setParameter('address', $address);
+
+            ->andWhere('u.city Like :area')
+            ->setParameter('area', '%'.$area.'%');
+
     }
 
+    public function WhereSpecificAreaLike(QueryBuilder $queryBuilder, $specificArea){
+        return $queryBuilder
+            ->andWhere('u.address Like :address or u.city Like :city')
+            ->setParameter('address', '%'.$specificArea.'%')
+            ->setParameter('city', '%'.$specificArea.'%');
+    }
+
+    public function WhereIdNot(QueryBuilder $queryBuilder, $id){
+        return $queryBuilder
+            ->andWhere('u.id != :id')
+            ->setParameter('id', $id);
+    }
 
 }

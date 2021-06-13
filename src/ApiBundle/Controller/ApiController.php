@@ -108,4 +108,19 @@ class ApiController extends Controller
         ]);
     }
 
+    public function serviceSearchAction(Request $request){
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $userId = $data['userId'];
+        $keyword = $data['keyword'];
+        $filter = $data['filter'];
+
+        return $this->forward("ZzeendBundle:Type:serviceSearch", [
+            'userId' => $userId,
+            'keyword' => $keyword,
+            'filter' => $filter
+        ]);
+    }
+
 }

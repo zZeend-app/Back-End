@@ -13,11 +13,6 @@ current-user:
     defaults: { _controller: ApiBundle:Api:getCurrentUser }
     methods: [POST]
 
-service-search:
-    path:     /service_search
-    defaults: { _controller: ApiBundle:Default:signUp }
-    methods: [POST]
-
 email-check:
     path:     /email-check/{codeGen}
     defaults: { _controller: ApiBundle:Api:enableAccount }
@@ -36,4 +31,9 @@ password-forgot:
 reset-password:
     path:     /reset-password
     defaults: { _controller: ApiBundle:Api:resetPassword }
+    methods: [POST]
+
+service-search:
+    path:     /service-search
+    defaults: { _controller: ApiBundle:Api:serviceSearch }
     methods: [POST]
