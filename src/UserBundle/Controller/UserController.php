@@ -145,6 +145,8 @@ class UserController extends Controller
             $accountVerification = new AccountVerification();
             $accountVerification->setUserId($user->getId());
             $accountVerification->setCodeGen($codeGen);
+            $accountVerification->setCreatedAtAutomatically();
+            $accountVerification->setUpdatedAtAutomatically();
 
             $entityManager->persist($accountVerification);
             $entityManager->flush();
@@ -178,6 +180,8 @@ class UserController extends Controller
             $entityManager = $this->getDoctrine()->getManager();
             $passwordForgot = new PasswordForgot();
             $passwordForgot->setUserId($user->getId());
+            $passwordForgot->setCreatedAtAutomatically();
+            $passwordForgot->setUpdatedAtAutomatically();
             $passwordForgot->setCodeGen($codeGen);
 
             $entityManager->persist($passwordForgot);

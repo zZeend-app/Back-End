@@ -37,3 +37,25 @@ service-search:
     path:     /service-search
     defaults: { _controller: ApiBundle:Api:serviceSearch }
     methods: [POST]
+
+user-profile:
+    path:     /user-profile
+    defaults: { _controller: ApiBundle:Api:userProfile }
+    methods: [POST]
+
+add-user-services:
+    path:     /add-user-services
+    defaults: { _controller: ApiBundle:Api:addUserServices }
+    methods: [POST]
+
+send-request:
+    path:     /send-request
+    defaults: { _controller: ApiBundle:Api:sendRequest }
+    methods: [POST]
+
+request-state:
+    path:     /request-state
+    defaults: { _controller: ApiBundle:Api:changeRequestState }
+    methods: [POST]
+
+

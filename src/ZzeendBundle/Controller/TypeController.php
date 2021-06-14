@@ -5,6 +5,8 @@ namespace ZzeendBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use UserBundle\Entity\User;
+use ZzeendBundle\Entity\Request;
+use ZzeendBundle\Entity\Service;
 
 class TypeController extends Controller
 {
@@ -42,7 +44,38 @@ class TypeController extends Controller
 
         if(isset($keyword) AND $keyword !== '') {
             $qb = $em->WhereIdNot($qb, $userId);
+            $qb = $em->WhereRoleNot($qb, "ROLE_SEEKER");
             $response = $qb->getQuery()->getResult();
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function userProfileAction($userId){
+        $response = array();
+        $em = $this->getDoctrine()->getRepository(User::class);
+        $user = $em->find($userId);
+
+        $em = $this->getDoctrine()->getRepository(Service::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereUser($qb, $user);
+        $services = $qb->getQuery()->getResult();
+
+        $connectedUserId = $this->getUser()->getId();
+
+        $response['user'] = $user;
+        $response['services'] = $services;
+
+        if($connectedUserId !== $userId){
+            $connectedUser = $this->getUser();
+            $em = $this->getDoctrine()->getRepository(Request::class);
+            $qb = $em->GetQueryBuilder();
+            $qb = $em->WhereUser($qb, $connectedUser);
+            $requestSenderObject = $qb->getQuery()->getResult();
+
+            if($requestSenderObject !== null){
+                $response['request_already_sent'] = true;
+            }
         }
 
         return new JsonResponse($response);

@@ -73,4 +73,10 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('id', $id);
     }
 
+    public function WhereRoleNot(QueryBuilder $queryBuilder, $role){
+        return $queryBuilder
+            ->andWhere('u.roles NOT Like :role')
+            ->setParameter('role', '%'.$role.'%');
+    }
+
 }

@@ -5,8 +5,10 @@ namespace UserBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
+use Doctrine\Common\Collections\Collection;
 use UserBundle\Entity\AccountVerification;
 use JsonSerializable;
+use ZzeendBundle\Entity\Service;
 
 /**
  * User
@@ -88,13 +90,25 @@ class User extends BaseUser implements JsonSerializable
      */
     private $jobDescription;
 
+    /**
+     * @ORM\OneToMany(targetEntity="ZzeendBundle\Entity\Service", mappedBy="user")
+     */
+    private $services;
 
     public function __construct()
     {
         parent::__construct();
-
-        $this->accountVerification = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
+
+    /**
+     * @return Collection|Service[]
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
 
 
     public function isGranted($role)

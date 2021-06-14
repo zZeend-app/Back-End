@@ -123,4 +123,54 @@ class ApiController extends Controller
         ]);
     }
 
+    public function userProfileAction(Request $request){
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $userId = $data['userId'];
+
+        return $this->forward("ZzeendBundle:Type:userProfile", [
+            'userId' => $userId,
+        ]);
+    }
+
+    public function addUserServicesAction(Request $request){
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $userId = $data['userId'];
+        $services = $data['services'];
+
+        return $this->forward("ZzeendBundle:Action:addUserServices", [
+            'userId' => $userId,
+            'services' => $services,
+        ]);
+    }
+
+    public function sendRequestAction(Request $request){
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $senderId = $data['senderId'];
+        $receiverId = $data['receiverId'];
+
+        return $this->forward("ZzeendBundle:Action:sendRequest", [
+            'senderId' => $senderId,
+            'receiverId' => $receiverId,
+        ]);
+    }
+
+    public function changeRequestStateAction(Request $request){
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $requestId = $data['requestId'];
+        $requestState = $data['requestState'];
+
+        return $this->forward("ZzeendBundle:Action:changeRequestState", [
+            'requestId' => $requestId,
+            'requestState' => $requestState
+        ]);
+    }
+
 }
