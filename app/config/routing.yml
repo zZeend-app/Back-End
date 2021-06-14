@@ -13,6 +13,3 @@ mailer:
     resource: "@WebBundle/Resources/config/routing.yml"
     prefix:   /web
 
-fos_user:
-    resource: "@FOSUserBundle/Resources/config/routing/all.xml"
-
