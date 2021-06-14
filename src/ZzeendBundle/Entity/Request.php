@@ -12,7 +12,7 @@ use JsonSerializable;
 use UserBundle\Entity\User;
 
 /**
- * User
+ * Request
  *
  * @ORM\Table(name="`request`")
  * @ORM\Entity(repositoryClass="ZzeendBundle\Repository\RequestRepository")
@@ -65,8 +65,8 @@ class Request implements JsonSerializable
     /**
      * Set users.
      *
-     * @param User $user_sender
-     * @param User $user_receiver
+     * @param User $sender
+     * @param User $receive
      *
      * @return void
      */

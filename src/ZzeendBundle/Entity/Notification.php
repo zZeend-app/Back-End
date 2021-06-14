@@ -12,7 +12,7 @@ use JsonSerializable;
 use UserBundle\Entity\User;
 
 /**
- * User
+ * Notification
  *
  * @ORM\Table(name="`notification`")
  * @ORM\Entity(repositoryClass="ZzeendBundle\Repository\NotificationRepository")

@@ -11,7 +11,7 @@ use JsonSerializable;
 use UserBundle\Entity\User;
 
 /**
- * User
+ * NotificationType
  *
  * @ORM\Table(name="`notification_type`")
  * @ORM\Entity

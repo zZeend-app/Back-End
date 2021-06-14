@@ -7,6 +7,7 @@ namespace ZzeendBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use UserBundle\Entity\User;
+use ZzeendBundle\Entity\Contact;
 use ZzeendBundle\Entity\Notification;
 use ZzeendBundle\Entity\NotificationType;
 use ZzeendBundle\Entity\Request;
@@ -70,6 +71,7 @@ class ActionController extends Controller
     public function changeRequestStateAction($requestId, $requestState){
         $response = array();
         $zZeendRequest = $this->getDoctrine()->getRepository(Request::class)->find($requestId);
+
         if($zZeendRequest !== null){
 
             $notificationTypeInt = 0;
@@ -80,7 +82,30 @@ class ActionController extends Controller
                 $notificationTypeInt = 2;
                 $requestAcceptedFlag = true;
                 $requestRejectedFlag = false;
+
+                $users = $zZeendRequest->getUsers();
+
+                $sender = $users['sender'];
+                $receiver = $users['receiver'];
+
+                $entityManager = $this->getDoctrine()->getManager();
+
+                $contact = new Contact();
+                $contact->setUsers($receiver, $sender);
+                $contact->setCreatedAtAutomatically();
+                $entityManager->persist($contact);
+
+                $contact = new Contact();
+                $contact->setUsers($sender, $receiver);
+                $contact->setCreatedAtAutomatically();
+                $entityManager->persist($contact);
+
+                $entityManager->flush();
+
+
                 $response = array('code' => 'request_accepted');
+
+
             }else{
                 $notificationTypeInt = 3;
                 $requestAcceptedFlag = false;

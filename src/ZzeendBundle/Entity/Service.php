@@ -11,7 +11,7 @@ use JsonSerializable;
 use UserBundle\Entity\User;
 
 /**
- * User
+ * Service
  *
  * @ORM\Table(name="`service`")
  * @ORM\Entity(repositoryClass="ZzeendBundle\Repository\ServiceRepository")
