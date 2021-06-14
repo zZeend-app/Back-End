@@ -26,11 +26,10 @@ class AccountVerification
     protected $id;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="userId", type="integer", length=255, unique=false, nullable=false)
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="services")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    private $userId;
+    private $user;
 
     /**
      * @var string
@@ -58,19 +57,23 @@ class AccountVerification
     }
 
     /**
-     * @return int
+     * @return User
      */
-    public function getUserId(): int
+    public function getUser(): User
     {
-        return $this->userId;
+        return $this->user;
     }
 
     /**
-     * @param string $userId
-     */
-    public function setUserId(string $userId): void
+    * Set user.
+    *
+    * @param User $user
+    *
+    * @return void
+    */
+    public function setUser($user)
     {
-        $this->userId = $userId;
+        $this->user = $user;
     }
 
     /**

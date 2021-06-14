@@ -143,7 +143,7 @@ class UserController extends Controller
             //save codeGen
             $entityManager = $this->getDoctrine()->getManager();
             $accountVerification = new AccountVerification();
-            $accountVerification->setUserId($user->getId());
+            $accountVerification->setUser($user);
             $accountVerification->setCodeGen($codeGen);
             $accountVerification->setCreatedAtAutomatically();
             $accountVerification->setUpdatedAtAutomatically();
@@ -179,7 +179,7 @@ class UserController extends Controller
             //save codeGen
             $entityManager = $this->getDoctrine()->getManager();
             $passwordForgot = new PasswordForgot();
-            $passwordForgot->setUserId($user->getId());
+            $passwordForgot->setUser($user);
             $passwordForgot->setCreatedAtAutomatically();
             $passwordForgot->setUpdatedAtAutomatically();
             $passwordForgot->setCodeGen($codeGen);
@@ -209,7 +209,7 @@ class UserController extends Controller
         $entityManager = $this->getDoctrine()->getRepository(PasswordForgot::class);
         $passwordForgotObject = $entityManager->findOneBy(["codeGen" => $codeGen]);
         if($passwordForgotObject !== null) {
-            $userId = $passwordForgotObject->getUserId();
+            $userId = $passwordForgotObject->getUser()->getId();
 
             $userManager = $this->get('fos_user.user_manager');
             $user =  $userManager->findUserBy(array('id'=> $userId));
@@ -230,7 +230,7 @@ class UserController extends Controller
             $entityManager = $this->getDoctrine()->getRepository(AccountVerification::class);
             $accountVerificationObject = $entityManager->findOneBy(["codeGen" => $codeGen]);
             if($accountVerificationObject !== null){
-                $userId = $accountVerificationObject->getUserId();
+                $userId = $accountVerificationObject->getUser()->getId();
 
                 $userManager = $this->get('fos_user.user_manager');
                 $user =  $userManager->findUserBy(array('id'=> $userId));

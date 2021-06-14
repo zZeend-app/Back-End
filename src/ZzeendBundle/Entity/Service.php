@@ -70,7 +70,7 @@ class Service implements JsonSerializable
     /**
      * Set user.
      *
-     * @param User $user_param
+     * @param User $user
      *
      * @return void
      */
