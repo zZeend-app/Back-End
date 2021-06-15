@@ -1,61 +1,19 @@
-register:
-    path:     /register
-    defaults: { _controller: ApiBundle:Api:signUp }
-    methods: [POST]
+Authentication:
+    resource: "@ApiBundle/Resources/config/Authentication/routingAuthentication.yml"
+    prefix:   /auth
 
-email-verification:
-    path:     /email-verification
-    defaults: { _controller: ApiBundle:Api:sendVerificationMail }
-    methods: [POST]
+service:
+    resource: "@ApiBundle/Resources/config/Service/routingService.yml"
+    prefix:   /services
 
-current-user:
-    path:     /current-user
-    defaults: { _controller: ApiBundle:Api:getCurrentUser }
-    methods: [POST]
+request:
+    resource: "@ApiBundle/Resources/config/Request/routingRequest.yml"
+    prefix:   /request
 
-email-check:
-    path:     /email-check/{codeGen}
-    defaults: { _controller: ApiBundle:Api:enableAccount }
-    methods: [GET]
+search:
+    resource: "@ApiBundle/Resources/config/Search/routingSearch.yml"
+    prefix:   /search
 
-password-recovery:
-    path:     /password-recovery/{codeGen}
-    defaults: { _controller: ApiBundle:Api:resetPasswordRender }
-    methods: [GET]
-
-password-forgot:
-    path:     /password-forgot
-    defaults: { _controller: ApiBundle:Api:sendPasswordForgotMail }
-    methods: [POST]
-
-reset-password:
-    path:     /reset-password
-    defaults: { _controller: ApiBundle:Api:resetPassword }
-    methods: [POST]
-
-service-search:
-    path:     /service-search
-    defaults: { _controller: ApiBundle:Api:serviceSearch }
-    methods: [POST]
-
-user-profile:
-    path:     /user-profile
-    defaults: { _controller: ApiBundle:Api:userProfile }
-    methods: [POST]
-
-add-user-services:
-    path:     /add-user-services
-    defaults: { _controller: ApiBundle:Api:addUserServices }
-    methods: [POST]
-
-send-request:
-    path:     /send-request
-    defaults: { _controller: ApiBundle:Api:sendRequest }
-    methods: [POST]
-
-request-state:
-    path:     /request-state
-    defaults: { _controller: ApiBundle:Api:changeRequestState }
-    methods: [POST]
-
-
+profile:
+    resource: "@ApiBundle/Resources/config/Profile/routingProfile.yml"
+    prefix:   /profile

@@ -1,0 +1,11 @@
+send:
+    path:     /send
+    defaults: { _controller: ApiBundle:Request:sendRequest }
+    methods: [POST]
+
+apply-state:
+    path:     /apply-state
+    defaults: { _controller: ApiBundle:Request:applyRequestState }
+    methods: [POST]
+
+

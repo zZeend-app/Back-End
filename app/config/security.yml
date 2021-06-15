@@ -19,36 +19,36 @@ security:
             security: false
 
         login:
-            pattern:  ^/api/login
+            pattern:  ^/api/auth/login
             stateless: true
             anonymous: true
             json_login:
-                check_path:               /api/login_check
+                check_path:               /api/auth/login_check
                 success_handler:          lexik_jwt_authentication.handler.authentication_success
                 failure_handler:          lexik_jwt_authentication.handler.authentication_failure
 
         api_register:
-            pattern: ^/api/register
+            pattern: ^/api/auth/register
             anonymous: true
 
         email_verification:
-            pattern: ^/api/email-verification
+            pattern: ^/api/auth/email-verification
             anonymous: true
 
         email_check:
-            pattern: ^/api/email-check
+            pattern: ^/api/auth/email-check
             anonymous: true
 
         password-forgot:
-            pattern: ^/api/password-forgot
+            pattern: ^/api/auth/password-forgot
             anonymous: true
 
         password-recovery:
-            pattern: ^/api/password-recovery
+            pattern: ^/api/auth/password-recovery
             anonymous: true
 
         reset-password:
-            pattern: ^/api/reset-password
+            pattern: ^/api/auth/reset-password
             anonymous: true
 
         api:
@@ -77,11 +77,11 @@ security:
                 #target: login
 
     access_control:
-        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/email-verification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/email-check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/password-recovery, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/password-forgot, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/reset-password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/email-verification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/email-check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/password-recovery, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/password-forgot, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/reset-password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

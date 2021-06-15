@@ -1,0 +1,4 @@
+service:
+    path:     /service
+    defaults: { _controller: ApiBundle:Search:serviceSearch }
+    methods: [POST]

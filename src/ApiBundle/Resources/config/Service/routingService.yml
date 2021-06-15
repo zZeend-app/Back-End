@@ -1,0 +1,4 @@
+add:
+    path:     /add
+    defaults: { _controller: ApiBundle:Service:addServices }
+    methods: [POST]

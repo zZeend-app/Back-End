@@ -60,7 +60,7 @@ class UserController extends Controller
         //save codeGen
         $entityManager = $this->getDoctrine()->getManager();
         $accountVerification = new AccountVerification();
-        $accountVerification->setUserId($user->getId());
+        $accountVerification->setUser($user);
         $accountVerification->setCodeGen($codeGen);
 
         $entityManager->persist($accountVerification);
@@ -114,7 +114,7 @@ class UserController extends Controller
             //save codeGen
             $entityManager = $this->getDoctrine()->getManager();
             $accountVerification = new AccountVerification();
-            $accountVerification->setUserId($user->getId());
+            $accountVerification->setUser($user);
             $accountVerification->setCodeGen($codeGen);
 
             $entityManager->persist($accountVerification);

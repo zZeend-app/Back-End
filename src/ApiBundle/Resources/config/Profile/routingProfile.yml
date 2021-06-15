@@ -1,0 +1,9 @@
+profile:
+    path:     /get
+    defaults: { _controller: ApiBundle:Profile:getProfile }
+    methods: [POST]
+
+get-user:
+    path:     /get-user
+    defaults: { _controller: ApiBundle:Profile:getCurrentUser }
+    methods: [POST]

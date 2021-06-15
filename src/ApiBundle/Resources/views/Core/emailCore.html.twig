@@ -340,7 +340,7 @@
                             const data = {codeGen: codeGen, newPassword: $first_password_val}
                             $('#submit_button').prop('disabled', true);
                             $.post({
-                                url: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php/api/reset-password",
+                                url: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php/api/auth/reset-password",
                                 data: JSON.stringify(data),
                                 success: function(data){
                                     if(data.code == "auth/codeGen_error"){

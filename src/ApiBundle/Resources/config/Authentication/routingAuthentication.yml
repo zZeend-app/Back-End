@@ -1,0 +1,34 @@
+register:
+    path:     /register
+    defaults: { _controller: ApiBundle:Authentication:signUp }
+    methods: [POST]
+
+email-verification:
+    path:     /email-verification
+    defaults: { _controller: ApiBundle:Authentication:sendVerificationMail }
+    methods: [POST]
+
+current-user:
+    path:     /current-user
+    defaults: { _controller: ApiBundle:Authentication:getCurrentUser }
+    methods: [POST]
+
+email-check:
+    path:     /email-check/{codeGen}
+    defaults: { _controller: ApiBundle:Authentication:enableAccount }
+    methods: [GET]
+
+password-recovery:
+    path:     /password-recovery/{codeGen}
+    defaults: { _controller: ApiBundle:Authentication:resetPasswordRender }
+    methods: [GET]
+
+password-forgot:
+    path:     /password-forgot
+    defaults: { _controller: ApiBundle:Authentication:sendPasswordForgotMail }
+    methods: [POST]
+
+reset-password:
+    path:     /reset-password
+    defaults: { _controller: ApiBundle:Authentication:resetPassword }
+    methods: [POST]

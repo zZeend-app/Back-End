@@ -8,7 +8,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\Common\Collections\Collection;
 use UserBundle\Entity\AccountVerification;
 use JsonSerializable;
-use ZzeendBundle\Entity\Service;
+use ApiBundle\Entity\Service;
 
 /**
  * User
@@ -91,7 +91,7 @@ class User extends BaseUser implements JsonSerializable
     private $jobDescription;
 
     /**
-     * @ORM\OneToMany(targetEntity="ZzeendBundle\Entity\Service", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="ApiBundle\Entity\Service", mappedBy="user")
      */
     private $services;
 

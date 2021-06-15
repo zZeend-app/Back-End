@@ -1,3 +1,0 @@
-zzeend_homepage:
-    path:     /
-    defaults: { _controller: ZzeendBundle:Default:index }
