@@ -124,4 +124,23 @@ class RequestController extends Controller
         return new JsonResponse($response);
     }
 
+    public function getAllRequestsAction(Request $request){
+        $response = array();
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $userId = $data['userId'];
+
+        $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+        $em = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereSenderOrReceiver($qb, $user);
+        $qb = $em->OrderBy($qb);
+        $requests = $qb->getQUery()->getResult();
+
+        return new JsonResponse($requests);
+
+    }
+
 }

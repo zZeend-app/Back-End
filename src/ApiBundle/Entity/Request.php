@@ -176,7 +176,7 @@ class Request implements JsonSerializable
         }
 
         if(!$entityClass instanceof Service || in_array("createdAt",$include)){
-            $json["createdAt"] = $this->rejected;
+            $json["createdAt"] = $this->createdAt;
         }
 
         return $json;

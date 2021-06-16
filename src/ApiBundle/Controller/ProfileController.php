@@ -40,11 +40,13 @@ class ProfileController extends Controller
             $connectedUser = $this->getUser();
             $em = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class);
             $qb = $em->GetQueryBuilder();
-            $qb = $em->WhereUser($qb, $connectedUser);
+            $qb = $em->WhereUser($qb, $connectedUser, $user);
             $requestSenderObject = $qb->getQuery()->getResult();
 
-            if($requestSenderObject !== null){
-                $response['request_already_sent'] = true;
+            if(count($requestSenderObject) > 0){
+                $response['requestAlreadySent'] = true;
+            }else{
+                $response['requestAlreadySent'] = false;
             }
         }
 
