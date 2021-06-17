@@ -43,7 +43,6 @@ class SearchController extends Controller
                 // $em->WhereAreaLike($qb, $filter['zZeendScore']);
             }
 
-            //todo filter by users who has an account enabled(0)
             //todo filter by users who are not service Owners (ROLE_OWNER)
             //todo filter by users who hasn't pay thier monthly plan fee (ROLE_OWNER)
         }
@@ -51,6 +50,7 @@ class SearchController extends Controller
         if(isset($keyword) AND $keyword !== ''){
             $qb = $em->WhereIdNot($qb, $userId);
             $qb = $em->WhereRoleNot($qb, "ROLE_SEEKER");
+            $qb = $em->WhereAccountIsEnabled($qb, true);
             $response = $qb->getQuery()->getResult();
         }
 

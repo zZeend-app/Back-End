@@ -79,4 +79,9 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('role', '%'.$role.'%');
     }
 
+    public function WhereAccountIsEnabled(QueryBuilder $queryBuilder, $flag){
+        return $queryBuilder
+            ->andWhere('u.enabled = :flag')
+            ->setParameter('flag', $flag);
+    }
 }
