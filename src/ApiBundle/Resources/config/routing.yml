@@ -17,3 +17,11 @@ search:
 profile:
     resource: "@ApiBundle/Resources/config/Profile/routingProfile.yml"
     prefix:   /profile
+
+contact:
+    resource: "@ApiBundle/Resources/config/Contact/routingContact.yml"
+    prefix:   /contact
+
+chat:
+    resource: "@ApiBundle/Resources/config/Chat/routingChat.yml"
+    prefix:   /chat

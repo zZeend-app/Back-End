@@ -1,0 +1,9 @@
+send:
+    path:     /send
+    defaults: { _controller: ApiBundle:Chat:sendChat }
+    methods: [POST]
+
+get:
+    path:     /get
+    defaults: { _controller: ApiBundle:Chat:getChat }
+    methods: [POST]

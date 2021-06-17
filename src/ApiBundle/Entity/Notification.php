@@ -147,11 +147,11 @@ class Notification implements JsonSerializable
         }
 
         if(!$entityClass instanceof Service || in_array("viewed",$include)){
-            $json["viewed"] = $this->related;
+            $json["viewed"] = $this->viewed;
         }
 
         if(!$entityClass instanceof Service || in_array("createdAt",$include)){
-            $json["createdAt"] = $this->viewed;
+            $json["createdAt"] = $this->createdAt;
         }
 
         return $json;

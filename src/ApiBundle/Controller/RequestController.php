@@ -15,7 +15,8 @@ use ApiBundle\Entity\NotificationType;
 class RequestController extends Controller
 {
 
-    public function sendRequestAction(Request $request){
+    public function sendRequestAction(Request $request)
+    {
         $data = $request->getContent();
         $data = json_decode($data, true);
 
@@ -49,7 +50,8 @@ class RequestController extends Controller
         return new JsonResponse($response);
     }
 
-    public function applyRequestStateAction(Request $request){
+    public function applyRequestStateAction(Request $request)
+    {
         $data = $request->getContent();
         $data = json_decode($data, true);
 
@@ -59,13 +61,13 @@ class RequestController extends Controller
         $response = array();
         $zZeendRequest = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class)->find($requestId);
 
-        if($zZeendRequest !== null){
+        if ($zZeendRequest !== null) {
 
             $notificationTypeInt = 0;
             $requestAcceptedFlag = false;
             $requestRejectedFlag = false;
 
-            if($requestState == true){
+            if ($requestState == true) {
                 $notificationTypeInt = 2;
                 $requestAcceptedFlag = true;
                 $requestRejectedFlag = false;
@@ -75,25 +77,24 @@ class RequestController extends Controller
                 $sender = $users['sender'];
                 $receiver = $users['receiver'];
 
-                $entityManager = $this->getDoctrine()->getManager();
-
-                $contact = new Contact();
-                $contact->setUsers($receiver, $sender);
-                $contact->setCreatedAtAutomatically();
-                $entityManager->persist($contact);
-
-                $contact = new Contact();
-                $contact->setUsers($sender, $receiver);
-                $contact->setCreatedAtAutomatically();
-                $entityManager->persist($contact);
-
-                $entityManager->flush();
+                if ($receiver->isGranted('ROLE_OWNER')) {
 
 
-                $response = array('code' => 'request_accepted');
+                    $entityManager = $this->getDoctrine()->getManager();
 
+                    $contact = new Contact();
+                    $contact->setUsers($receiver, $sender);
+                    $contact->setCreatedAtAutomatically();
+                    $entityManager->persist($contact);
 
-            }else{
+                    $entityManager->flush();
+
+                    $response = array('code' => 'request_accepted');
+                } else {
+                    $response = array('code' => 'action_not_allowed');
+                }
+
+            } else {
                 $notificationTypeInt = 3;
                 $requestAcceptedFlag = false;
                 $requestRejectedFlag = true;
@@ -117,14 +118,16 @@ class RequestController extends Controller
             $entityManager->persist($notification);
             $entityManager->flush();
 
-        }else{
+
+        } else {
             $response = array('code' => 'request_not_found');
         }
 
         return new JsonResponse($response);
     }
 
-    public function getAllRequestsAction(Request $request){
+    public function getAllRequestsAction(Request $request)
+    {
         $response = array();
         $data = $request->getContent();
         $data = json_decode($data, true);

@@ -48,6 +48,11 @@ class Contact implements JsonSerializable
      */
     private $createdAt;
 
+    public function __construct()
+    {
+        $this->chats = new ArrayCollection();
+    }
+
     /**
      * Set users.
      *
@@ -56,6 +61,8 @@ class Contact implements JsonSerializable
      *
      * @return void
      */
+
+
     public function setUsers($mainUser, $secondUser)
     {
         $this->mainUser = $mainUser;
@@ -69,7 +76,7 @@ class Contact implements JsonSerializable
      */
     public function getUsers()
     {
-        return array('main_user' => $this->mainUser, 'second_user' => $this->secondUser);
+        return array('mainUser' => $this->mainUser, 'secondUser' => $this->secondUser);
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -93,22 +100,23 @@ class Contact implements JsonSerializable
         }
     }
 
+
     public function jsonSerialize($entityClass = null,$include = [])
     {
         $json = [
             "id" => $this->id,
         ];
 
-        if (!$entityClass instanceof Service || in_array("mainUser", $include)) {
+        if (!$entityClass instanceof Contact || in_array("mainUser", $include)) {
             $json["mainUser"] = $this->mainUser;
         }
 
-        if (!$entityClass instanceof Service || in_array("secondUser", $include)) {
-            $json["secondUser"] = $this->mainUser;
+        if (!$entityClass instanceof Contact || in_array("secondUser", $include)) {
+            $json["secondUser"] = $this->secondUser;
         }
 
-        if (!$entityClass instanceof Service || in_array("createdAt", $include)) {
-            $json["createdAt"] = $this->mainUser;
+        if (!$entityClass instanceof Contact || in_array("createdAt", $include)) {
+            $json["createdAt"] = $this->createdAt;
         }
 
 
