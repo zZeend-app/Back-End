@@ -18,4 +18,9 @@ class ChatRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('contact', $contact);
     }
 
+    public function GroupBy(QueryBuilder $queryBuilder, $columnName){
+        return $queryBuilder
+            ->groupBy($columnName);
+    }
+
 }

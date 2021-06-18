@@ -83,5 +83,29 @@ class ChatController extends Controller
         return new JsonResponse($response);
     }
 
+    public function getChatContactAction(){
+        $response = array();
+        $currentUser = $this->getUser();
+        $em = $this->getDoctrine()->getRepository(Contact::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereUser($qb, $currentUser);
+
+        $contacts = $qb->getQuery()->getResult();
+
+        for($i = 0; $i < count($contacts); $i++){
+            $qb = '';
+            $contact = $contacts[$i];
+            $em = $this->getDoctrine()->getRepository(Chat::class);
+            $qb = $em->GetQueryBuilder();
+            $qb = $em->WhereContact($qb, $contact);
+            $qb = $em->GroupBy($qb, 'contact');
+
+            $response = $qb->getQuery()->getResult();
+
+        }
+
+        return new JsonResponse($response);
+    }
+
 
 }

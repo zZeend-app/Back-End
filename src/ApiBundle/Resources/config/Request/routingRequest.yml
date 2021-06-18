@@ -1,5 +1,5 @@
-send:
-    path:     /send
+send_:
+    path:     /send-req
     defaults: { _controller: ApiBundle:Request:sendRequest }
     methods: [POST]
 

@@ -7,3 +7,8 @@ get:
     path:     /get
     defaults: { _controller: ApiBundle:Chat:getChat }
     methods: [POST]
+
+contact:
+    path:     /contact
+    defaults: { _controller: ApiBundle:Chat:getChatContact }
+    methods: [POST]
