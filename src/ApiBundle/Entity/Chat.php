@@ -191,6 +191,10 @@ class Chat implements JsonSerializable
             $json["secondUser"] = $this->secondUser;
         }
 
+        if (!$entityClass instanceof Chat || in_array("contact", $include)) {
+            $json["contact"] = $this->contact;
+        }
+
         if (!$entityClass instanceof Chat || in_array("createdAt", $include)) {
             $json["createdAt"] = $this->createdAt;
         }

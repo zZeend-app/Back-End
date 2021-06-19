@@ -12,15 +12,28 @@ class ChatRepository extends \Doctrine\ORM\EntityRepository
     }
 
 
+    public function WhereUser(QueryBuilder $queryBuilder, $user){
+        return $queryBuilder
+            ->orWhere('ch.mainUser = :mainUser')
+            ->setParameter('mainUser', $user)
+            ->orWhere('ch.secondUser = :secondUser')
+            ->setParameter('secondUser', $user);
+    }
+
     public function WhereContact(QueryBuilder $queryBuilder, $contact){
         return $queryBuilder
-            ->andWhere('ch.contact = :contact')
+            ->where('ch.contact = :contact')
             ->setParameter('contact', $contact);
     }
 
     public function GroupBy(QueryBuilder $queryBuilder, $columnName){
         return $queryBuilder
-            ->groupBy($columnName);
+            ->groupBy('ch.'.$columnName);
+    }
+
+    public function OrderBy(QueryBuilder $queryBuilder, $columnName){
+        return $queryBuilder
+            ->orderBy('ch.'.$columnName, 'ASC');
     }
 
 }
