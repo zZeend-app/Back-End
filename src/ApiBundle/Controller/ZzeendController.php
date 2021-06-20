@@ -160,6 +160,10 @@ class ZzeendController extends Controller
             $entityManager = $this->getDoctrine()->getManager();
 
             $mainZzeendUser = $zZeend->getUser();
+            $mainZzeendUser = $mainZzeendUser->getScore() + 1;
+
+            $entityManager->persist($mainZzeendUser);
+
             $zZeendCost = $zZeend->getCost();
 
             $finance = new Finance();

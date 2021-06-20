@@ -5,6 +5,8 @@ namespace ApiBundle\Controller;
 
 
 use ApiBundle\Entity\Service;
+use ApiBundle\Entity\SocialNetwork;
+use ApiBundle\Entity\SocialNetworkType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,8 +34,15 @@ class ProfileController extends Controller
 
         $connectedUserId = $this->getUser()->getId();
 
+        $em = $this->getDoctrine()->getRepository(SocialNetwork::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereUser($qb, $user);
+        $socialNetworks = $qb->getQuery()->getResult();
+
+
         $response['user'] = $user;
         $response['services'] = $services;
+        $response['socialNetworks'] = $socialNetworks;
 
 
         if($connectedUserId !== $userId){
@@ -58,7 +67,7 @@ class ProfileController extends Controller
     }
 
     public function updateCurrentUserAction(Request $request){
-        $reponse = array();
+        $response = array();
         $updated = array();
 
         $currentUser = $this->getUser();
@@ -114,12 +123,9 @@ class ProfileController extends Controller
     }
 
     public function visibilityAction(Request $request){
-        $reponse = array();
+        $response = array();
 
         $currentUser = $this->getUser();
-
-        $data = $request->getContent();
-        $data = json_decode($data, true);
 
         $profileVisibility = $currentUser->getVisibility();
 
@@ -137,6 +143,111 @@ class ProfileController extends Controller
         $entityManager->persist($currentUser);
         $entityManager->flush();
 
+
+        return new JsonResponse($response);
+
+    }
+
+    public function addSocialNetworkAction(Request $request){
+        $response = array();
+
+        $currentUser = $this->getUser();
+
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $link = $data['link'];
+        $social_network_type = $data['social_network_type'];
+
+        $socialNetworkType = $this->getDoctrine()->getRepository(SocialNetworkType::class)->find($social_network_type);
+
+        if($socialNetworkType){
+
+            $sameSocialNetowk = $this->getDoctrine()->getRepository(SocialNetwork::class)->findOneBy(["socialNetworkType" => $socialNetworkType]);
+
+            if($sameSocialNetowk === null){
+                $entityManager = $this->getDoctrine()->getManager();
+
+                $socialNetwork = new SocialNetwork();
+                $socialNetwork->setUser($currentUser);
+                $socialNetwork->setSocialNetworkType($socialNetworkType);
+                $socialNetwork->setLink($link);
+                $socialNetwork->setCreatedAtAutomatically();
+                $socialNetwork->setUpdatedAtAutomatically();
+
+                $entityManager->persist($socialNetwork);
+                $entityManager->flush();
+
+                $response = array("code" => "social_network_added");
+            }else{
+                $response = array("code" => "action_not_allowed");
+            }
+        }else{
+            $response = array("code" => "action_not_allowed");
+        }
+
+        return new JsonResponse($response);
+
+    }
+
+    public function updateSocialNetworkAction(Request $request)
+    {
+        $response = array();
+
+        $currentUser = $this->getUser();
+
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $social_network_id = $data['social_network_id'];
+        $link = $data['link'];
+
+        $socialNetwork = $this->getDoctrine()->getRepository(SocialNetwork::class)->find($social_network_id);
+
+        if($socialNetwork){
+
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $socialNetwork->setLink($link);
+
+            $entityManager->persist($socialNetwork);
+            $entityManager->flush();
+
+            $response = array("code" => "social_network_updated");
+
+        }else{
+            $response = array("code" => "action_not_allowed");
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function deleteSocialNetworkAction(Request $request)
+    {
+        $response = array();
+
+        $currentUser = $this->getUser();
+
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $social_network_id = $data['social_network_id'];
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $socialNetwork = $entityManager->getRepository(SocialNetwork::class)->find($social_network_id);
+
+        if($socialNetwork !== null){
+            $entityManager->remove($socialNetwork);
+            $entityManager->flush();
+
+            $response = array("code" => "social_network_delete");
+        }else{
+            $response = array("code" => "action_not_allowed");
+        }
 
         return new JsonResponse($response);
 

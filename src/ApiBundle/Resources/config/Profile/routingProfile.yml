@@ -17,3 +17,18 @@ visibility:
     path:     /visibility
     defaults: { _controller: ApiBundle:Profile:visibility }
     methods: [PUT]
+
+add-social-netoword:
+    path:     /social-netowk/add
+    defaults: { _controller: ApiBundle:Profile:addSocialNetwork }
+    methods: [POST]
+
+update-social-netoword:
+    path:     /social-netowk/update
+    defaults: { _controller: ApiBundle:Profile:updateSocialNetwork }
+    methods: [PUT]
+
+delete-social-netoword:
+    path:     /social-netowk/delete
+    defaults: { _controller: ApiBundle:Profile:deleteSocialNetwork }
+    methods: [DELETE]
