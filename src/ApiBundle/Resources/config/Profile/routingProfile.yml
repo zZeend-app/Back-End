@@ -12,3 +12,8 @@ update-profile:
     path:     /update
     defaults: { _controller: ApiBundle:Profile:updateCurrentUser }
     methods: [PUT]
+
+visibility:
+    path:     /visibility
+    defaults: { _controller: ApiBundle:Profile:visibility }
+    methods: [PUT]

@@ -36,8 +36,10 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
     public function WhereKeywordLike(QueryBuilder $queryBuilder, $keyword){
       return $queryBuilder
-          ->andWhere('u.jobTitle Like :keyword')
-          ->setParameter('keyword', '%'.$keyword.'%');
+          ->orWhere('u.jobTitle Like :keyword')
+          ->setParameter('keyword', '%'.$keyword.'%')
+          ->orWhere('u.jobDescription Like :keyword')
+          ->setParameter('keyword', '%'.$keyword.'%');;
     }
 
     public function WhereCountryLike(QueryBuilder $queryBuilder, $country){

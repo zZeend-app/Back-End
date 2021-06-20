@@ -113,5 +113,34 @@ class ProfileController extends Controller
         return new JsonResponse($response);
     }
 
+    public function visibilityAction(Request $request){
+        $reponse = array();
+
+        $currentUser = $this->getUser();
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $profileVisibility = $currentUser->getVisibility();
+
+        if($profileVisibility == true){
+            $profileVisibility = false;
+            $response = array("code" => "profile_hidden");
+        }else if($profileVisibility == false){
+            $profileVisibility = true;
+            $response = array("code" => "profile_visible");
+        }
+
+        $currentUser->setVisibility($profileVisibility);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($currentUser);
+        $entityManager->flush();
+
+
+        return new JsonResponse($response);
+
+    }
+
 
 }
