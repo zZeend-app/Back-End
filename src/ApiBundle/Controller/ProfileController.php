@@ -57,5 +57,61 @@ class ProfileController extends Controller
         return $this->forward("UserBundle:User:getCurrentUser");
     }
 
+    public function updateCurrentUserAction(Request $request){
+        $reponse = array();
+        $updated = array();
+
+        $currentUser = $this->getUser();
+
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $fullname = $data['fullname'];
+        $job_title = $data['job_title'];
+        $job_description = $data['job_description'];
+        $address = $data['address'];
+        $zip_code = $data['zip_code'];
+        $phone_number = $data['phone_number'];
+
+        if($fullname !== '' AND $fullname !== $currentUser->getFullname()){
+            $currentUser->setFullname($fullname);
+            $updated[] = "fullname";
+        }
+
+        if($job_title !== '' AND $job_title !== $currentUser->getJobTitle()){
+            $currentUser->setJobTitle($job_title);
+            $updated[] = "job_title";
+        }
+
+        if($job_description !== '' AND $job_description !== $currentUser->getJobDescription()){
+            $currentUser->setJobDescription($job_description);
+            $updated[] = "job_description";
+        }
+
+        if($address !== '' AND $address !== $currentUser->getAddress()){
+            $currentUser->setAddress($address);
+            $updated[] = "address";
+        }
+
+        if($zip_code !== '' AND $zip_code !== $currentUser->getZipCode()){
+            $currentUser->setZipCode($zip_code);
+            $updated[] = "zip_code";
+        }
+
+        if($phone_number !== '' AND $phone_number !== $currentUser->getPhoneNumber()){
+            $currentUser->setPhoneNumber($phone_number);
+            $updated[] = "phone_number";
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($currentUser);
+        $entityManager->flush();
+
+        $response = array("updated" => $updated);
+
+        return new JsonResponse($response);
+    }
+
 
 }

@@ -1,0 +1,24 @@
+create:
+    path:     /create
+    defaults: { _controller: ApiBundle:Zzeend:create }
+    methods: [POST]
+
+get-all:
+    path:     /get-all
+    defaults: { _controller: ApiBundle:Zzeend:getAllZzeends }
+    methods: [POST]
+
+get:
+    path:     /get/{ZzeendId}
+    defaults: { _controller: ApiBundle:Zzeend:getZzeend }
+    methods: [GET]
+
+payment:
+    path:     /payment
+    defaults: { _controller: ApiBundle:Zzeend:payment }
+    methods: [POST]
+
+finalize:
+    path:     /finalize
+    defaults: { _controller: ApiBundle:Zzeend:done }
+    methods: [POST]

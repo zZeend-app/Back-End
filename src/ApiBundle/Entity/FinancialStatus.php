@@ -11,16 +11,14 @@ use JsonSerializable;
 use UserBundle\Entity\User;
 
 /**
- * NotificationType
+ * Service
  *
- * @ORM\Table(name="`notification_type`")
- * @ORM\Entity
+ * @ORM\Table(name="`financial_status`")
+ * @ORM\Entity(repositoryClass="ApiBundle\Repository\FinancialStatusRepository")
  */
 
-
-class NotificationType implements JsonSerializable
+class FinancialStatus implements JsonSerializable
 {
-
     /**
      * @var int
      *
@@ -37,13 +35,7 @@ class NotificationType implements JsonSerializable
      */
     private $title;
 
-    /**
-     * Set title.
-     *
-     * @param string $title
-     *
-     * @return NotificationType
-     */
+
     public function setTitle(string $title)
     {
         $this->title = $title;
@@ -68,12 +60,10 @@ class NotificationType implements JsonSerializable
             "id" => $this->id,
         ];
 
-        if(!$entityClass instanceof NotificationType || in_array("title",$include)){
+        if(!$entityClass instanceof FinancialStatus || in_array("title",$include)){
             $json["title"] = $this->title;
         }
 
-
         return $json;
     }
-
 }

@@ -1,0 +1,14 @@
+add:
+    path:     /add
+    defaults: { _controller: ApiBundle:PaymentMethod:addPaymentMethod }
+    methods: [POST]
+
+update:
+    path:     /update
+    defaults: { _controller: ApiBundle:PaymentMethod:updatePaymentMethod }
+    methods: [POST]
+
+delete:
+    path:     /delete
+    defaults: { _controller: ApiBundle:PaymentMethod:deletePaymentMethod }
+    methods: [POST]

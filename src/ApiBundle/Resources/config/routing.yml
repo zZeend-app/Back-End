@@ -25,3 +25,15 @@ contact:
 chat:
     resource: "@ApiBundle/Resources/config/Chat/routingChat.yml"
     prefix:   /chat
+
+zzeend:
+    resource: "@ApiBundle/Resources/config/Zzeend/routingZzeend.yml"
+    prefix:   /zzeend
+
+notification:
+    resource: "@ApiBundle/Resources/config/Notification/routingNotification.yml"
+    prefix:   /notification
+
+payment_method:
+    resource: "@ApiBundle/Resources/config/PaymentMethod/routingPaymentMethod.yml"
+    prefix:   /payment-method

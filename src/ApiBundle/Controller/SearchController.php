@@ -51,6 +51,7 @@ class SearchController extends Controller
             $qb = $em->WhereIdNot($qb, $userId);
             $qb = $em->WhereRoleNot($qb, "ROLE_SEEKER");
             $qb = $em->WhereAccountIsEnabled($qb, true);
+            $qb = $em->WhereUserVisibility($qb, true);
             $response = $qb->getQuery()->getResult();
         }
 

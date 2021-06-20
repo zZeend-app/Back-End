@@ -84,4 +84,13 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('u.enabled = :flag')
             ->setParameter('flag', $flag);
     }
+
+    public function WhereUserVisibility(QueryBuilder $queryBuilder, $flag)
+    {
+        return $queryBuilder
+            ->andWhere('u.visibility = :flag')
+            ->setParameter('flag', $flag)
+            ->andWhere('u.mainVisibility = :flag')
+            ->setParameter('flag', $flag);
+    }
 }

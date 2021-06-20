@@ -95,6 +95,27 @@ class User extends BaseUser implements JsonSerializable
      */
     private $services;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="zZeend_score", type="string", length=255, unique=false, nullable=false)
+     */
+    private $zZeendScore;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="visibility", type="boolean", length=255, unique=false, nullable=false)
+     */
+    private $visibility;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="main_visibility", type="boolean", length=255, unique=false, nullable=false)
+     */
+    private $mainVisibility;
+
     public function __construct()
     {
         parent::__construct();
@@ -261,6 +282,30 @@ class User extends BaseUser implements JsonSerializable
     }
 
     /**
+     * Set address.
+     *
+     * @param string $zZeendScore
+     *
+     * @return string
+     */
+    public function setZzeendScore($zZeendScore)
+    {
+        $this->zZeendScore = $zZeendScore;
+
+    }
+
+    /**
+     * Get zZeendScore.
+     *
+     * @return string
+     */
+    public function getZzeendScore()
+    {
+        return $this->zZeendScore;
+    }
+
+
+    /**
      * Set zipCode.
      *
      * @param string $zipCode
@@ -368,6 +413,48 @@ class User extends BaseUser implements JsonSerializable
         return $this;
     }
 
+    /**
+     * Set visibility.
+     *
+     * @param string $visibilityFlag
+     *
+     */
+    public function setVisibility($visibilityFlag)
+    {
+        $this->visibility = $visibilityFlag;
+    }
+
+    /**
+     * Get visibility.
+     *
+     * @return boolean
+     */
+    public function getVisibility()
+    {
+        return $this->visibility;
+    }
+
+    /**
+     * Set mainVisibility.
+     *
+     * @param string $visibilityFlag
+     *
+     */
+    public function setMainVisibility($visibilityFlag)
+    {
+        $this->mainVisibility = $visibilityFlag;
+    }
+
+    /**
+     * Get mainVisibility.
+     *
+     * @return boolean
+     */
+    public function getMainVisibility()
+    {
+        return $this->mainVisibility;
+    }
+
 
     public function jsonSerialize($entityClass = null,$include = []){
 
@@ -421,6 +508,18 @@ class User extends BaseUser implements JsonSerializable
 
         if(!$entityClass instanceof User || in_array("enabled",$include)){
             $json["enabled"] = $this->enabled;
+        }
+
+        if(!$entityClass instanceof User || in_array("zZeendScore",$include)){
+            $json["zZeendScore"] = $this->zZeendScore;
+        }
+
+        if(!$entityClass instanceof User || in_array("visibility",$include)){
+            $json["visibility"] = $this->visibility;
+        }
+
+        if(!$entityClass instanceof User || in_array("mainVisibility",$include)){
+            $json["mainVisibility"] = $this->mainVisibility;
         }
 
         return $json;

@@ -50,6 +50,9 @@ class UserController extends Controller
         $user->setPhoneNumber($phoneNumber);
         $user->setJobTitle($jobTitle);
         $user->setJobDescription($jobDescription);
+        $user->setZzeendScore(0);
+        $user->setVisibility(true);
+        $user->setMainVisibility(true);
 
         $userManager->updateUser($user);
 
