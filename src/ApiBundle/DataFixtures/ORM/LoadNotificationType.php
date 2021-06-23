@@ -17,7 +17,12 @@ class LoadNotificationType implements FixtureInterface
             'Request Rejected',
             'Send Chat',
             'Chat Received',
-            'Chat Seen'
+            'Chat Seen',
+            'New zZeend',
+            'zZeend Payment',
+            'zZeend finalize',
+            'Shared Post',
+            'Shared Proile'
         );
 
         foreach ($notificationTitles as $notificationTitle) {

@@ -192,7 +192,7 @@ class SocialNetwork implements JsonSerializable
         }
 
         if(!$entityClass instanceof SocialNetwork || in_array("updatedA",$include)){
-            $json["updatedA"] = $this->updatedAt;
+            $json["updatedAt"] = $this->updatedAt;
         }
 
         return $json;

@@ -72,6 +72,8 @@ class ProfileController extends Controller
 
         $currentUser = $this->getUser();
 
+        $modification = false;
+
 
         $data = $request->getContent();
         $data = json_decode($data, true);
@@ -86,31 +88,41 @@ class ProfileController extends Controller
         if($fullname !== '' AND $fullname !== $currentUser->getFullname()){
             $currentUser->setFullname($fullname);
             $updated[] = "fullname";
+            $modification = true;
         }
 
         if($job_title !== '' AND $job_title !== $currentUser->getJobTitle()){
             $currentUser->setJobTitle($job_title);
             $updated[] = "job_title";
+            $modification = true;
         }
 
         if($job_description !== '' AND $job_description !== $currentUser->getJobDescription()){
             $currentUser->setJobDescription($job_description);
             $updated[] = "job_description";
+            $modification = true;
         }
 
         if($address !== '' AND $address !== $currentUser->getAddress()){
             $currentUser->setAddress($address);
             $updated[] = "address";
+            $modification = true;
         }
 
         if($zip_code !== '' AND $zip_code !== $currentUser->getZipCode()){
             $currentUser->setZipCode($zip_code);
             $updated[] = "zip_code";
+            $modification = true;
         }
 
         if($phone_number !== '' AND $phone_number !== $currentUser->getPhoneNumber()){
             $currentUser->setPhoneNumber($phone_number);
             $updated[] = "phone_number";
+            $modification = true;
+        }
+
+        if($modification){
+            $currentUser->setUpdatedAtAutomatically();
         }
 
         $entityManager = $this->getDoctrine()->getManager();
@@ -211,6 +223,7 @@ class ProfileController extends Controller
             $entityManager = $this->getDoctrine()->getManager();
 
             $socialNetwork->setLink($link);
+            $socialNetwork->setUpdatedAtAutomatically();
 
             $entityManager->persist($socialNetwork);
             $entityManager->flush();

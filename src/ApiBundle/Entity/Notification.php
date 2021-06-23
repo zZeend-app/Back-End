@@ -38,10 +38,9 @@ class Notification implements JsonSerializable
     private $notificationType;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\Request", inversedBy="notification")
-     * @ORM\JoinColumn(name="related_id", referencedColumnName="id")
+     * @ORM\Column(name="related_id", type="boolean", unique=false, nullable=true)
      */
-    private $related;
+    private $related_id;
 
     /**
      * @var boolean
@@ -77,24 +76,24 @@ class Notification implements JsonSerializable
     }
 
     /**
-     * Set related.
+     * Set related_id.
      *
      *
      * @return void
      */
-    public function setRelated($related)
+    public function setRelatedId($related_id)
     {
-        $this->related = $related;
+        $this->related_id = $related_id;
     }
 
     /**
-     * Get related.
+     * Get related_id.
      *
-     * @return Request
+     * @return integer
      */
-    public function getRelated(): Request
+    public function getRelatedId()
     {
-        return $this->related;
+        return $this->related_id;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -138,19 +137,19 @@ class Notification implements JsonSerializable
             "id" => $this->id,
         ];
 
-        if(!$entityClass instanceof Service || in_array("notificationType",$include)){
+        if(!$entityClass instanceof Notification || in_array("notificationType",$include)){
             $json["notificationType"] = $this->notificationType;
         }
 
-        if(!$entityClass instanceof Service || in_array("related",$include)){
-            $json["related"] = $this->related;
+        if(!$entityClass instanceof Notification || in_array("related_id",$include)){
+            $json["related_id"] = $this->related_id;
         }
 
-        if(!$entityClass instanceof Service || in_array("viewed",$include)){
+        if(!$entityClass instanceof Notification || in_array("viewed",$include)){
             $json["viewed"] = $this->viewed;
         }
 
-        if(!$entityClass instanceof Service || in_array("createdAt",$include)){
+        if(!$entityClass instanceof Notification || in_array("createdAt",$include)){
             $json["createdAt"] = $this->createdAt;
         }
 

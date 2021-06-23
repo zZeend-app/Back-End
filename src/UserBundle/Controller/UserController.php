@@ -53,6 +53,8 @@ class UserController extends Controller
         $user->setZzeendScore(0);
         $user->setVisibility(true);
         $user->setMainVisibility(true);
+        $user->setCreatedAtAutomatically();
+        $user->setUpdatedAtAutomatically();
 
         $userManager->updateUser($user);
 

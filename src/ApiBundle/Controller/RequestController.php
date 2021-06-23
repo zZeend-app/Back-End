@@ -38,7 +38,7 @@ class RequestController extends Controller
 
         $entityManager = $this->getDoctrine()->getManager();
         $notification = new Notification();
-        $notification->setRelated($zZeendRequest);
+        $notification->setRelatedId($zZeendRequest->getId());
         $notification->setCreatedAtAutomatically();
         $notification->setViewed(false);
         $notification->setNotificationType($notificationType);
@@ -111,7 +111,7 @@ class RequestController extends Controller
 
             $entityManager = $this->getDoctrine()->getManager();
             $notification = new Notification();
-            $notification->setRelated($zZeendRequest);
+            $notification->setRelatedId($zZeendRequest);
             $notification->setCreatedAtAutomatically();
             $notification->setViewed(false);
             $notification->setNotificationType($notificationType);

@@ -8,8 +8,8 @@ apply-state:
     defaults: { _controller: ApiBundle:Request:applyRequestState }
     methods: [POST]
 
-get-all:
-    path:     /get-all
+\all:
+    path:     /all
     defaults: { _controller: ApiBundle:Request:getAllRequests }
     methods: [POST]
 
