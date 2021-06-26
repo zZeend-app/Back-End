@@ -20,4 +20,12 @@ class NotificationRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('userAssigned', $user);
     }
 
+    public function InnerJoin(QueryBuilder $queryBuilder){
+        return $queryBuilder
+            ->join('n.related_id', 'related_id')
+            >addSelect('related_id')
+            ->orWhere('z.userAssigned = :userAssigned')
+            ->setParameter('userAssigned', $user);
+    }
+
 }

@@ -160,7 +160,7 @@ class ZzeendController extends Controller
             $entityManager = $this->getDoctrine()->getManager();
 
             $mainZzeendUser = $zZeend->getUser();
-            $mainZzeendUser = $mainZzeendUser->getScore() + 1;
+            $mainZzeendUser->setZzeendScore($mainZzeendUser->getZzeendScore() + 1);
 
             $entityManager->persist($mainZzeendUser);
 
@@ -181,6 +181,8 @@ class ZzeendController extends Controller
 
             $entityManager->persist($finance);
 
+            $zZeendStatus = $this->getDoctrine()->getRepository(ZzeendStatus::class)->find(3);
+            $zZeend->setStatus($zZeendStatus);
             $zZeend->setDone(true);
             $zZeend->setUpdatedAtAutomatically();
 

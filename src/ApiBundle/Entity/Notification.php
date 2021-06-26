@@ -38,7 +38,7 @@ class Notification implements JsonSerializable
     private $notificationType;
 
     /**
-     * @ORM\Column(name="related_id", type="boolean", unique=false, nullable=true)
+     * @ORM\Column(name="related_id", type="integer", unique=false, nullable=true)
      */
     private $related_id;
 
@@ -53,6 +53,16 @@ class Notification implements JsonSerializable
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
+
+    /**
+     * Get id.
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
     /**
      * Set notificationType.
@@ -110,6 +120,17 @@ class Notification implements JsonSerializable
     public function setViewed($flag)
     {
         $this->viewed = $flag;
+    }
+
+    /**
+     * Get viewed.
+     *
+     *
+     * @return boolean
+     */
+    public function getViewed()
+    {
+        return $this->viewed;
     }
 
     public function setCreatedAt(?DateTimeInterface $timestamp): self

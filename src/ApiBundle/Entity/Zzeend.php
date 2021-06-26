@@ -368,6 +368,7 @@ class Zzeend implements JsonSerializable
     /**
      * @ORM\PreUpdate
      */
+
     public function setUpdatedAtAutomatically()
     {
         $this->setUpdatedAt(new DateTime());

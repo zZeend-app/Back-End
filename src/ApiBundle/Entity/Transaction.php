@@ -302,9 +302,6 @@ class Transaction implements JsonSerializable
             $json["createdAt"] = $this->createdAt;
         }
 
-        if(!$entityClass instanceof Transaction || in_array("updatedAt",$include)){
-            $json["updatedAt"] = $this->updatedAt;
-        }
 
         return $json;
     }

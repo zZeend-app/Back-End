@@ -38,6 +38,17 @@ class NotificationType implements JsonSerializable
     private $title;
 
     /**
+     * Get id.
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+
+    /**
      * Set title.
      *
      * @param string $title
