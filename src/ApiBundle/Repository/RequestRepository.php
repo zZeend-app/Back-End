@@ -59,7 +59,7 @@ class RequestRepository extends \Doctrine\ORM\EntityRepository
 
     public function OrderBy(QueryBuilder $queryBuilder){
         return $queryBuilder
-            ->orderBy('r.id', 'DESC');
+            ->addOrderBy('r.id', 'DESC');
     }
 
 }

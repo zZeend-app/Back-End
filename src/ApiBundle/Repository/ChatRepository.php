@@ -33,7 +33,7 @@ class ChatRepository extends \Doctrine\ORM\EntityRepository
 
     public function OrderBy(QueryBuilder $queryBuilder, $columnName){
         return $queryBuilder
-            ->orderBy('ch.'.$columnName, 'ASC');
+            ->addOrderBy('ch.'.$columnName, 'ASC');
     }
 
 }

@@ -17,7 +17,7 @@ class ContactRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('mainUser', $user)
             ->orWhere('c.secondUser = :secondUser')
             ->setParameter('secondUser', $user)
-            ->orderBy('c.secondUser', 'DESC');
+            ->addOrderBy('c.secondUser', 'DESC');
     }
 
     public function WhereContactId(QueryBuilder $queryBuilder, $contactId){
