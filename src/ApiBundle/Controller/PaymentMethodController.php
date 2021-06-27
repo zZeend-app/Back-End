@@ -143,9 +143,28 @@ class PaymentMethodController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $paymentMethod = $entityManager->getRepository(PaymentMethod::class)->findOneBy(["user" => $currentUser, "id" => $payment_method_id]);
 
+        $main = $paymentMethod->getMain();
+
         if ($paymentMethod) {
             $entityManager->remove($paymentMethod);
             $entityManager->flush();
+
+            if($main){
+                $em = $this->getDoctrine()->getRepository(PaymentMethod::class);
+                $qb =  $em->GetQueryBuilder();
+                $qb = $em->WhereUser($qb, $currentUser);
+                $qb = $em->OrderById($qb);
+                $paymentMethods = $qb->getQuery()->getResult();
+
+                if(count($paymentMethods) > 0){
+
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $paymentMethods[0]->setMain(true);
+                    $entityManager->persist($paymentMethods[0]);
+                    $entityManager->flush();
+                }
+            }
+
             $response = array("code" => "payment_method_deleted");
         } else {
             $response = array("code" => "action_not_allowed");

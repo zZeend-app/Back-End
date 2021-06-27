@@ -23,4 +23,9 @@ class PaymentMethodRepository extends \Doctrine\ORM\EntityRepository
             ->addOrderBy('pm.main', 'DESC');
     }
 
+    public function OrderById(QueryBuilder $queryBuilder){
+        return $queryBuilder
+            ->addOrderBy('pm.id', 'DESC');
+    }
+
 }

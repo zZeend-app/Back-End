@@ -1,24 +1,24 @@
-add:
+pmth-add:
     path:     /add
     defaults: { _controller: ApiBundle:PaymentMethod:addPaymentMethod }
     methods: [POST]
 
-update:
+pmth-update:
     path:     /update
     defaults: { _controller: ApiBundle:PaymentMethod:updatePaymentMethod }
     methods: [POST]
 
-delete:
+pmth-delete:
     path:     /delete
     defaults: { _controller: ApiBundle:PaymentMethod:deletePaymentMethod }
     methods: [POST]
 
-mth-get-all:
+pmth-get-all:
     path:     /get-all
     defaults: { _controller: ApiBundle:PaymentMethod:getAllPaymentMethods }
     methods: [POST]
 
-mth-state:
+pmth-state:
     path:     /apply-state
     defaults: { _controller: ApiBundle:PaymentMethod:applyState }
     methods: [POST]
