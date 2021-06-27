@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 class PaymentMethodController extends Controller
 {
 
-    public function addPaymentMethodAction(Request $request){
+    public function addPaymentMethodAction(Request $request)
+    {
         $response = array();
 
         $currentUser = $this->getUser();
@@ -24,30 +25,59 @@ class PaymentMethodController extends Controller
         $last_four_digit = $data['last_four_digit'];
         $expiration_date = $data['expiration_date'];
         $csv = $data['csv'];
-        $main = $data['main'];
 
-        $entityManager = $this->getDoctrine()->getManager();
+        $paymentMethod = $this->getDoctrine()->getRepository(PaymentMethod::class)->findOneBy([
+            "card" => $card,
+            "lastFourDigit" => $last_four_digit,
+            "expirationDate" => $expiration_date,
+            "csv" => $csv
+        ]);
 
-        $paymentMethod = new PaymentMethod();
-        $paymentMethod->setUser($currentUser);
-        $paymentMethod->setCard($card);
-        $paymentMethod->setLastFourDigit($last_four_digit);
-        $paymentMethod->setExpirationDate($expiration_date);
-        $paymentMethod->setCsv($csv);
-        $paymentMethod->setMain($main);
-        $paymentMethod->setCreatedAtAutomatically();
-        $paymentMethod->setUpdatedAtAutomatically();
+        if ($paymentMethod == null) {
 
-        $entityManager->persist($paymentMethod);
-        $entityManager->flush();
+            $paymentMedthods = $this->getDoctrine()->getRepository(PaymentMethod::class)->findBy([
+                "user" => $currentUser
+            ]);
 
-        $response = array("code" => "payment_method_added");
+            $main = false;
+
+            if (count($paymentMedthods) == 0) {
+                $main = true;
+            }
+
+            if (count($paymentMedthods) > 2) {
+
+                $response = array("code" => "maximum_limit_exceeded");
+                return new JsonResponse($response);
+            }
+
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $paymentMethod = new PaymentMethod();
+            $paymentMethod->setUser($currentUser);
+            $paymentMethod->setCard($card);
+            $paymentMethod->setLastFourDigit($last_four_digit);
+            $paymentMethod->setExpirationDate($expiration_date);
+            $paymentMethod->setCsv($csv);
+            $paymentMethod->setMain($main);
+            $paymentMethod->setCreatedAtAutomatically();
+            $paymentMethod->setUpdatedAtAutomatically();
+
+            $entityManager->persist($paymentMethod);
+            $entityManager->flush();
+
+
+            $response = array("code" => "payment_method_added");
+        } else {
+            $response = array("code" => "already_added");
+        }
 
         return new JsonResponse($response);
 
     }
 
-    public function updatePaymentMethodAction(Request $request){
+    public function updatePaymentMethodAction(Request $request)
+    {
         $response = array();
         $updated = array();
 
@@ -62,34 +92,28 @@ class PaymentMethodController extends Controller
         $last_four_digit = $data['last_four_digit'];
         $expiration_date = $data['expiration_date'];
         $csv = $data['csv'];
-        $main = $data['main'];
 
         $paymentMethod = $this->getDoctrine()->getRepository(PaymentMethod::class)->findOneBy(["user" => $currentUser, "id" => $payment_method_id]);
 
-        if($paymentMethod){
-            if($card !== '' AND $card !== $paymentMethod->getCard()){
+        if ($paymentMethod) {
+            if ($card !== '' and $card !== $paymentMethod->getCard()) {
                 $paymentMethod->setCard($card);
                 $updated[] = "card";
             }
 
-            if($last_four_digit !== '' AND $last_four_digit !== $paymentMethod->getLastFourDigit()){
+            if ($last_four_digit !== '' and $last_four_digit !== $paymentMethod->getLastFourDigit()) {
                 $paymentMethod->setLastFourDigit($last_four_digit);
                 $updated[] = "last_four_digit";
             }
 
-            if($expiration_date !== '' AND $expiration_date !== $paymentMethod->getExpirationDate()){
+            if ($expiration_date !== '' and $expiration_date !== $paymentMethod->getExpirationDate()) {
                 $paymentMethod->setExpirationDate($expiration_date);
                 $updated[] = "expiration_date";
             }
 
-            if($csv !== '' AND $csv !== $paymentMethod->getCsv()){
+            if ($csv !== '' and $csv !== $paymentMethod->getCsv()) {
                 $paymentMethod->setCsv($csv);
                 $updated[] = "csv";
-            }
-
-            if($main !== '' AND $main !== $paymentMethod->getMain()){
-                $paymentMethod->setMain($main);
-                $updated[] = "main";
             }
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -97,14 +121,15 @@ class PaymentMethodController extends Controller
             $entityManager->flush();
 
             $response = array("updated" => $updated);
-        }else{
+        } else {
             $response = array("code" => "action_not_allowed");
         }
 
         return new JsonResponse($response);
     }
 
-    public function deletePaymentMethodAction(Request $request){
+    public function deletePaymentMethodAction(Request $request)
+    {
         $response = array();
 
         $currentUser = $this->getUser();
@@ -118,10 +143,64 @@ class PaymentMethodController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $paymentMethod = $entityManager->getRepository(PaymentMethod::class)->findOneBy(["user" => $currentUser, "id" => $payment_method_id]);
 
-        if($paymentMethod){
+        if ($paymentMethod) {
             $entityManager->remove($paymentMethod);
             $entityManager->flush();
             $response = array("code" => "payment_method_deleted");
+        } else {
+            $response = array("code" => "action_not_allowed");
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function getAllPaymentMethodsAction()
+    {
+        $response = array();
+
+        $currentUser = $this->getUser();
+
+        $em = $this->getDoctrine()->getRepository(PaymentMethod::class);
+        $qb =  $em->GetQueryBuilder();
+        $qb = $em->WhereUser($qb, $currentUser);
+        $qb = $em->OrderByMain($qb);
+
+
+        $response = $qb->getQuery()->getResult();
+
+        return new JsonResponse($response);
+    }
+
+    public function applyStateAction(Request $request){
+        $response = array();
+
+        $currentUser = $this->getUser();
+
+        $data = $request->getContent();
+
+        $data = json_decode($data, true);
+
+        $payment_method_id = $data['payment_method_id'];
+
+        $em = $this->getDoctrine()->getManager();
+        $RAW_QUERY = 'UPDATE payment_method SET main = "0" where user_id = :userId;';
+
+        $statement = $em->getConnection()->prepare($RAW_QUERY);
+        $statement->bindValue('userId', $currentUser->getId());
+        $statement->execute();
+
+        $paymentMethod = $this->getDoctrine()->getRepository(PaymentMethod::class)->find($payment_method_id);
+
+        if($paymentMethod){
+
+           $entityManager = $this->getDoctrine()->getManager();
+
+            $paymentMethod->setMain(true);
+            $entityManager->persist($paymentMethod);
+            $entityManager->flush();
+
+            $response = array("code" => "main_applied");
+
         }else{
             $response = array("code" => "action_not_allowed");
         }

@@ -18,4 +18,9 @@ class PaymentMethodRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('user', $user);
     }
 
+    public function OrderByMain(QueryBuilder $queryBuilder){
+        return $queryBuilder
+            ->orderBy('pm.main', 'DESC');
+    }
+
 }

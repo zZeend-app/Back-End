@@ -3,8 +3,8 @@ create:
     defaults: { _controller: ApiBundle:Zzeend:create }
     methods: [POST]
 
-z-get-all:
-    path:     /z-get-all
+znd-get-all:
+    path:     /get-all
     defaults: { _controller: ApiBundle:Zzeend:getAllZzeends }
     methods: [POST]
 

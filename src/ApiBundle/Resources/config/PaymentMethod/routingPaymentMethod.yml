@@ -12,3 +12,13 @@ delete:
     path:     /delete
     defaults: { _controller: ApiBundle:PaymentMethod:deletePaymentMethod }
     methods: [POST]
+
+mth-get-all:
+    path:     /get-all
+    defaults: { _controller: ApiBundle:PaymentMethod:getAllPaymentMethods }
+    methods: [POST]
+
+mth-state:
+    path:     /apply-state
+    defaults: { _controller: ApiBundle:PaymentMethod:applyState }
+    methods: [POST]
