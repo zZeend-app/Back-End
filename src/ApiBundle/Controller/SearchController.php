@@ -41,10 +41,9 @@ class SearchController extends Controller
             }
 
             if (array_key_exists('zZeendScore', $filter)) {
-                // $em->WhereAreaLike($qb, $filter['zZeendScore']);
+                $qb = $em->OrderByZzeendScore($qb, $filter['zZeendScore']);
             }
 
-            //todo filter by users who are not service Owners (ROLE_OWNER)
             //todo filter by users who hasn't pay thier monthly plan fee (ROLE_OWNER)
         }
 
@@ -53,6 +52,7 @@ class SearchController extends Controller
             $qb = $em->WhereRoleNot($qb, "ROLE_SEEKER");
             $qb = $em->WhereAccountIsEnabled($qb, true);
             $qb = $em->WhereUserVisibility($qb, true);
+
             $response = $qb->getQuery()->getResult();
         }
 

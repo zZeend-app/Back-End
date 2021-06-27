@@ -95,4 +95,15 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('u.mainVisibility = :flag')
             ->setParameter('flag', $flag);
     }
+
+    public function OrderByZzeendScore(QueryBuilder $queryBuilder, $zZeendScore){
+        if($zZeendScore == 0) {
+            return $queryBuilder
+                ->addOrderBy('u.zZeendScore', 'DESC');
+        }else{
+            return $queryBuilder
+                ->addOrderBy('u.zZeendScore', 'ASC');
+        }
+    }
+
 }

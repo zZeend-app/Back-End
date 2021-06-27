@@ -15,7 +15,8 @@ use UserBundle\Entity\User;
 class ProfileController extends Controller
 {
 
-    public function getProfileAction(Request $request){
+    public function getProfileAction(Request $request)
+    {
         $response = array();
 
         $data = $request->getContent();
@@ -45,16 +46,16 @@ class ProfileController extends Controller
         $response['socialNetworks'] = $socialNetworks;
 
 
-        if($connectedUserId !== $userId){
+        if ($connectedUserId !== $userId) {
             $connectedUser = $this->getUser();
             $em = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class);
             $qb = $em->GetQueryBuilder();
             $qb = $em->WhereUser($qb, $connectedUser, $user);
             $requestSenderObject = $qb->getQuery()->getResult();
 
-            if(count($requestSenderObject) > 0){
+            if (count($requestSenderObject) > 0) {
                 $response['requestAlreadySent'] = true;
-            }else{
+            } else {
                 $response['requestAlreadySent'] = false;
             }
         }
@@ -62,11 +63,13 @@ class ProfileController extends Controller
         return new JsonResponse($response);
     }
 
-    public function getCurrentUserAction(){
+    public function getCurrentUserAction()
+    {
         return $this->forward("UserBundle:User:getCurrentUser");
     }
 
-    public function updateCurrentUserAction(Request $request){
+    public function updateCurrentUserAction(Request $request)
+    {
         $response = array();
         $updated = array();
 
@@ -85,43 +88,43 @@ class ProfileController extends Controller
         $zip_code = $data['zip_code'];
         $phone_number = $data['phone_number'];
 
-        if($fullname !== '' AND $fullname !== $currentUser->getFullname()){
+        if ($fullname !== '' and $fullname !== $currentUser->getFullname()) {
             $currentUser->setFullname($fullname);
             $updated[] = "fullname";
             $modification = true;
         }
 
-        if($job_title !== '' AND $job_title !== $currentUser->getJobTitle()){
+        if ($job_title !== '' and $job_title !== $currentUser->getJobTitle()) {
             $currentUser->setJobTitle($job_title);
             $updated[] = "job_title";
             $modification = true;
         }
 
-        if($job_description !== '' AND $job_description !== $currentUser->getJobDescription()){
+        if ($job_description !== '' and $job_description !== $currentUser->getJobDescription()) {
             $currentUser->setJobDescription($job_description);
             $updated[] = "job_description";
             $modification = true;
         }
 
-        if($address !== '' AND $address !== $currentUser->getAddress()){
+        if ($address !== '' and $address !== $currentUser->getAddress()) {
             $currentUser->setAddress($address);
             $updated[] = "address";
             $modification = true;
         }
 
-        if($zip_code !== '' AND $zip_code !== $currentUser->getZipCode()){
+        if ($zip_code !== '' and $zip_code !== $currentUser->getZipCode()) {
             $currentUser->setZipCode($zip_code);
             $updated[] = "zip_code";
             $modification = true;
         }
 
-        if($phone_number !== '' AND $phone_number !== $currentUser->getPhoneNumber()){
+        if ($phone_number !== '' and $phone_number !== $currentUser->getPhoneNumber()) {
             $currentUser->setPhoneNumber($phone_number);
             $updated[] = "phone_number";
             $modification = true;
         }
 
-        if($modification){
+        if ($modification) {
             $currentUser->setUpdatedAtAutomatically();
         }
 
@@ -134,17 +137,18 @@ class ProfileController extends Controller
         return new JsonResponse($response);
     }
 
-    public function visibilityAction(Request $request){
+    public function visibilityAction(Request $request)
+    {
         $response = array();
 
         $currentUser = $this->getUser();
 
         $profileVisibility = $currentUser->getVisibility();
 
-        if($profileVisibility == true){
+        if ($profileVisibility == true) {
             $profileVisibility = false;
             $response = array("code" => "profile_hidden");
-        }else if($profileVisibility == false){
+        } else if ($profileVisibility == false) {
             $profileVisibility = true;
             $response = array("code" => "profile_visible");
         }
@@ -160,110 +164,84 @@ class ProfileController extends Controller
 
     }
 
-    public function addSocialNetworkAction(Request $request){
+    public function addSocialNetworkAction(Request $request)
+    {
         $response = array();
 
         $currentUser = $this->getUser();
 
 
-        $data = $request->getContent();
-        $data = json_decode($data, true);
+        $datas = $request->getContent();
+        $datas = json_decode($datas, true);
 
-        $link = $data['link'];
-        $social_network_type = $data['social_network_type'];
+        for ($i = 0; $i < count($datas); $i++) {
+            $data = $datas[$i];
 
-        $socialNetworkType = $this->getDoctrine()->getRepository(SocialNetworkType::class)->find($social_network_type);
+            $link = $data['link'];
+            $social_network_type = $data['social_network_type'];
 
-        if($socialNetworkType){
+            $socialNetworkType = $this->getDoctrine()->getRepository(SocialNetworkType::class)->find($social_network_type);
 
-            $sameSocialNetowk = $this->getDoctrine()->getRepository(SocialNetwork::class)->findOneBy(["socialNetworkType" => $socialNetworkType]);
+            if ($socialNetworkType) {
 
-            if($sameSocialNetowk === null){
-                $entityManager = $this->getDoctrine()->getManager();
+                $sameSocialNetowk = $this->getDoctrine()->getRepository(SocialNetwork::class)->findOneBy(["socialNetworkType" => $socialNetworkType, "user" => $currentUser]);
 
-                $socialNetwork = new SocialNetwork();
-                $socialNetwork->setUser($currentUser);
-                $socialNetwork->setSocialNetworkType($socialNetworkType);
-                $socialNetwork->setLink($link);
-                $socialNetwork->setCreatedAtAutomatically();
-                $socialNetwork->setUpdatedAtAutomatically();
+                if ($sameSocialNetowk === null) {
+                    if (trim($link) !== '') {
+                        $entityManager = $this->getDoctrine()->getManager();
 
-                $entityManager->persist($socialNetwork);
-                $entityManager->flush();
+                        $socialNetwork = new SocialNetwork();
+                        $socialNetwork->setUser($currentUser);
+                        $socialNetwork->setSocialNetworkType($socialNetworkType);
+                        $socialNetwork->setLink($link);
+                        $socialNetwork->setCreatedAtAutomatically();
+                        $socialNetwork->setUpdatedAtAutomatically();
 
-                $response = array("code" => "social_network_added");
-            }else{
-                $response = array("code" => "action_not_allowed");
+                        $entityManager->persist($socialNetwork);
+                        $entityManager->flush();
+
+                        $response = array("code" => "social_network_added");
+                    }
+                } else {
+                    $linkInDb = $sameSocialNetowk->getLink();
+
+                    if ($linkInDb !== $link) {
+                        $sameSocialNetowk->setLink($link);
+                        $sameSocialNetowk->setUpdatedAtAutomatically();
+
+                        $entityManager = $this->getDoctrine()->getManager();
+                        $entityManager->persist($sameSocialNetowk);
+                        $entityManager->flush();
+                        $response = array("code" => "social_network_updated");
+                    }
+                }
             }
-        }else{
-            $response = array("code" => "action_not_allowed");
+
         }
 
         return new JsonResponse($response);
 
     }
 
-    public function updateSocialNetworkAction(Request $request)
+    public function getAllSocialNetworkAction(Request $request)
     {
         $response = array();
 
-        $currentUser = $this->getUser();
-
-
         $data = $request->getContent();
-        $data = json_decode($data, true);
+        $data =  json_decode($data, true);
 
-        $social_network_id = $data['social_network_id'];
-        $link = $data['link'];
+        $profileId = $data['profile_id'];
 
-        $socialNetwork = $this->getDoctrine()->getRepository(SocialNetwork::class)->find($social_network_id);
+        $profileUser = $this->getDoctrine()->getRepository(User::class)->find($profileId);
 
-        if($socialNetwork){
+        $em = $this->getDoctrine()->getRepository(SocialNetwork::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereUser($qb, $profileUser);
+        $qb = $em->WhereLinkNotEmpty($qb);
 
-            $entityManager = $this->getDoctrine()->getManager();
+        $socialNetworks = $qb->getQUery()->getResult();
 
-            $socialNetwork->setLink($link);
-            $socialNetwork->setUpdatedAtAutomatically();
-
-            $entityManager->persist($socialNetwork);
-            $entityManager->flush();
-
-            $response = array("code" => "social_network_updated");
-
-        }else{
-            $response = array("code" => "action_not_allowed");
-        }
-
-        return new JsonResponse($response);
-    }
-
-    public function deleteSocialNetworkAction(Request $request)
-    {
-        $response = array();
-
-        $currentUser = $this->getUser();
-
-
-        $data = $request->getContent();
-        $data = json_decode($data, true);
-
-        $social_network_id = $data['social_network_id'];
-
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $socialNetwork = $entityManager->getRepository(SocialNetwork::class)->find($social_network_id);
-
-        if($socialNetwork !== null){
-            $entityManager->remove($socialNetwork);
-            $entityManager->flush();
-
-            $response = array("code" => "social_network_delete");
-        }else{
-            $response = array("code" => "action_not_allowed");
-        }
-
-        return new JsonResponse($response);
-
+        return new JsonResponse($socialNetworks);
     }
 
 

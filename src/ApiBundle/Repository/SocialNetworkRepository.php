@@ -14,8 +14,14 @@ class SocialNetworkRepository extends \Doctrine\ORM\EntityRepository
 
     public function WhereUser(QueryBuilder $queryBuilder, $user){
         return $queryBuilder
-            ->orWhere('sn.user = :user')
+            ->andWhere('sn.user = :user')
             ->setParameter('user', $user);
+    }
+
+    public function WhereLinkNotEmpty(QueryBuilder $queryBuilder){
+        return $queryBuilder
+            ->andWhere('sn.link != :link')
+            ->setParameter('link', "");
     }
 
 }

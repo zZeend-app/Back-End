@@ -17,10 +17,11 @@ class LoadSocialNetworkType implements FixtureInterface
 
         $socialNetworks = array(
             'Facebook',
-            'Twitter',
             'Instagram',
+            'Google',
             'Youtube',
-            'Google'
+            'LinkedIn',
+            'Twitter'
         );
 
         foreach ($socialNetworks as $socialNetwork) {
