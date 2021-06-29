@@ -11,7 +11,7 @@ class ContactRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder = $this->createQueryBuilder('c');
     }
 
-    public function WhereUser(QueryBuilder $queryBuilder, $user){
+    public function OrWhereUser(QueryBuilder $queryBuilder, $user){
         return $queryBuilder
             ->orWhere('c.mainUser = :mainUser')
             ->setParameter('mainUser', $user)
@@ -24,6 +24,15 @@ class ContactRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder
             ->andWhere('c.id = :contactId')
             ->setParameter('contactId', $contactId);
+    }
+
+    public function GetCount(QueryBuilder $queryBuilder, $user){
+        return $queryBuilder
+            ->select('count(c.id)')
+            ->orWhere('c.mainUser = :mainUser')
+            ->setParameter('mainUser', $user)
+            ->orWhere('c.secondUser = :secondUser')
+            ->setParameter('secondUser', $user);
     }
 
 }

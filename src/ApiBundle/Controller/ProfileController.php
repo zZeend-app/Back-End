@@ -4,6 +4,7 @@
 namespace ApiBundle\Controller;
 
 
+use ApiBundle\Entity\Contact;
 use ApiBundle\Entity\Service;
 use ApiBundle\Entity\SocialNetwork;
 use ApiBundle\Entity\SocialNetworkType;
@@ -40,17 +41,23 @@ class ProfileController extends Controller
         $qb = $em->WhereUser($qb, $user);
         $socialNetworks = $qb->getQuery()->getResult();
 
+        $em = $this->getDoctrine()->getRepository(Contact::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->GetCount($qb, $user);
+        $nbContacts = $qb->getQuery()->getSingleScalarResult();
+
 
         $response['user'] = $user;
         $response['services'] = $services;
         $response['socialNetworks'] = $socialNetworks;
+        $response['nbContacts'] = intval($nbContacts);
 
 
         if ($connectedUserId !== $userId) {
             $connectedUser = $this->getUser();
             $em = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class);
             $qb = $em->GetQueryBuilder();
-            $qb = $em->WhereUser($qb, $connectedUser, $user);
+            $qb = $em->OrWhereUser($qb, $connectedUser, $user);
             $requestSenderObject = $qb->getQuery()->getResult();
 
             if (count($requestSenderObject) > 0) {

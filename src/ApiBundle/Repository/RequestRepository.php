@@ -11,11 +11,11 @@ class RequestRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder = $this->createQueryBuilder('r');
     }
 
-    public function WhereUser(QueryBuilder $queryBuilder, $sender, $receiver){
+    public function OrWhereUser(QueryBuilder $queryBuilder, $sender, $receiver){
         return $queryBuilder
-            ->andWhere('r.sender = :sender')
+            ->orWhere('r.sender = :sender')
             ->setParameter('sender', $sender)
-            ->andWhere('r.receiver = :receiver')
+            ->orWhere('r.receiver = :receiver')
             ->setParameter('receiver', $receiver);
     }
 

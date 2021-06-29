@@ -12,7 +12,7 @@ class ZzeendRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder = $this->createQueryBuilder('z');
     }
 
-    public function WhereUser(QueryBuilder $queryBuilder, $user){
+    public function OrWhereUser(QueryBuilder $queryBuilder, $user){
         return $queryBuilder
             ->orWhere('z.user = :user')
             ->setParameter('user', $user)

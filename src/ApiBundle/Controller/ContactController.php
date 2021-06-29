@@ -17,7 +17,7 @@ class ContactController extends Controller
 
         $em = $this->getDoctrine()->getRepository(Contact::class);
         $qb = $em->GetQueryBuilder();
-        $qb = $em->WhereUser($qb, $currentUser);
+        $qb = $em->OrWhereUser($qb, $currentUser);
 
         $contacts = $qb->getQuery()->getResult();
         $response = $contacts;

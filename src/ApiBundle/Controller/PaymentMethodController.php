@@ -143,9 +143,8 @@ class PaymentMethodController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $paymentMethod = $entityManager->getRepository(PaymentMethod::class)->findOneBy(["user" => $currentUser, "id" => $payment_method_id]);
 
-        $main = $paymentMethod->getMain();
-
         if ($paymentMethod) {
+            $main = $paymentMethod->getMain();
             $entityManager->remove($paymentMethod);
             $entityManager->flush();
 
