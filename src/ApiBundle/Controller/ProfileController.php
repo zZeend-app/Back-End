@@ -34,7 +34,9 @@ class ProfileController extends Controller
         $qb = $em->WhereUser($qb, $user);
         $services = $qb->getQuery()->getResult();
 
-        $connectedUserId = $this->getUser()->getId();
+        $currentUser = $this->getUser();
+
+        $connectedUserId = $currentUser->getId();
 
         $em = $this->getDoctrine()->getRepository(SocialNetwork::class);
         $qb = $em->GetQueryBuilder();
@@ -51,14 +53,17 @@ class ProfileController extends Controller
         $response['services'] = $services;
         $response['socialNetworks'] = $socialNetworks;
         $response['nbContacts'] = intval($nbContacts);
-
+        $requestSenderObject = '';
 
         if ($connectedUserId !== $userId) {
             $connectedUser = $this->getUser();
-            $em = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class);
-            $qb = $em->GetQueryBuilder();
-            $qb = $em->OrWhereUser($qb, $connectedUser, $user);
-            $requestSenderObject = $qb->getQuery()->getResult();
+            $em = $this->getDoctrine()->getManager();
+            $query = $em->createQuery("SELECT r FROM ApiBundle\Entity\Request r Where r.sender = :sender AND r.receiver = :receiver OR r.sender = :receiver AND r.receiver = :sender");
+            $query->setParameters(array(
+                'sender' => $currentUser,
+                'receiver' => $user,
+            ));
+            $requestSenderObject = $query->getResult();
 
             if (count($requestSenderObject) > 0) {
                 $response['requestAlreadySent'] = true;
