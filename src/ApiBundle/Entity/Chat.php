@@ -44,16 +44,10 @@ class Chat implements JsonSerializable
     private $filePath;
 
     /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="request")
-     * @ORM\JoinColumn(name="main_user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="chats")
+     * @ORM\JoinColumn(name="sender_id", referencedColumnName="id")
      */
-    private $mainUser;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="request")
-     * @ORM\JoinColumn(name="second_user_id", referencedColumnName="id")
-     */
-    private $secondUser;
+    private $sender;
 
     /**
      * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\Contact", inversedBy="chats", cascade={"persist"})
@@ -69,25 +63,23 @@ class Chat implements JsonSerializable
     /**
      * Set users.
      *
-     * @param User $mainUser
-     * @param User $secondUser
+     * @param User $sender
      *
      * @return void
      */
-    public function setUsers($mainUser, $secondUser)
+    public function setUser($sender)
     {
-        $this->mainUser = $mainUser;
-        $this->secondUser = $secondUser;
+        $this->sender = $sender;
     }
 
     /**
      * Get users.
      *
-     * @return array
+     * @return User
      */
     public function getUsers()
     {
-        return array('main_user' => $this->mainUser, 'second_user' => $this->secondUser);
+        return $this->sender;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -184,11 +176,7 @@ class Chat implements JsonSerializable
         }
 
         if (!$entityClass instanceof Chat || in_array("mainUse", $include)) {
-            $json["mainUser"] = $this->mainUser;
-        }
-
-        if (!$entityClass instanceof Chat || in_array("secondUser", $include)) {
-            $json["secondUser"] = $this->secondUser;
+            $json["sender"] = $this->sender;
         }
 
         if (!$entityClass instanceof Chat || in_array("contact", $include)) {

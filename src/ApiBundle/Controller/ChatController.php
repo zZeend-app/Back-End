@@ -13,15 +13,16 @@ use UserBundle\Entity\User;
 
 class ChatController extends Controller
 {
-    public function sendChatAction(Request $request){
+    public function sendChatAction(Request $request)
+    {
         $data = $request->getContent();
         $data = json_decode($data, true);
 
-        $receiverId = $data['receiverId'];
         $contactId = $data['contactId'];
         $chatFromClient = $data['chat'];
 
-        $user_receiver = $this->getDoctrine()->getRepository(User::class)->find($receiverId);
+        $currentUser = $this->getUser();
+
         $contact = $this->getDoctrine()->getRepository(Contact::class)->find($contactId);
 
         $em = $this->getDoctrine()->getRepository(Contact::class);
@@ -29,16 +30,7 @@ class ChatController extends Controller
         $qb = $em->WhereContactId($qb, $contactId);
 
         $contactFound = $qb->getQuery()->getResult();
-        if(count($contactFound) > 0) {
-            $users = $contactFound[0]->getUsers();
-            $_mainUser = $users['mainUser'];
-            $_secondUser = $users['secondUser'];
-
-            $mainFalg = false;
-
-            if($receiverId == $_mainUser->getId()){
-                $mainFalg = true;
-            }
+        if (count($contactFound) > 0) {
 
             $entityManager = $this->getDoctrine()->getManager();
             $chat = new Chat();
@@ -47,23 +39,20 @@ class ChatController extends Controller
             $chat->setCreatedAtAutomatically();
             $chat->setFilePath(null);
             $currentUser = $this->getUser();
-            if($mainFalg){
-                $chat->setUsers($user_receiver, null);
-            }else{
-                $chat->setUsers(null, $user_receiver);
-            }
+            $chat->setUser($currentUser);
             $entityManager->persist($chat);
             $entityManager->flush();
 
             $response = array("code" => "chat_sent");
-        }else{
+        } else {
             $response = array("code" => "action_not_allowed");
         }
 
         return new JsonResponse($response);
     }
 
-    public function getChatAction(Request $request){
+    public function getChatAction(Request $request)
+    {
         $response = array();
         $data = $request->getContent();
         $data = json_decode($data, true);
@@ -83,18 +72,31 @@ class ChatController extends Controller
         return new JsonResponse($response);
     }
 
-    public function getChatContactAction(){
-        $response = array();
+    public function getChatContactAction()
+    {
         $currentUser = $this->getUser();
 
-            $em = $this->getDoctrine()->getRepository(Chat::class);
-            $qb = $em->GetQueryBuilder();
-            $qb = $em->WhereUser($qb, $currentUser);
-            $qb = $em->GroupBy($qb, 'contact');
 
-            $response = $qb->getQuery()->getResult();
+        $em = $this->getDoctrine()->getManager();
+        $RAW_QUERY = 'SELECT chat.contact_id FROM chat INNER JOIN contact WHERE contact.main_user_id = :main_user_id OR contact.second_user_id = :main_user_id GROUP BY chat.contact_id ORDER BY chat.id DESC;';
 
-        return new JsonResponse($response);
+        $statement = $em->getConnection()->prepare($RAW_QUERY);
+        $statement->bindValue('main_user_id', $currentUser->getId());
+        $statement->execute();
+
+        $chatContactIds = $statement->fetchAll();
+
+        $contacts = [];
+
+        for ($i = 0; $i < count($chatContactIds); $i++) {
+            $chatContactId = intval($chatContactIds[$i]["contact_id"]);
+
+            $contacts[] = $this->getDoctrine()->getRepository(Contact::class)->find($chatContactId);
+
+        }
+
+
+        return new JsonResponse($contacts);
     }
 
 

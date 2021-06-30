@@ -26,6 +26,11 @@ class ContactRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('contactId', $contactId);
     }
 
+    public function OrderById(QueryBuilder $queryBuilder){
+        return $queryBuilder
+            ->orderBy('c.id', 'DESC');
+    }
+
     public function GetCount(QueryBuilder $queryBuilder, $user){
         return $queryBuilder
             ->select('count(c.id)')
