@@ -5,6 +5,7 @@ namespace ApiBundle\Controller;
 
 
 use ApiBundle\Entity\Contact;
+use ApiBundle\Entity\Rate;
 use ApiBundle\Entity\Service;
 use ApiBundle\Entity\SocialNetwork;
 use ApiBundle\Entity\SocialNetworkType;
@@ -48,11 +49,17 @@ class ProfileController extends Controller
         $qb = $em->GetCount($qb, $user);
         $nbContacts = $qb->getQuery()->getSingleScalarResult();
 
+        $em = $this->getDoctrine()->getRepository(Rate::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->GetRatesAvg($qb, $user);
+        $avg = $qb->getQuery()->getSingleScalarResult();
+
 
         $response['user'] = $user;
         $response['services'] = $services;
         $response['socialNetworks'] = $socialNetworks;
         $response['nbContacts'] = intval($nbContacts);
+        $response['avg'] = intval($avg);
         $requestSenderObject = '';
 
         if ($connectedUserId !== $userId) {

@@ -37,3 +37,7 @@ notification:
 payment_method:
     resource: "@ApiBundle/Resources/config/PaymentMethod/routingPaymentMethod.yml"
     prefix:   /payment-method
+
+rate:
+    resource: "@ApiBundle/Resources/config/Rate/routingRate.yml"
+    prefix:   /rate

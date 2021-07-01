@@ -38,23 +38,23 @@ class Rate implements JsonSerializable
 
     /**
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="rates")
-     * @ORM\JoinColumn(name="user_rated_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="rated_user_id", referencedColumnName="id")
      */
-    private $userRated;
+    private $ratedUser;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="star", type="integer", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="stars", type="integer", length=255, unique=false, nullable=false)
      */
-    private $star;
+    private $stars;
 
     /**
      * @var string
      *
      * @ORM\Column(name="point_of_view", type="string", length=255, unique=false, nullable=false)
      */
-    private $pontOfView;
+    private $pointOfView;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -84,47 +84,69 @@ class Rate implements JsonSerializable
     }
 
     /**
-     * Set userRated.
+     * Set ratedUser.
      *
-     * @param User $userRated
-     *
-     * @return void
-     */
-    public function setUserRated($userRated)
-    {
-        $this->userRated = $userRated;
-    }
-
-    /**
-     * Get userRated.
+     * @param User $ratedUser
      *
      * @return void
      */
-    public function getUserRated()
+    public function setRatedUser($ratedUser)
     {
-        return $this->userRated;
+        $this->ratedUser = $ratedUser;
     }
 
     /**
-     * Set star.
-     *
-     * @param Post $star
+     * Get ratedUser.
      *
      * @return void
      */
-    public function setPost($star)
+    public function getRatedUser()
     {
-        $this->star = $star;
+        return $this->ratedUser;
     }
 
     /**
-     * Get star.
+     * Set stars.
+     *
+     * @param integer $stars
+     *
+     * @return void
+     */
+    public function setStars($stars)
+    {
+        $this->stars = $stars;
+    }
+
+    /**
+     * Get stars.
      *
      * @return integer
      */
-    public function getStar()
+    public function getStars()
     {
-        return $this->star;
+        return $this->stars;
+    }
+
+    /**
+     * Set pointOfView.
+     *
+     * @param string $pointOfView
+     *
+     * @return void
+     */
+    public function setPointOfView($pointOfView)
+    {
+        $this->pointOfView = $pointOfView;
+    }
+
+    /**
+     * Get pointOfView.
+     *
+     * @return string
+     */
+    public function getPointOfView()
+    {
+        return $this->pointOfView;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -160,16 +182,16 @@ class Rate implements JsonSerializable
             $json["user"] = $this->user;
         }
 
-        if(!$entityClass instanceof Rate || in_array("userRated",$include)){
-            $json["userRated"] = $this->userRated;
+        if(!$entityClass instanceof Rate || in_array("ratedUser",$include)){
+            $json["ratedUser"] = $this->ratedUser;
         }
 
-        if(!$entityClass instanceof Rate || in_array("star",$include)){
-            $json["star"] = $this->star;
+        if(!$entityClass instanceof Rate || in_array("stars",$include)){
+            $json["stars"] = $this->stars;
         }
 
-        if(!$entityClass instanceof Rate || in_array("pontOfView",$include)){
-            $json["pontOfView"] = $this->pontOfView;
+        if(!$entityClass instanceof Rate || in_array("pointOfView",$include)){
+            $json["pointOfView"] = $this->pointOfView;
         }
 
         if(!$entityClass instanceof Rate || in_array("createdAt",$include)){

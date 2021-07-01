@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ContactController extends Controller
 {
 
-    public function getConactsAction(){
+    public function getContactsAction(){
         $response = array();
         $currentUser = $this->getUser();
 

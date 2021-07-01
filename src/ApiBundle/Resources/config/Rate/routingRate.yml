@@ -1,0 +1,9 @@
+rt-add:
+    path:     /add
+    defaults: { _controller: ApiBundle:Rate:publishRate }
+    methods: [POST]
+
+rt-get-all:
+    path:     /get-all/{ratedUserId}
+    defaults: { _controller: ApiBundle:Rate:getAllRates }
+    methods: [GET]
