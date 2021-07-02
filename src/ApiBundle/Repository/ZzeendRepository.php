@@ -20,4 +20,10 @@ class ZzeendRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('userAssigned', $user);
     }
 
+    public function OrderById(QueryBuilder $queryBuilder){
+        return $queryBuilder
+            ->addOrderBy('z.id', 'DESC');
+    }
+
+
 }

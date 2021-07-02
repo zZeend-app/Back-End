@@ -74,6 +74,7 @@ class ZzeendController extends Controller
         $em = $this->getDoctrine()->getRepository(Zzeend::class);
         $qb = $em->GetQueryBuilder();
         $qb = $em->OrWhereUser($qb, $currenetUser);
+        $qb = $em->OrderById($qb);
         $zZeends = $qb->getQuery()->getResult();
 
         return new JsonResponse($zZeends);
