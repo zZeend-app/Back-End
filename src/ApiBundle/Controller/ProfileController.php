@@ -64,6 +64,7 @@ class ProfileController extends Controller
 
         if ($connectedUserId !== $userId) {
             $connectedUser = $this->getUser();
+
             $em = $this->getDoctrine()->getManager();
             $query = $em->createQuery("SELECT r FROM ApiBundle\Entity\Request r Where r.sender = :sender AND r.receiver = :receiver OR r.sender = :receiver AND r.receiver = :sender");
             $query->setParameters(array(
@@ -77,6 +78,22 @@ class ProfileController extends Controller
             } else {
                 $response['requestAlreadySent'] = false;
             }
+
+            $em = $this->getDoctrine()->getManager();
+            $query = $em->createQuery("SELECT c FROM ApiBundle\Entity\Contact c Where c.mainUser = :mainUser AND c.secondUser = :secondUser OR c.mainUser = :secondUser AND c.secondUser = :mainUser");
+            $query->setParameters(array(
+                'mainUser' => $currentUser,
+                'secondUser' => $user,
+            ));
+            $requestSenderObject = $query->getResult();
+
+            if (count($requestSenderObject) > 0) {
+                $response['alreadyInContact'] = true;
+            } else {
+                $response['alreadyInContact'] = false;
+            }
+
+
         }
 
         return new JsonResponse($response);

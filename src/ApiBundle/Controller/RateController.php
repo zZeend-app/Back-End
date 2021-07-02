@@ -64,6 +64,7 @@ class RateController extends Controller
             $em = $this->getDoctrine()->getRepository(Rate::class);
             $qb = $em->GetQueryBuilder();
             $qb = $em->WhereRatedUser($qb, $ratedUser);
+            $qb = $em->OrderById($qb);
 
             $rates = $qb->getQuery()->getResult();
 
@@ -71,7 +72,6 @@ class RateController extends Controller
             $qb = $em->GetRatesAvg($qb, $ratedUser);
             $avg = $qb->getQuery()->getSingleScalarResult();
 
-            $rates = json_decode($rates, true);
             $response = array("rates" => $rates, "avg" => intval($avg));
 
 

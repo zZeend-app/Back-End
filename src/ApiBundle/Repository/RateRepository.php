@@ -24,5 +24,11 @@ class RateRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('ratedUser', $ratedUser);
     }
 
+    public function OrderById(QueryBuilder $queryBuilder){
+        return $queryBuilder
+            ->addOrderBy('rt.id', 'DESC');
+    }
+
+
 
 }
