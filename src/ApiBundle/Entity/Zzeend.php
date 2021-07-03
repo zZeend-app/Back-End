@@ -292,7 +292,7 @@ class Zzeend implements JsonSerializable
      * @param boolean $done
      *
      */
-    public function setDone(string $done)
+    public function setDone(bool $done)
     {
         $this->done = $done;
 

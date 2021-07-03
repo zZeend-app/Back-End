@@ -1,0 +1,9 @@
+event-add:
+    path:     /add
+    defaults: { _controller: ApiBundle:Event:newEvent }
+    methods: [POST]
+
+event-get-all:
+    path:     /get-all
+    defaults: { _controller: ApiBundle:Event:getAllEvents }
+    methods: [GET]

@@ -15,7 +15,7 @@ use UserBundle\Entity\User;
 /**
  * Service
  *
- * @ORM\Table(name="`filnance`")
+ * @ORM\Table(name="`finance`")
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\FinanceRepository")
  */
 

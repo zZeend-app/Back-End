@@ -41,3 +41,7 @@ payment_method:
 rate:
     resource: "@ApiBundle/Resources/config/Rate/routingRate.yml"
     prefix:   /rate
+
+event:
+    resource: "@ApiBundle/Resources/config/Event/routingEvent.yml"
+    prefix:   /event
