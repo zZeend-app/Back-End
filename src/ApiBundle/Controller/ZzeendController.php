@@ -4,6 +4,7 @@
 namespace ApiBundle\Controller;
 
 
+use ApiBundle\Entity\Event;
 use ApiBundle\Entity\Finance;
 use ApiBundle\Entity\FinancialStatus;
 use ApiBundle\Entity\PaymentType;
@@ -56,7 +57,7 @@ class ZzeendController extends Controller
             $entityManager->persist($zZeend);
             $entityManager->flush();
 
-            $response = array("code" => "zZeend_created");
+            $response = array("code" => $zZeend->getId());
 
         }else{
             $response = array('code' => 'action_not_allowed');
@@ -189,6 +190,19 @@ class ZzeendController extends Controller
 
             $entityManager->persist($zZeend);
             $entityManager->flush();
+
+            $event = $this->getDoctrine()->getRepository(Event::class)->findOneBy(['zZeend', $zZeend]);
+
+            if($event !== null) {
+
+                $event->setActive(false);
+
+                $entityManager = $this->getDoctrine()->getManager();
+
+                $entityManager->persist($event);
+                $entityManager->flush();
+
+            }
 
             $response = array("code" => "zZeend_done");
 

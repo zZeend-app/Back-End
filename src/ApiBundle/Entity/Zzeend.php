@@ -102,6 +102,16 @@ class Zzeend implements JsonSerializable
     private $updatedAt;
 
     /**
+     * Get id.
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Set title.
      *
      * @param string $title

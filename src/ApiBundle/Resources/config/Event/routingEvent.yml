@@ -7,3 +7,8 @@ event-get-all:
     path:     /get-all
     defaults: { _controller: ApiBundle:Event:getAllEvents }
     methods: [GET]
+
+event-state-off:
+    path:     /state-off
+    defaults: { _controller: ApiBundle:Event:deleteEvent }
+    methods: [POST]
