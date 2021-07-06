@@ -31,16 +31,23 @@ class View implements JsonSerializable
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="likes")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="views")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="likes")
-     * @ORM\JoinColumn(name="post_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\ViewType", inversedBy="views")
+     * @ORM\JoinColumn(name="view_type_id", referencedColumnName="id")
      */
-    private $post;
+    private $viewType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="related_id", type="string", length=255, unique=false, nullable=false)
+     */
+    private $relatedId;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -70,25 +77,47 @@ class View implements JsonSerializable
     }
 
     /**
-     * Set post.
+     * Set viewType.
      *
-     * @param Post $post
+     * @param ViewType $viewType
      *
      * @return void
      */
-    public function setPost($post)
+    public function setViewType($viewType)
     {
-        $this->post = $post;
+        $this->user = $viewType;
     }
 
     /**
-     * Get user.
+     * Get viewType.
      *
      * @return void
      */
-    public function getPost()
+    public function getViewType()
     {
-        return $this->post;
+        return $this->viewType;
+    }
+
+
+    /**
+     * Set relatedId.
+     *
+     * @param $relatedId
+     *
+     * @return void
+     */
+    public function setRelatedId($relatedId)
+    {
+        $this->relatedId = $relatedId;
+    }
+
+    /**
+     * Get relatedId.
+     *
+     */
+    public function geRelatedId()
+    {
+        return $this->relatedId;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -124,8 +153,12 @@ class View implements JsonSerializable
             $json["user"] = $this->user;
         }
 
-        if(!$entityClass instanceof View || in_array("post",$include)){
-            $json["post"] = $this->post;
+        if(!$entityClass instanceof View || in_array("viewType",$include)){
+            $json["viewType"] = $this->viewType;
+        }
+
+        if(!$entityClass instanceof View || in_array("relatedId",$include)){
+            $json["relatedId"] = $this->relatedId;
         }
 
         if(!$entityClass instanceof View || in_array("createdAt",$include)){

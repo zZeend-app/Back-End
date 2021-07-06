@@ -9,7 +9,7 @@ use ApiBundle\Entity\ZzeendStatus;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class FinancialStatus implements FixtureInterface
+class LoadFinancialStatus implements FixtureInterface
 {
     public function load(ObjectManager $manager)
     {
