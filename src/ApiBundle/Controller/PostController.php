@@ -65,7 +65,7 @@ class PostController extends Controller
 
     public function getAllPost(){
 
-        $this->getDoctrine()->getRepository(Post::class)
+        $this->getDoctrine()->getRepository(Post::class);
     }
 
 
