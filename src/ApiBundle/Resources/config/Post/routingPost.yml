@@ -1,0 +1,9 @@
+post-add:
+    path:     /add
+    defaults: { _controller: ApiBundle:Post:newPost }
+    methods: [POST]
+
+post-get-all:
+    path:     /get-all
+    defaults: { _controller: ApiBundle:Post:getAllPost }
+    methods: [GET]

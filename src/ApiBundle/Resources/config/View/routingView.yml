@@ -1,0 +1,4 @@
+view-add:
+    path:     /add
+    defaults: { _controller: ApiBundle:View:addView }
+    methods: [POST]

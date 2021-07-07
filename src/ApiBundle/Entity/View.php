@@ -85,7 +85,7 @@ class View implements JsonSerializable
      */
     public function setViewType($viewType)
     {
-        $this->user = $viewType;
+        $this->viewType = $viewType;
     }
 
     /**

@@ -45,3 +45,15 @@ rate:
 event:
     resource: "@ApiBundle/Resources/config/Event/routingEvent.yml"
     prefix:   /event
+
+post:
+    resource: "@ApiBundle/Resources/config/Post/routingPost.yml"
+    prefix:   /post
+
+like:
+    resource: "@ApiBundle/Resources/config/Like/routingLike.yml"
+    prefix:   /like
+
+view:
+    resource: "@ApiBundle/Resources/config/View/routingView.yml"
+    prefix:   /view

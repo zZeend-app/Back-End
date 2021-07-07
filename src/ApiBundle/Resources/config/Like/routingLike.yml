@@ -1,0 +1,4 @@
+like-add:
+    path:     /add
+    defaults: { _controller: ApiBundle:Like:likeState }
+    methods: [POST]

@@ -46,21 +46,21 @@ class Post implements JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="file_path", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="file_path", type="string", length=255, unique=false, nullable=true)
      */
     private $filePath;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="file_type", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="file_type", type="string", length=255, unique=false, nullable=true)
      */
     private $fileType;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="link", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="link", type="string", length=255, unique=false, nullable=true)
      */
     private $link;
 
@@ -124,12 +124,34 @@ class Post implements JsonSerializable
     }
 
     /**
+     * Set link.
+     *
+     * @param string $link
+     *
+     */
+    public function setLink($link)
+    {
+        $this->link = $link;
+    }
+
+
+    /**
+     * Get link.
+     *
+     * @return string
+     */
+    public function getLink()
+    {
+        return $this->link;
+    }
+
+    /**
      * Set filePath.
      *
      * @param string $filePath
      *
      */
-    public function setFilePath(string $filePath)
+    public function setFilePath($filePath)
     {
         $this->filePath = $filePath;
     }
@@ -151,7 +173,7 @@ class Post implements JsonSerializable
      * @param string $fileType
      *
      */
-    public function setFileType(string $fileType)
+    public function setFileType($fileType)
     {
         $this->fileType = $fileType;
     }

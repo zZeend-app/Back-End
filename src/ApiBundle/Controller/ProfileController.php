@@ -9,6 +9,8 @@ use ApiBundle\Entity\Rate;
 use ApiBundle\Entity\Service;
 use ApiBundle\Entity\SocialNetwork;
 use ApiBundle\Entity\SocialNetworkType;
+use ApiBundle\Entity\View;
+use ApiBundle\Entity\ViewType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,12 +56,21 @@ class ProfileController extends Controller
         $qb = $em->GetRatesAvg($qb, $user);
         $avg = $qb->getQuery()->getSingleScalarResult();
 
+        $em = $this->getDoctrine()->getRepository(View::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->GetViewsCount($qb, $user->getId());
+
+        $viewType = $this->getDoctrine()->getRepository(ViewType::class)->find(2);
+        $qb = $em->AndWhereViewType($qb, $viewType);
+        $nbViews = $qb->getQuery()->getSingleScalarResult();
+
 
         $response['user'] = $user;
         $response['services'] = $services;
         $response['socialNetworks'] = $socialNetworks;
         $response['nbContacts'] = intval($nbContacts);
         $response['avg'] = intval($avg);
+        $response['nbViews'] = intval($nbViews);
         $requestSenderObject = '';
 
         if ($connectedUserId !== $userId) {

@@ -37,10 +37,17 @@ class Like implements JsonSerializable
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="likes")
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\Post", inversedBy="likes")
      * @ORM\JoinColumn(name="post_id", referencedColumnName="id")
      */
     private $post;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="active", type="boolean", length=255, unique=false, nullable=false)
+     */
+    private $active;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -89,6 +96,27 @@ class Like implements JsonSerializable
     public function getPost()
     {
         return $this->post;
+    }
+
+    /**
+     * Set active.
+     *
+     * @param boolean $active
+     *
+     */
+    public function setActive(bool $active)
+    {
+        $this->active = $active;
+    }
+
+    /**
+     * Get active.
+     *
+     * @return boolean
+     */
+    public function getActive()
+    {
+        return $this->active;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
