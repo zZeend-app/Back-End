@@ -78,8 +78,6 @@ class PostController extends Controller
         //make sure nothing is missing inside data
         $data = $jsonManager->getInclude($data);
 
-        $include = $data["include"];
-
 //        if (array_key_exists("departement", $filtersInclude)) {
 //            if($filtersInclude['departement'] !== null) {
 //                $qb = $tacheRepo->WhereDepartement($qb, $filtersInclude["departement"]);
@@ -93,7 +91,10 @@ class PostController extends Controller
 
         $em = $this->getDoctrine()->getRepository(Post::class);
         $qb = $em->GetQueryBuilder();
-        $qb = $em->OrderById($qb);
+
+      if (array_key_exists("order", $data)) {
+          $qb = $em->OrderByJson($qb, $data["order"]);
+        }
 
 //        $posts = $qb->getQuery()->getResult();
 

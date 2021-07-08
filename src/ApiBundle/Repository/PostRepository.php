@@ -12,9 +12,14 @@ class PostRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder = $this->createQueryBuilder('pst');
     }
 
-    public function OrderById(QueryBuilder $queryBuilder){
-        return $queryBuilder
-            ->addOrderBy('pst.id', 'DESC');
+    public function OrderByJson(QueryBuilder $queryBuilder, $data){
+        foreach($data as $order){
+            foreach ($order as $key => $value){
+                $queryBuilder = $queryBuilder->addOrderBy("pst." .$key ,$value);
+            }
+        }
+
+        return $queryBuilder;
     }
 
 }
