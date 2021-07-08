@@ -30,11 +30,11 @@ class ViewRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('viewType', $viewType);
     }
 
-    public function GetViewsCount(QueryBuilder $queryBuilder, $user_id){
+    public function GetViewsCount(QueryBuilder $queryBuilder, $related_id){
         return $queryBuilder
             ->select('count(v.id)')
             ->andWhere('v.relatedId = :relatedId')
-            ->setParameter('relatedId', $user_id);
+            ->setParameter('relatedId', $related_id);
     }
 
 

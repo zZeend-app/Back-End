@@ -76,6 +76,13 @@ class Event implements JsonSerializable
     private $active;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="deveice_event_id", type="integer", length=255, unique=false, nullable=false)
+     */
+    private $deviceEventId;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
@@ -147,6 +154,30 @@ class Event implements JsonSerializable
     {
         return $this->allDay;
     }
+
+    /**
+     * Set deviceEventId.
+     *
+     * @param integer $deviceEventId
+     *
+     */
+    public function setDeviceEventIdy($deviceEventId)
+    {
+        $this->deviceEventId= $deviceEventId;
+
+    }
+
+
+    /**
+     * Get deviceEventId.
+     *
+     * @return integer
+     */
+    public function getDeviceEventId()
+    {
+        return $this->deviceEventId;
+    }
+
 
     /**
      * Set user.

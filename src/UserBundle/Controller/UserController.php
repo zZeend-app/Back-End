@@ -16,7 +16,7 @@ class UserController extends Controller
         return new JsonResponse($user);
     }
 
-    public function newUserAction($email, $password, $fullname, $accountType, $image, $country, $city, $address, $zipCode, $phoneNumber, $jobTitle, $jobDescription){
+    public function newUserAction($email, $password, $fullname, $accountType, $image, $country, $city, $address, $zipCode, $phoneNumber, $jobTitle, $jobDescription, $spokenLanguages){
 
         $userManager = $this->get('fos_user.user_manager');
         $response = array();
@@ -51,6 +51,8 @@ class UserController extends Controller
         $user->setJobTitle($jobTitle);
         $user->setJobDescription($jobDescription);
         $user->setZzeendScore(0);
+        $user->setSpokenLanguages($spokenLanguages);
+        $user->setUpdatedAtAutomatically();
         $user->setVisibility(true);
         $user->setMainVisibility(true);
         $user->setCreatedAtAutomatically();

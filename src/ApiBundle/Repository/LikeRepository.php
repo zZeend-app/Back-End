@@ -23,4 +23,11 @@ class LikeRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('l.post = :post')
             ->setParameter('post', $post);
     }
+
+    public function GetLikesCount(QueryBuilder $queryBuilder, $post){
+        return $queryBuilder
+            ->select('count(l.id)')
+            ->andWhere('l.post = :post')
+            ->setParameter('post', $post);
+    }
 }

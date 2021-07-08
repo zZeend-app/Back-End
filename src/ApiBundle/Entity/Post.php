@@ -67,7 +67,7 @@ class Post implements JsonSerializable
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_profile_related", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="is_profile_related", type="boolean", length=255, unique=false, nullable=false)
      */
     private $isProfileRelated;
 

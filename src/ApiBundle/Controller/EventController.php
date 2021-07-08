@@ -24,6 +24,7 @@ class EventController extends Controller
         $title = $data['title'];
         $start_time = $data['startTime'];
         $end_date = $data['endTime'];
+        $device_event_id = $data['id'];
 
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -73,6 +74,7 @@ class EventController extends Controller
             $event->setAllDay(false);
         }
 
+        $event->setDeviceEventIdy($device_event_id);
         $event->setCreatedAtAutomatically();
 
         $entityManager->persist($event);

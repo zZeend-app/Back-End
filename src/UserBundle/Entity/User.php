@@ -105,6 +105,13 @@ class User extends BaseUser implements JsonSerializable
     private $zZeendScore;
 
     /**
+     * @var array
+     *
+     * @ORM\Column(name="spoken_languages", type="array", length=255, unique=false, nullable=false)
+     */
+    private $spokenLanguages;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="visibility", type="boolean", length=255, unique=false, nullable=false)
@@ -243,6 +250,30 @@ class User extends BaseUser implements JsonSerializable
     public function getCity()
     {
         return $this->city;
+    }
+
+    /**
+     * Set spokenLanguages.
+     *
+     * @param array $spokenLanguages
+     *
+     * @return User
+     */
+    public function setSpokenLanguages($spokenLanguages)
+    {
+        $this->spokenLanguages = $spokenLanguages;
+
+        return $this;
+    }
+
+    /**
+     * Get spokenLanguages.
+     *
+     * @return array
+     */
+    public function getSpokenLanguages()
+    {
+        return $this->spokenLanguages;
     }
 
     /**
@@ -565,6 +596,10 @@ class User extends BaseUser implements JsonSerializable
 
         if(!$entityClass instanceof User || in_array("zZeendScore",$include)){
             $json["zZeendScore"] = $this->zZeendScore;
+        }
+
+        if(!$entityClass instanceof User || in_array("spokenLanguages",$include)){
+            $json["spokenLanguages"] = $this->spokenLanguages;
         }
 
         if(!$entityClass instanceof User || in_array("visibility",$include)){

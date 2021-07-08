@@ -134,6 +134,7 @@ class ProfileController extends Controller
         $address = $data['address'];
         $zip_code = $data['zip_code'];
         $phone_number = $data['phone_number'];
+        $spoken_languages = $data['spoken_languages'];
 
         if ($fullname !== '' and $fullname !== $currentUser->getFullname()) {
             $currentUser->setFullname($fullname);
@@ -168,6 +169,12 @@ class ProfileController extends Controller
         if ($phone_number !== '' and $phone_number !== $currentUser->getPhoneNumber()) {
             $currentUser->setPhoneNumber($phone_number);
             $updated[] = "phone_number";
+            $modification = true;
+        }
+
+        if ($spoken_languages !== '' and count(array_diff($spoken_languages, $currentUser->getSpokenLanguages())) > 0) {
+            $currentUser->setSpokenLanguages($spoken_languages);
+            $updated[] = "spoken_languages";
             $modification = true;
         }
 

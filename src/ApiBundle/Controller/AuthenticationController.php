@@ -32,6 +32,7 @@ class AuthenticationController extends Controller
                 $phoneNumber = $data['phoneNumber'];
                 $jobTitle = $data['jobTitle'];
                 $jobDescription = $data['jobDescription'];
+                $spokenLanguages = $data['spoken_languages'];
 
                 $response = $this->forward("UserBundle:User:newUser", [
                     'email' => $email,
@@ -45,7 +46,8 @@ class AuthenticationController extends Controller
                     'zipCode' => $zipCode,
                     'phoneNumber' => $phoneNumber,
                     'jobTitle' => $jobTitle,
-                    'jobDescription' => $jobDescription
+                    'jobDescription' => $jobDescription,
+                    'spokenLanguages' => $spokenLanguages
                 ]);
             }else{
                 $response = array('code' => 'auth/imcomplete_data');
