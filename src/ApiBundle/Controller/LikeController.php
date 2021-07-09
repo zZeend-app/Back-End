@@ -43,10 +43,11 @@ class LikeController extends Controller
                     $entityManager->persist($oldLike);
                     $entityManager->flush();
 
+
                     if ($active) {
-                        $response = array("code" => "post_liked");
+                        $response = array("code" => $this->getPostLikesCount($post));
                     } else {
-                        $response = array("code" => "post_disliked");
+                        $response = array("code" => $this->getPostLikesCount($post));
                     }
 
                 } else {
@@ -62,7 +63,7 @@ class LikeController extends Controller
 
                     $entityManager->persist($like);
                     $entityManager->flush();
-                    $response = array("code" => "post_liked");
+                    $response = array("code" => $this->getPostLikesCount($post));
 
                 }
             } else {
@@ -74,6 +75,17 @@ class LikeController extends Controller
         }
 
         return new JsonResponse($response);
+    }
+
+    public function getPostLikesCount($post)
+    {
+
+        $em = $this->getDoctrine()->getRepository(Like::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->GetLikesCount($qb, $post);
+        $nbLikes = $qb->getQuery()->getSingleScalarResult();
+
+        return intval($nbLikes);
     }
 
 

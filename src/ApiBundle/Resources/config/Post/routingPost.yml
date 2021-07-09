@@ -6,7 +6,7 @@ post-add:
 post-get-all:
     path:     /get-all
     defaults: { _controller: ApiBundle:Post:getAllPost }
-    methods: [GET]
+    methods: [POST]
 
 post-get:
     path:     /get/{postId}

@@ -23,18 +23,21 @@ class PostController extends Controller
             $data = $request->getContent();
             $data = json_decode($data, true);
 
-            $text = $data['text'];
             $file_path = null;
             $file_type = null;
-            $link = $data['link'];
-            $is_profile_relted = $data['is_profile_relted'];
 
             $entityManager = $this->getDoctrine()->getManager();
 
             $post = new Post();
 
             $post->setUser($currentUser);
-            $post->setText($text);
+
+            if(array_key_exists('text', $data)){
+                $text = $data['text'];
+                $post->setText($text);
+            }else{
+                $post->setText(null);
+            }
             $post->setFilePath($file_path);
             $post->setFileType($file_type);
 
@@ -47,9 +50,9 @@ class PostController extends Controller
 
             $post->setCreatedAtAutomatically();
 
-            if(array_key_exists('is_profile_relted', $data)){
-                $is_profile_relted = $data['is_profile_relted'];
-                $post->setIsProfileRelated($is_profile_relted);
+            if(array_key_exists('is_profile_related', $data)){
+                $is_profile_related = $data['is_profile_related'];
+                $post->setIsProfileRelated($is_profile_related);
             }else{
                 $post->setIsProfileRelated(false);
             }

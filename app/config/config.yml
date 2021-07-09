@@ -15,6 +15,10 @@ parameters:
     site_url: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php" #TODO Change
     baseUrl: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php/api"
 
+
+    api_keys:
+        app_authentication_api: 'a17211a2-ed02-4f32-9896-2777483ae20b'
+
 framework:
     #esi: ~
     translator: { fallbacks: ['%locale%'] }
