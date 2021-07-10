@@ -110,7 +110,7 @@ class View implements JsonSerializable
     {
         $this->relatedId = $relatedId;
     }
-    
+
     /**
      * Get relatedId.
      *
