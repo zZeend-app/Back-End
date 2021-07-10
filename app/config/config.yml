@@ -17,7 +17,7 @@ parameters:
 
 
     api_keys:
-        app_authentication_api: 'a17211a2-ed02-4f32-9896-2777483ae20b'
+        app_source_key: 'rLxO#JGPCvY1*oH&F9D1qSiOdG50MvO&X7O*Va&vmQqhVeNVMfaeD0OxWObUemDw2GwQn@FfY*CsF3rKTf39zT7SmH9uoQp00@e'
 
 framework:
     #esi: ~

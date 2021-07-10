@@ -3,9 +3,9 @@ create:
     defaults: { _controller: ApiBundle:Zzeend:create }
     methods: [POST]
 
-znd-get-all:
-    path:     /get-all
-    defaults: { _controller: ApiBundle:Zzeend:getAllZzeends }
+znd-get:
+    path:     /get
+    defaults: { _controller: ApiBundle:Zzeend:getZzeends }
     methods: [POST]
 
 get:

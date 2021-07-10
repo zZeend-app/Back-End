@@ -16,9 +16,19 @@ class SearchController extends Controller
         $data = $request->getContent();
         $data = json_decode($data, true);
 
-        $userId = $data['userId'];
-        $keyword = $data['keyword'];
-        $filter = $data['filter'];
+        $jsonManager = $this->get("ionicapi.jsonManager");
+
+        //make sure nothing is missing inside data
+        $data = $jsonManager->getInclude($data);
+
+        //get restriction
+        $filtersInclude = $data["filters"]["include"];
+
+        $searchObject = $filtersInclude['searchObject'];
+
+        $userId = $searchObject['userId'];
+        $keyword = $searchObject['keyword'];
+        $filter = $searchObject['filter'];
 
         $response = array();
         if (isset($keyword) and $keyword !== '') {
@@ -53,7 +63,7 @@ class SearchController extends Controller
             $qb = $em->WhereAccountIsEnabled($qb, true);
             $qb = $em->WhereUserVisibility($qb, true);
 
-            $response = $qb->getQuery()->getResult();
+            $response = $jsonManager->setQueryLimit($qb, $filtersInclude);
         }
 
         return new JsonResponse($response);

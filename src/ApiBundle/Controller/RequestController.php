@@ -132,7 +132,16 @@ class RequestController extends Controller
         $data = $request->getContent();
         $data = json_decode($data, true);
 
-        $userId = $data['userId'];
+        $jsonManager = $this->get("ionicapi.jsonManager");
+
+        //make sure nothing is missing inside data
+        $data = $jsonManager->getInclude($data);
+
+        //get restriction
+        $filtersInclude = $data["filters"]["include"];
+
+        $userId = $filtersInclude['userId'];
+
 
         $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
@@ -140,7 +149,7 @@ class RequestController extends Controller
         $qb = $em->GetQueryBuilder();
         $qb = $em->WhereSenderOrReceiver($qb, $user);
         $qb = $em->OrderBy($qb);
-        $requests = $qb->getQUery()->getResult();
+        $requests = $jsonManager->setQueryLimit($qb,$filtersInclude);
 
         return new JsonResponse($requests);
 

@@ -89,7 +89,6 @@ class PostController extends Controller
 
         //get restriction
         $filtersInclude = $data["filters"]["include"];
-        $json = [];
 
 
         $em = $this->getDoctrine()->getRepository(Post::class);

@@ -35,12 +35,12 @@ class KernelRequestListener
         $response = array("code" => "auth/unknown_source");
         $headers = $event->getRequest()->headers;
 
-        if ($headers->has('ApiKey')) {
+        if ($headers->has('SourceKey')) {
 
-            $ApiKey = $headers->get('ApiKey');
-            $app_authentication_api = $this->api_keys['app_authentication_api'];
+            $sourceKey = $headers->get('SourceKey');
+            $app_source_key = $this->api_keys['app_source_key'];
 
-            if ($ApiKey === $app_authentication_api) {
+            if ($sourceKey === $app_source_key) {
                 return $event;
             }
 
@@ -54,7 +54,7 @@ class KernelRequestListener
     public static function getSubscribedEvents()
     {
         return array(
-            KernelEvents::RESPONSE => array('onKernelResponse', 10),
+            KernelEvents::RESPONSE => array('onKernelRequest', 240),
         );
     }
 

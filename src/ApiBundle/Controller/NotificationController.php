@@ -23,9 +23,26 @@ class NotificationController extends Controller
         $returnObject = array();
         $requestObject = array();
 
+        $data = $request->getContent();
+
+        $data = json_decode($data, true);
+
+        $jsonManager = $this->get("ionicapi.jsonManager");
+
+        //make sure nothing is missing inside data
+        $data = $jsonManager->getInclude($data);
+
+        //get restriction
+        $filtersInclude = $data["filters"]["include"];
+
+        $count = $filtersInclude['count'];
+        $offset = $filtersInclude['offset'];
+
+        $limit = $offset + 19;
+
                 $em = $this->getDoctrine()->getManager();
 
-                $RAW_QUERY = 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where request.sender_id = :userId OR request.receiver_id = :userId;';
+                $RAW_QUERY = 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where request.sender_id = :userId OR request.receiver_id = :userId ORDER BY notification.id DESC LIMIT '.$offset.', '.$limit.';';
 
                 $statement = $em->getConnection()->prepare($RAW_QUERY);
                 $statement->bindValue('userId', $currentUser->getId());

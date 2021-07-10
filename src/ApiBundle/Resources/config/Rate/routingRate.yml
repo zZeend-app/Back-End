@@ -4,6 +4,6 @@ rt-add:
     methods: [POST]
 
 rt-get-all:
-    path:     /get-all/{ratedUserId}
+    path:     /get-all
     defaults: { _controller: ApiBundle:Rate:getAllRates }
-    methods: [GET]
+    methods: [POST]

@@ -57,14 +57,22 @@ class ChatController extends Controller
         $data = $request->getContent();
         $data = json_decode($data, true);
 
-        $contactId = $data['contactId'];
+        $jsonManager = $this->get("ionicapi.jsonManager");
+
+        //make sure nothing is missing inside data
+        $data = $jsonManager->getInclude($data);
+
+        //get restriction
+        $filtersInclude = $data["filters"]["include"];
+
+        $contactId = $filtersInclude['contactId'];
 
         $contact = $this->getDoctrine()->getRepository(Contact::class)->find($contactId);
 
         $em = $this->getDoctrine()->getRepository(Chat::class);
         $qb = $em->GetQueryBuilder();
         $qb = $em->WhereContact($qb, $contact);
-        $chats = $qb->getQuery()->getResult();
+        $chats = $jsonManager->setQueryLimit($qb,$filtersInclude);
 
         $response = $chats;
 
@@ -72,13 +80,30 @@ class ChatController extends Controller
         return new JsonResponse($response);
     }
 
-    public function getChatContactAction()
+    public function getChatContactAction(Request $request)
     {
         $currentUser = $this->getUser();
 
+        $data = $request->getContent();
+
+        $data = json_decode($data, true);
+
+        $jsonManager = $this->get("ionicapi.jsonManager");
+
+        //make sure nothing is missing inside data
+        $data = $jsonManager->getInclude($data);
+
+        //get restriction
+        $filtersInclude = $data["filters"]["include"];
+
+        $count = $filtersInclude['count'];
+        $offset = $filtersInclude['offset'];
+
+        $limit = $offset + 19;
+
 
         $em = $this->getDoctrine()->getManager();
-        $RAW_QUERY = 'SELECT chat.contact_id FROM chat INNER JOIN contact WHERE contact.main_user_id = :main_user_id OR contact.second_user_id = :main_user_id GROUP BY chat.contact_id ORDER BY chat.id DESC;';
+        $RAW_QUERY = 'SELECT chat.contact_id FROM chat INNER JOIN contact WHERE (contact.main_user_id = :main_user_id OR contact.second_user_id = :main_user_id) AND chat.contact_id = contact.id GROUP BY chat.contact_id ORDER BY chat.id DESC LIMIT '.$offset.', '.$limit.' ;';
 
         $statement = $em->getConnection()->prepare($RAW_QUERY);
         $statement->bindValue('main_user_id', $currentUser->getId());

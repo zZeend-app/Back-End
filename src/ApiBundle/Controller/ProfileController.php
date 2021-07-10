@@ -172,10 +172,27 @@ class ProfileController extends Controller
             $modification = true;
         }
 
-        if ($spoken_languages !== '' and count(array_diff($spoken_languages, $currentUser->getSpokenLanguages())) > 0) {
-            $currentUser->setSpokenLanguages($spoken_languages);
-            $updated[] = "spoken_languages";
-            $modification = true;
+        if ($spoken_languages !== '') {
+
+            $spokenLanaguagesInDB = $currentUser->getSpokenLanguages();
+
+            if (count($spoken_languages) !== count($spokenLanaguagesInDB)) {
+                $currentUser->setSpokenLanguages($spoken_languages);
+                $updated[] = "spoken_languages";
+                $modification = true;
+            } else {
+
+                for ($i = 0; $i < count($spoken_languages); $i++) {
+                    $language = $spoken_languages[$i];
+
+                    if (!in_array($language, $spokenLanaguagesInDB)) {
+                        $currentUser->setSpokenLanguages($spoken_languages);
+                        $updated[] = "spoken_languages";
+                        $modification = true;
+                        break;
+                    }
+                }
+            }
         }
 
         if ($modification) {
@@ -282,7 +299,7 @@ class ProfileController extends Controller
         $response = array();
 
         $data = $request->getContent();
-        $data =  json_decode($data, true);
+        $data = json_decode($data, true);
 
         $profileId = $data['profile_id'];
 

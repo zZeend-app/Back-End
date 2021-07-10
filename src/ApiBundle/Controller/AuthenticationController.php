@@ -32,7 +32,7 @@ class AuthenticationController extends Controller
                 $phoneNumber = $data['phoneNumber'];
                 $jobTitle = $data['jobTitle'];
                 $jobDescription = $data['jobDescription'];
-                $spokenLanguages = $data['spoken_languages'];
+                $spokenLanguages = $data['spokenLanguages'];
 
                 $response = $this->forward("UserBundle:User:newUser", [
                     'email' => $email,

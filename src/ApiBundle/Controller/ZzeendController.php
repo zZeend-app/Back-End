@@ -67,16 +67,38 @@ class ZzeendController extends Controller
 
     }
 
-    public function getAllZzeendsAction(){
+    public function getZzeendsAction(Request $request){
 
         $response = array();
         $currenetUser = $this->getUser();
 
-        $em = $this->getDoctrine()->getRepository(Zzeend::class);
-        $qb = $em->GetQueryBuilder();
-        $qb = $em->OrWhereUser($qb, $currenetUser);
-        $qb = $em->OrderById($qb);
-        $zZeends = $qb->getQuery()->getResult();
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $jsonManager = $this->get("ionicapi.jsonManager");
+
+        //make sure nothing is missing inside data
+        $data = $jsonManager->getInclude($data);
+
+        //get restriction
+        $filtersInclude = $data["filters"]["include"];
+
+        $zZeendStatusId = $filtersInclude['zZeendStatusId'];
+
+        $status = $this->getDoctrine()->getRepository(ZzeendStatus::class)->find($zZeendStatusId);
+
+        if($status !== null) {
+
+            $em = $this->getDoctrine()->getRepository(Zzeend::class);
+            $qb = $em->GetQueryBuilder();
+            $qb = $em->OrWhereUser($qb, $currenetUser);
+            $qb = $em->WhereInProgress($qb, $status);
+            $qb = $em->OrderById($qb);
+            $zZeends = $jsonManager->setQueryLimit($qb, $filtersInclude);
+
+        }else{
+            $zZeends = [];
+        }
 
         return new JsonResponse($zZeends);
 

@@ -20,6 +20,12 @@ class ZzeendRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('userAssigned', $user);
     }
 
+    public function WhereInProgress(QueryBuilder $queryBuilder, $status){
+        return $queryBuilder
+            ->andWhere('z.status = :status')
+            ->setParameter('status', $status);
+    }
+
     public function OrderById(QueryBuilder $queryBuilder){
         return $queryBuilder
             ->addOrderBy('z.id', 'DESC');

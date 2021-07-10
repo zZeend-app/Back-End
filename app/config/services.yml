@@ -28,5 +28,5 @@ services:
     ionic_kernel_request_listener:
         class: ApiBundle\EventListener\KernelRequestListener
         tags:
-            - { name: kernel.event_listener, event: kernel.request, methode: onKernelRequest, priority: -1025 }
+            - { name: kernel.event_listener, event: kernel.request, methode: onKernelRequest, priority: 240 }
         arguments: [ "%api_keys%"]

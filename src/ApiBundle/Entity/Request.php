@@ -169,23 +169,23 @@ class Request implements JsonSerializable
             "id" => $this->id,
         ];
 
-        if(!$entityClass instanceof Service || in_array("sender",$include)){
+        if(!$entityClass instanceof Request || in_array("sender",$include)){
             $json["sender"] = $this->sender;
         }
 
-        if(!$entityClass instanceof Service || in_array("receiver",$include)){
+        if(!$entityClass instanceof Request || in_array("receiver",$include)){
             $json["receiver"] = $this->receiver;
         }
 
-        if(!$entityClass instanceof Service || in_array("accepted",$include)){
+        if(!$entityClass instanceof Request || in_array("accepted",$include)){
             $json["accepted"] = $this->accepted;
         }
 
-        if(!$entityClass instanceof Service || in_array("rejected",$include)){
+        if(!$entityClass instanceof Request || in_array("rejected",$include)){
             $json["rejected"] = $this->rejected;
         }
 
-        if(!$entityClass instanceof Service || in_array("createdAt",$include)){
+        if(!$entityClass instanceof Request || in_array("createdAt",$include)){
             $json["createdAt"] = $this->createdAt;
         }
 

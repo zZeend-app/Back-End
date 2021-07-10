@@ -54,8 +54,23 @@ class RateController extends Controller
         return new JsonResponse($response);
     }
 
-    public function getAllRatesAction($ratedUserId)
+    public function getAllRatesAction(Request $request)
     {
+
+        $response = array();
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $jsonManager = $this->get("ionicapi.jsonManager");
+
+        //make sure nothing is missing inside data
+        $data = $jsonManager->getInclude($data);
+
+        //get restriction
+        $filtersInclude = $data["filters"]["include"];
+
+        $ratedUserId = $filtersInclude['user_id'];
+
 
         $ratedUser = $this->getDoctrine()->getRepository(User::class)->find($ratedUserId);
 
@@ -66,7 +81,7 @@ class RateController extends Controller
             $qb = $em->WhereRatedUser($qb, $ratedUser);
             $qb = $em->OrderById($qb);
 
-            $rates = $qb->getQuery()->getResult();
+            $rates = $jsonManager->setQueryLimit($qb,$filtersInclude);
 
             $qb = $em->GetQueryBuilder();
             $qb = $em->GetRatesAvg($qb, $ratedUser);
