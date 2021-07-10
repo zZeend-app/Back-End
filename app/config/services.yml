@@ -23,7 +23,7 @@ services:
         class: ApiBundle\EventListener\KernelResponseListener
         tags:
             - { name: kernel.event_listener, event: kernel.response, methode: onKernelResponse, priority: -1025 }
-        arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
+        arguments: [ "@doctrine.orm.entity_manager"]
 
     ionic_kernel_request_listener:
         class: ApiBundle\EventListener\KernelRequestListener
