@@ -22,4 +22,11 @@ class PostRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder;
     }
 
+    public function WhereUser(QueryBuilder $queryBuilder, $user){
+        return $queryBuilder
+            ->andWhere('pst.user = :user')
+            ->setParameter('user', $user);
+    }
+
+
 }

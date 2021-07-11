@@ -8,6 +8,12 @@ post-get-all:
     defaults: { _controller: ApiBundle:Post:getAllPost }
     methods: [POST]
 
+post-current-user-get-all:
+    path:     /user/get-all
+    defaults: { _controller: ApiBundle:Post:getCurrentUserAllPosts }
+    methods: [POST]
+
+
 post-get:
     path:     /get/{postId}
     defaults: { _controller: ApiBundle:Post:getPost }
