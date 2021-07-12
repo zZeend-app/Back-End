@@ -28,6 +28,11 @@ get-all-social-netoword:
     defaults: { _controller: ApiBundle:Profile:getAllSocialNetwork }
     methods: [POST]
 
+upgrade-ccount:
+    path:     /upgrade-account
+    defaults: { _controller: ApiBundle:Profile:upgradeAccount }
+    methods: [POST]
+
 
 #view-get-all:
 #    path:     /get-all

@@ -315,5 +315,22 @@ class ProfileController extends Controller
         return new JsonResponse($socialNetworks);
     }
 
+    public function upgradeAccountAction(){
+
+        $currentUser = $this->getUser();
+
+        $response = array();
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $currentUser->setRoles(['ROLE_OWNER']);
+
+        $entityManager->persist($currentUser);
+
+        $entityManager->flush();
+
+        $response = array("code" => "user/account_upgraded");
+
+        return new JsonResponse($response);
+    }
 
 }

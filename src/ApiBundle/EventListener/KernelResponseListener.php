@@ -16,9 +16,13 @@ use UserBundle\Entity\User;
 class KernelResponseListener
 {
     private $em;
+    private $tokenStorage;
+    private $array;
 
-    public function __construct(EntityManager $em){
+
+    public function __construct(EntityManager $em, TokenStorage $tokenStorage){
         $this->em = $em;
+        $this->tokenStorage = $tokenStorage;
     }
 
 
@@ -31,6 +35,16 @@ class KernelResponseListener
         $appVersion = $qbCrmVersion->getQuery()->getOneOrNullResult();
 
         $exposeHeaders = ["app-version"];
+
+        if($this->tokenStorage->getToken())
+        {
+            if($this->tokenStorage->getToken()->getUser() && $this->tokenStorage->getToken()->getUser() instanceof User)
+            {
+                $this->array = $this->tokenStorage->getToken()->getUser()->getRoles();
+                $event->getResponse()->headers->add(["role" => $this->array[0] ]);
+               $exposeHeaders[] = "role";
+            }
+        }
 
         $event->getResponse()->headers->add(["app-version" => $appVersion->getVersion()]);
         $event->getResponse()->headers->add(["access-control-expose-headers" => $exposeHeaders]);

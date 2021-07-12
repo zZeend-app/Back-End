@@ -32,3 +32,4 @@ reset-password:
     path:     /reset-password
     defaults: { _controller: ApiBundle:Authentication:resetPassword }
     methods: [POST]
+
