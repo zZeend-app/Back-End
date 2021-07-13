@@ -72,9 +72,12 @@ class ChatController extends Controller
         $em = $this->getDoctrine()->getRepository(Chat::class);
         $qb = $em->GetQueryBuilder();
         $qb = $em->WhereContact($qb, $contact);
+        if (array_key_exists("order", $data)) {
+            $qb = $em->OrderByJson($qb, $data["order"]);
+        }
         $chats = $jsonManager->setQueryLimit($qb,$filtersInclude);
 
-        $response = $chats;
+        $response = array_reverse($chats);
 
 
         return new JsonResponse($response);
