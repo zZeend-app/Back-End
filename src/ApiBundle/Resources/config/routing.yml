@@ -57,3 +57,7 @@ like:
 view:
     resource: "@ApiBundle/Resources/config/View/routingView.yml"
     prefix:   /view
+
+plan:
+    resource: "@ApiBundle/Resources/config/Plan/routingPlan.yml"
+    prefix:   /plan

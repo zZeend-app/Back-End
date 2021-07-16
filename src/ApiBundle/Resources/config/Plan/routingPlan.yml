@@ -1,0 +1,24 @@
+get-all:
+    path:     /all
+    defaults: { _controller: ApiBundle:Plan:getPlans }
+    methods: [GET]
+
+get-subscription:
+    path:     /subscription
+    defaults: { _controller: ApiBundle:Plan:getUserSubscription }
+    methods: [GET]
+
+get-subscribe:
+    path:     /subscribe
+    defaults: { _controller: ApiBundle:Plan:planSubscribe }
+    methods: [POST]
+
+get-update:
+    path:     /update
+    defaults: { _controller: ApiBundle:Plan:updatePlanSubscription }
+    methods: [POST]
+
+get-payment:
+    path:     /payment
+    defaults: { _controller: ApiBundle:Plan:planSubscriptionPayment }
+    methods: [POST]
