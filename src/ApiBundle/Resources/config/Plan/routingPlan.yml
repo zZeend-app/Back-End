@@ -16,7 +16,7 @@ get-subscribe:
 get-update:
     path:     /update
     defaults: { _controller: ApiBundle:Plan:updatePlanSubscription }
-    methods: [POST]
+    methods: [PUT]
 
 get-payment:
     path:     /payment

@@ -89,6 +89,7 @@ class PlanController extends Controller
     public function updatePlanSubscriptionAction(Request $request)
     {
 
+        $response = array();
         $updated = array();
 
         $data = $request->getContent();
@@ -104,27 +105,37 @@ class PlanController extends Controller
         if (array_key_exists('plan_id', $data)) {
             $plan_id = $data['plan_id'];
             $plan = $this->getDoctrine()->getRepository(Plan::class)->find($plan_id);
-            $subscription->setPlan($plan);
-            $updated[] = "plan";
+            if($subscription->getPlan()->getId() !== $plan->getId()) {
+                $subscription->setPlan($plan);
+                $updated[] = "plan";
+            }
         }
 
         if (array_key_exists('renewal_type_id', $data)) {
             $renewal_type_id = $data['renewal_type_id'];
             $renewalType = $this->getDoctrine()->getRepository(RenewalType::class)->find($renewal_type_id);
-            $subscription->setRenewalType($renewalType);
-            $updated[] = "renewal";
+            if($subscription->getRenewalType()->getId() !== $renewalType->getId()) {
+                $subscription->setRenewalType($renewalType);
+                $updated[] = "renewal";
+            }
         }
 
         if (array_key_exists('active', $data)) {
             $active = $data['active'];
-            $subscription->setActive($active);
-            $updated[] = "active";
+            if($subscription->getActive() !== $active) {
+                $subscription->setActive($active);
+                $updated[] = "status";
+            }
         }
+
+        $subscription->setUpdatedAtAutomatically();
 
         $entityManager->persist($subscription);
         $entityManager->flush();
 
-        return new JsonResponse($updated);
+        $response = array("updated" => $updated);
+
+        return new JsonResponse($response);
 
     }
 
@@ -149,6 +160,9 @@ class PlanController extends Controller
         //todo add transaction to plan monthly payment
 //        $transaction = $this->getDoctrine()->getRepository(Transaction::class)->find($transaction_id);
 
+        $subscription->setActive(true);
+        $subscription->setUpdatedAtAutomatically();
+
         $planSubscriptionPayment->setSubscription($subscription);
 
         $planSubscriptionPayment->setTransaction(null); //todo
@@ -157,6 +171,7 @@ class PlanController extends Controller
 
         $currentUser->setMainVisibility(true);
 
+        $entityManager->persist($subscription);
         $entityManager->persist($planSubscriptionPayment);
         $entityManager->persist($currentUser);
         $entityManager->flush();

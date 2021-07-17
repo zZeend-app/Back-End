@@ -43,6 +43,16 @@ class Plan implements JsonSerializable
     private $duration;
 
     /**
+     * Get id.
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Set price.
      *
      * @param float $price
