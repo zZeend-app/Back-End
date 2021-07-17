@@ -22,3 +22,8 @@ get-payment:
     path:     /payment
     defaults: { _controller: ApiBundle:Plan:planSubscriptionPayment }
     methods: [POST]
+
+taxes:
+    path:     /taxes
+    defaults: { _controller: ApiBundle:Plan:makeTaxes }
+    methods: [POST]

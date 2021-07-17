@@ -20,13 +20,15 @@ use UserBundle\Entity\User;
 class PlanController extends Controller
 {
 
-    public function getPlansAction(){
+    public function getPlansAction()
+    {
         $plans = $this->getDoctrine()->getRepository(Plan::class)->findAll();
 
         return new JsonResponse($plans);
     }
 
-    public function getUserSubscriptionAction(){
+    public function getUserSubscriptionAction()
+    {
         $currentUser = $this->getUser();
 
         $em = $this->getDoctrine()->getRepository(Subscription::class);
@@ -38,12 +40,13 @@ class PlanController extends Controller
         return new JsonResponse($subscription);
     }
 
-    public function planSubscribeAction(Request $request){
+    public function planSubscribeAction(Request $request)
+    {
 
         $response = array();
 
         $currentUser = $this->getUser();
-        if($currentUser !== null){
+        if ($currentUser !== null) {
             $data = $request->getContent();
             $data = json_decode($data, true);
 
@@ -54,7 +57,7 @@ class PlanController extends Controller
 
             $renewalType = $this->getDoctrine()->getRepository(RenewalType::class)->find($renewal_type_id);
 
-            if($plan !== null && $renewalType !== null){
+            if ($plan !== null && $renewalType !== null) {
 
                 $entityManager = $this->getDoctrine()->getManager();
 
@@ -72,10 +75,10 @@ class PlanController extends Controller
 
                 $response = array("code" => "subscribed");
 
-            }else{
+            } else {
                 $response = array("code" => "action_not_allowed");
             }
-        }else{
+        } else {
             $response = array("code" => "action_not_allowed");
         }
 
@@ -83,7 +86,8 @@ class PlanController extends Controller
 
     }
 
-    public function updatePlanSubscriptionAction(Request $request){
+    public function updatePlanSubscriptionAction(Request $request)
+    {
 
         $updated = array();
 
@@ -97,21 +101,21 @@ class PlanController extends Controller
         $subscription = $this->getDoctrine()->getRepository(Subscription::class)->find($subscription_id);
 
 
-        if(array_key_exists('plan_id', $data)){
+        if (array_key_exists('plan_id', $data)) {
             $plan_id = $data['plan_id'];
             $plan = $this->getDoctrine()->getRepository(Plan::class)->find($plan_id);
             $subscription->setPlan($plan);
             $updated[] = "plan";
         }
 
-        if(array_key_exists('renewal_type_id', $data)){
+        if (array_key_exists('renewal_type_id', $data)) {
             $renewal_type_id = $data['renewal_type_id'];
             $renewalType = $this->getDoctrine()->getRepository(RenewalType::class)->find($renewal_type_id);
             $subscription->setRenewalType($renewalType);
             $updated[] = "renewal";
         }
 
-        if(array_key_exists('active', $data)){
+        if (array_key_exists('active', $data)) {
             $active = $data['active'];
             $subscription->setActive($active);
             $updated[] = "active";
@@ -124,7 +128,8 @@ class PlanController extends Controller
 
     }
 
-    public function planSubscriptionPaymentAction(Request $request){
+    public function planSubscriptionPaymentAction(Request $request)
+    {
 
         $currentUser = $this->getUser();
 
@@ -164,7 +169,8 @@ class PlanController extends Controller
 
     }
 
-    public function enableAccountMainVisibilityAction($userId){
+    public function enableAccountMainVisibilityAction($userId)
+    {
         $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
         $entityManager = $this->getDoctrine()->getManager();
@@ -174,7 +180,8 @@ class PlanController extends Controller
         $entityManager->flush();
     }
 
-    public function disableAccountMainVisibility($userId){
+    public function disableAccountMainVisibility($userId)
+    {
         $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
         $entityManager = $this->getDoctrine()->getManager();
@@ -182,6 +189,33 @@ class PlanController extends Controller
         $user->setMainVisibility(false);
         $entityManager->persist($user);
         $entityManager->flush();
+    }
+
+    public function makeTaxesAction(Request $request)
+    {
+
+        $response = array();
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $baseAmount = $data['base_amount'];
+
+        $baseAmount = round($baseAmount, 2);
+
+        $tvq = round(($baseAmount * 9.975) / 100, 2);
+        $tps = round(($baseAmount * 5) / 100, 2);
+        $applicationFee = 0; // 2.89
+
+        $finalPrice = $baseAmount + $tvq + $tps + $applicationFee;
+
+        $response['baseAmount'] = $baseAmount;
+        $response['tvq'] = $tvq;
+        $response['tps'] = $tps;
+        $response['applicationFee'] = $applicationFee;
+        $response['finalPrice'] = round($finalPrice, 2);
+
+        return new JsonResponse($response);
     }
 
 }
