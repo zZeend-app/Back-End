@@ -92,7 +92,7 @@ class Plan implements JsonSerializable
         ];
 
         if(!$entityClass instanceof Plan || in_array("price",$include)){
-            $json["price"] = $this->price;
+            $json["price"] = number_format($this->price, 2);
         }
 
         if(!$entityClass instanceof Plan || in_array("duration",$include)){

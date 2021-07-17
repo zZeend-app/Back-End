@@ -16,9 +16,9 @@ class LoadPlan implements FixtureInterface
     {
 
         $plans = array(
-            "24.99" => "1m",
-            "23.00" => "6m",
-            "21.99" => "9m"
+            "24.99" => "1 month",
+            "23.00" => "6 months",
+            "21.99" => "9 months"
         );
 
         foreach ($plans as $price => $duration) {
