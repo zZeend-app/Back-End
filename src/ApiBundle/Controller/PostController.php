@@ -11,6 +11,7 @@ use ApiBundle\Entity\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use UserBundle\Entity\User;
 
 class PostController extends Controller
 {
@@ -105,6 +106,7 @@ class PostController extends Controller
 
 
         for($i = 0; $i < count($posts); $i++){
+            $sharedContent = null;
             $post = $posts[$i];
 
             $em = $this->getDoctrine()->getRepository(Like::class);
@@ -117,10 +119,25 @@ class PostController extends Controller
             $qb = $em->GetViewsCount($qb, $post);
             $nbLViews = $qb->getQuery()->getSingleScalarResult();
 
+            if($post->getShare() !== null){
+                $shareTypeId = $post->getShare()->getShareType()->getId();
+
+
+                $relatedId = $post->getShare()->getRelatedId();
+
+
+                if($shareTypeId == 1){
+                    $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
+                }else if($shareTypeId == 2){
+                    $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
+                }
+            }
+
             $response[] = array(
                 "post" => $post,
                 "likes" => intval($nbLikes),
-                "views" => intval($nbLViews)
+                "views" => intval($nbLViews),
+                "sharedContent" => $sharedContent
                 );
 
 

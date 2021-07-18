@@ -69,10 +69,19 @@ class ShareController extends Controller
             } else if ($sharedDestination == 2) {
                 //share to chat
 
-                $chat = new Chat();
-                $chat->setShare($share);
-                $chat->setCreatedAtAutomatically();
-                $entityManager->persist($chat);
+                $contactId = $data['contact_id'];
+                $contact = $this->getDoctrine()->getRepository(Contact::class)->find($contactId);
+
+                if($contact !== null){
+                    $chat = new Chat();
+                    $chat->setContact($contact);
+                    $chat->setShare($share);
+                    $chat->setCreatedAtAutomatically();
+                    $entityManager->persist($chat);
+                }else{
+                    return new JsonResponse(array("code" => "action_not_allowed"));
+                }
+
             }else{
                 return new JsonResponse(array("code" => "action_not_allowed"));
             }

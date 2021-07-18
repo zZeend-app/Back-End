@@ -6,6 +6,7 @@ namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
+use ApiBundle\Entity\Post;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,9 +77,35 @@ class ChatController extends Controller
         if (array_key_exists("order", $data)) {
             $qb = $em->OrderByJson($qb, $data["order"]);
         }
-        $chats = $jsonManager->setQueryLimit($qb,$filtersInclude);
+        $chats = $jsonManager->setQueryLimit($qb, $filtersInclude);
 
-        $response = array_reverse($chats);
+        $chats = array_reverse($chats);
+
+        for ($i = 0; $i < count($chats); $i++) {
+
+            $sharedContent = null;
+            $chat = $chats[$i];
+
+            if($chat->getShare() !== null){
+                $shareTypeId = $chat->getShare()->getShareType()->getId();
+
+
+                $relatedId = $chat->getShare()->getRelatedId();
+
+
+                if($shareTypeId == 1){
+                    $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
+                }else if($shareTypeId == 2){
+                    $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
+                }
+            }
+
+            $response[] = array(
+                "chat" => $chat,
+                "sharedContent" => $sharedContent
+            );
+
+        }
 
 
         return new JsonResponse($response);
@@ -107,7 +134,7 @@ class ChatController extends Controller
 
 
         $em = $this->getDoctrine()->getManager();
-        $RAW_QUERY = 'SELECT chat.contact_id FROM chat INNER JOIN contact WHERE (contact.main_user_id = :main_user_id OR contact.second_user_id = :main_user_id) AND chat.contact_id = contact.id GROUP BY chat.contact_id ORDER BY chat.id DESC LIMIT '.$offset.', '.$limit.' ;';
+        $RAW_QUERY = 'SELECT chat.contact_id FROM chat INNER JOIN contact WHERE (contact.main_user_id = :main_user_id OR contact.second_user_id = :main_user_id) AND chat.contact_id = contact.id GROUP BY chat.contact_id ORDER BY chat.id DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 
         $statement = $em->getConnection()->prepare($RAW_QUERY);
         $statement->bindValue('main_user_id', $currentUser->getId());
