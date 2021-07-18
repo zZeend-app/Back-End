@@ -16,11 +16,12 @@ use UserBundle\Entity\User;
 class PostController extends Controller
 {
 
-    public function newPostAction(Request $request){
+    public function newPostAction(Request $request)
+    {
         $response = array();
         $currentUser = $this->getUser();
 
-        if($currentUser !== null){
+        if ($currentUser !== null) {
             $data = $request->getContent();
             $data = json_decode($data, true);
 
@@ -33,29 +34,29 @@ class PostController extends Controller
 
             $post->setUser($currentUser);
 
-            if(array_key_exists('text', $data)){
+            if (array_key_exists('text', $data)) {
                 $text = $data['text'];
                 $post->setText($text);
-            }else{
+            } else {
                 $post->setText(null);
             }
             $post->setFilePath($file_path);
             $post->setFileType($file_type);
 
-            if(array_key_exists('link', $data)){
+            if (array_key_exists('link', $data)) {
                 $link = $data['link'];
                 $post->setLink($link);
-            }else{
+            } else {
                 $post->setLink(null);
             }
 
             $post->setShare(null);
             $post->setCreatedAtAutomatically();
 
-            if(array_key_exists('is_profile_related', $data)){
+            if (array_key_exists('is_profile_related', $data)) {
                 $is_profile_related = $data['is_profile_related'];
                 $post->setIsProfileRelated($is_profile_related);
-            }else{
+            } else {
                 $post->setIsProfileRelated(false);
             }
 
@@ -63,14 +64,15 @@ class PostController extends Controller
             $entityManager->flush();
 
             $response = array("code" => "post_added");
-        }else{
+        } else {
             $response = array("code" => "action_not_allowed");
         }
 
         return new JsonResponse($response);
     }
 
-    public function getAllPostAction(Request $request){
+    public function getAllPostAction(Request $request)
+    {
 
         $response = array();
 
@@ -96,16 +98,16 @@ class PostController extends Controller
         $em = $this->getDoctrine()->getRepository(Post::class);
         $qb = $em->GetQueryBuilder();
 
-      if (array_key_exists("order", $data)) {
-          $qb = $em->OrderByJson($qb, $data["order"]);
+        if (array_key_exists("order", $data)) {
+            $qb = $em->OrderByJson($qb, $data["order"]);
         }
 
 //        $posts = $qb->getQuery()->getResult();
 
-        $posts = $jsonManager->setQueryLimit($qb,$filtersInclude);
+        $posts = $jsonManager->setQueryLimit($qb, $filtersInclude);
 
 
-        for($i = 0; $i < count($posts); $i++){
+        for ($i = 0; $i < count($posts); $i++) {
             $sharedContent = null;
             $post = $posts[$i];
 
@@ -119,16 +121,15 @@ class PostController extends Controller
             $qb = $em->GetViewsCount($qb, $post);
             $nbLViews = $qb->getQuery()->getSingleScalarResult();
 
-            if($post->getShare() !== null){
+            if ($post->getShare() !== null) {
                 $shareTypeId = $post->getShare()->getShareType()->getId();
-
 
                 $relatedId = $post->getShare()->getRelatedId();
 
 
-                if($shareTypeId == 1){
+                if ($shareTypeId == 1) {
                     $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
-                }else if($shareTypeId == 2){
+                } else if ($shareTypeId == 2) {
                     $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
                 }
             }
@@ -138,7 +139,7 @@ class PostController extends Controller
                 "likes" => intval($nbLikes),
                 "views" => intval($nbLViews),
                 "sharedContent" => $sharedContent
-                );
+            );
 
 
         }
@@ -146,7 +147,8 @@ class PostController extends Controller
         return new JsonResponse($response);
     }
 
-    public function getCurrentUserAllPostsAction(Request $request){
+    public function getCurrentUserAllPostsAction(Request $request)
+    {
 
         $response = array();
 
@@ -181,10 +183,11 @@ class PostController extends Controller
 
 //        $posts = $qb->getQuery()->getResult();
 
-        $posts = $jsonManager->setQueryLimit($qb,$filtersInclude);
+        $posts = $jsonManager->setQueryLimit($qb, $filtersInclude);
 
 
-        for($i = 0; $i < count($posts); $i++){
+        for ($i = 0; $i < count($posts); $i++) {
+            $sharedContent = null;
             $post = $posts[$i];
 
             $em = $this->getDoctrine()->getRepository(Like::class);
@@ -197,10 +200,24 @@ class PostController extends Controller
             $qb = $em->GetViewsCount($qb, $post);
             $nbLViews = $qb->getQuery()->getSingleScalarResult();
 
+            if ($post->getShare() !== null) {
+                $shareTypeId = $post->getShare()->getShareType()->getId();
+
+                $relatedId = $post->getShare()->getRelatedId();
+
+
+                if ($shareTypeId == 1) {
+                    $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
+                } else if ($shareTypeId == 2) {
+                    $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
+                }
+            }
+
             $response[] = array(
                 "post" => $post,
                 "likes" => intval($nbLikes),
-                "views" => intval($nbLViews)
+                "views" => intval($nbLViews),
+                "sharedContent" => $sharedContent
             );
 
 
@@ -209,7 +226,8 @@ class PostController extends Controller
         return new JsonResponse($response);
     }
 
-    public function getPostAction($postId){
+    public function getPostAction($postId)
+    {
 
         $response = array();
 
@@ -234,8 +252,6 @@ class PostController extends Controller
         return new JsonResponse($response);
 
     }
-
-
 
 
 }

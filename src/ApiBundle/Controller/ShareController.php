@@ -69,6 +69,9 @@ class ShareController extends Controller
 
                 $post = new Post();
                 $post->setText($text);
+                if($shareType->getId() == 2){
+                    $post->setUser($currentUser);
+                }
                 $post->setShare($share);
                 $post->setCreatedAtAutomatically();
                 $entityManager->persist($post);

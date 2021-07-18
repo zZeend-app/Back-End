@@ -287,6 +287,10 @@ class Post implements JsonSerializable
             $json["link"] = $this->link;
         }
 
+        if(!$entityClass instanceof Post || in_array("isProfileRelated",$include)){
+            $json["isProfileRelated"] = $this->isProfileRelated;
+        }
+
         if(!$entityClass instanceof Post || in_array("share",$include)){
             $json["share"] = $this->share;
         }
