@@ -61,7 +61,7 @@ class ShareController extends Controller
             if ($sharedDestination == 1) {
                 //share to post
 
-                $text = null;
+                $text = '';
 
                 if(array_key_exists('text', $data)){
                     $text = $data['text'];
@@ -76,12 +76,13 @@ class ShareController extends Controller
             } else if ($sharedDestination == 2) {
                 //share to chat
 
-                $contactId = $data['contact_id'];
+                $contactId = $data['contactId'];
                 $contact = $this->getDoctrine()->getRepository(Contact::class)->find($contactId);
 
                 if($contact !== null){
                     $chat = new Chat();
                     $chat->setContact($contact);
+                    $chat->setUser($currentUser);
                     $chat->setShare($share);
                     $chat->setCreatedAtAutomatically();
                     $entityManager->persist($chat);
