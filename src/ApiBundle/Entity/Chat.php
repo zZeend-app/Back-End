@@ -51,9 +51,16 @@ class Chat implements JsonSerializable
 
     /**
      * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\Contact", inversedBy="chats", cascade={"persist"})
-     * @ORM\JoinColumn(name="contact_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="contact_id", referencedColumnName="id", nullable=true)
      */
     private $contact;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\Share", inversedBy="posts")
+     * @ORM\JoinColumn(name="share_id", referencedColumnName="id")
+     */
+    private $share;
+
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -80,6 +87,28 @@ class Chat implements JsonSerializable
     public function getUsers()
     {
         return $this->sender;
+    }
+
+    /**
+     * Set share.
+     *
+     * @param $share
+     *
+     * @return void
+     */
+    public function setShare($share)
+    {
+        $this->share = $share;
+    }
+
+    /**
+     * Get share.
+     *
+     * @return Share
+     */
+    public function getShare()
+    {
+        return $this->share;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -181,6 +210,10 @@ class Chat implements JsonSerializable
 
         if (!$entityClass instanceof Chat || in_array("contact", $include)) {
             $json["contact"] = $this->contact;
+        }
+
+        if (!$entityClass instanceof Chat || in_array("share", $include)) {
+            $json["share"] = $this->share;
         }
 
         if (!$entityClass instanceof Chat || in_array("createdAt", $include)) {

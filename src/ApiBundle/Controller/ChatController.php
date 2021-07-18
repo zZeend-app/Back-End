@@ -40,6 +40,7 @@ class ChatController extends Controller
             $chat->setFilePath(null);
             $currentUser = $this->getUser();
             $chat->setUser($currentUser);
+            $chat->setShare(null);
             $entityManager->persist($chat);
             $entityManager->flush();
 

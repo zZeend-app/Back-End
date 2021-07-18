@@ -39,7 +39,7 @@ class Post implements JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="text", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="text", type="string", length=255, unique=false, nullable=true)
      */
     private $text;
 
@@ -67,9 +67,15 @@ class Post implements JsonSerializable
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_profile_related", type="boolean", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="is_profile_related", type="boolean", length=255, unique=false, nullable=true)
      */
     private $isProfileRelated;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\Share", inversedBy="posts")
+     * @ORM\JoinColumn(name="share_id", referencedColumnName="id")
+     */
+    private $share;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -92,9 +98,7 @@ class Post implements JsonSerializable
     /**
      * Get user.
      *
-     * @param User $user
-     *
-     * @return void
+     * @return User
      */
     public function getUser()
     {
@@ -211,6 +215,28 @@ class Post implements JsonSerializable
         return $this->isProfileRelated;
     }
 
+    /**
+     * Set share.
+     *
+     * @param $share
+     *
+     * @return void
+     */
+    public function setShare($share)
+    {
+        $this->share = $share;
+    }
+
+    /**
+     * Get share.
+     *
+     * @return Share
+     */
+    public function getShare()
+    {
+        return $this->share;
+    }
+
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
@@ -241,31 +267,32 @@ class Post implements JsonSerializable
             "id" => $this->id,
         ];
 
-        if(!$entityClass instanceof Service || in_array("user",$include)){
+        if(!$entityClass instanceof Post || in_array("user",$include)){
             $json["user"] = $this->user;
         }
 
-        if(!$entityClass instanceof Service || in_array("text",$include)){
+        if(!$entityClass instanceof Post || in_array("text",$include)){
             $json["text"] = $this->text;
         }
 
-        if(!$entityClass instanceof Service || in_array("filePath",$include)){
+        if(!$entityClass instanceof Post || in_array("filePath",$include)){
             $json["filePath"] = $this->filePath;
         }
 
-        if(!$entityClass instanceof Service || in_array("fileType",$include)){
+        if(!$entityClass instanceof Post || in_array("fileType",$include)){
             $json["fileType"] = $this->fileType;
         }
 
-        if(!$entityClass instanceof Service || in_array("link",$include)){
+        if(!$entityClass instanceof Post || in_array("link",$include)){
             $json["link"] = $this->link;
         }
 
-        if(!$entityClass instanceof Service || in_array("isProfileRelated",$include)){
-            $json["isProfileRelated"] = $this->isProfileRelated;
+        if(!$entityClass instanceof Post || in_array("share",$include)){
+            $json["share"] = $this->share;
         }
 
-        if(!$entityClass instanceof Service || in_array("createdAt",$include)){
+
+        if(!$entityClass instanceof Post || in_array("createdAt",$include)){
             $json["createdAt"] = $this->createdAt;
         }
 

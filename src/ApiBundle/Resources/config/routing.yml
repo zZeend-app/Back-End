@@ -61,3 +61,7 @@ view:
 plan:
     resource: "@ApiBundle/Resources/config/Plan/routingPlan.yml"
     prefix:   /plan
+
+share:
+    resource: "@ApiBundle/Resources/config/Share/routingShare.yml"
+    prefix:   /share

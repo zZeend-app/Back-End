@@ -48,6 +48,7 @@ class PostController extends Controller
                 $post->setLink(null);
             }
 
+            $post->setShare(null);
             $post->setCreatedAtAutomatically();
 
             if(array_key_exists('is_profile_related', $data)){

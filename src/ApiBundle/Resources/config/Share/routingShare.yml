@@ -1,0 +1,4 @@
+sh-new:
+    path:     /new
+    defaults: { _controller: ApiBundle:Share:shareContent }
+    methods: [POST]
