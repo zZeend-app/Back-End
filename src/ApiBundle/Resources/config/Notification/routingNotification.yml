@@ -1,4 +1,4 @@
-get-all:
+ntf-get-all:
     path:     /get-all
     defaults: { _controller: ApiBundle:Notification:getAll }
     methods: [POST]

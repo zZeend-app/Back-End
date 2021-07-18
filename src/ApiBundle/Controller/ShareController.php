@@ -61,7 +61,14 @@ class ShareController extends Controller
             if ($sharedDestination == 1) {
                 //share to post
 
+                $text = null;
+
+                if(array_key_exists('text', $data)){
+                    $text = $data['text'];
+                }
+
                 $post = new Post();
+                $post->setText($text);
                 $post->setShare($share);
                 $post->setCreatedAtAutomatically();
                 $entityManager->persist($post);
