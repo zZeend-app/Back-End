@@ -119,7 +119,7 @@ class PostController extends Controller
             $em = $this->getDoctrine()->getRepository(View::class);
             $qb = $em->GetQueryBuilder();
             $qb = $em->GetViewsCount($qb, $post);
-            $nbLViews = $qb->getQuery()->getSingleScalarResult();
+            $nbViews = $qb->getQuery()->getSingleScalarResult();
 
             if ($post->getShare() !== null) {
                 $shareTypeId = $post->getShare()->getShareType()->getId();
@@ -137,7 +137,7 @@ class PostController extends Controller
             $response[] = array(
                 "post" => $post,
                 "likes" => intval($nbLikes),
-                "views" => intval($nbLViews),
+                "views" => intval($nbViews),
                 "sharedContent" => $sharedContent
             );
 

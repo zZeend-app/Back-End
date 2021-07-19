@@ -43,7 +43,18 @@ class ShareController extends Controller
                 //if the share is a post
                 $post = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
                 if ($post !== null) {
-                    $share->setRelatedId($relatedId);
+                    if($post->getShare() !== null){
+
+                        $tempShare = $post->getShare();
+
+                        $tempShareType = $tempShare->getShareType();
+
+                        $share->setShareType($tempShareType);
+                        $share->setRelatedId($tempShare->getRelatedId());
+
+                    }else{
+                        $share->setRelatedId($relatedId);
+                    }
                 } else {
                     return new JsonResponse(array("code" => "action_not_Allowed"));
                 }

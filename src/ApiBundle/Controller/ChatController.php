@@ -6,7 +6,9 @@ namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
+use ApiBundle\Entity\Like;
 use ApiBundle\Entity\Post;
+use ApiBundle\Entity\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,6 +86,8 @@ class ChatController extends Controller
         for ($i = 0; $i < count($chats); $i++) {
 
             $sharedContent = null;
+            $nbLikes = null;
+            $nbViews = null;
             $chat = $chats[$i];
 
             if($chat->getShare() !== null){
@@ -95,6 +99,17 @@ class ChatController extends Controller
 
                 if($shareTypeId == 1){
                     $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
+
+                    $em = $this->getDoctrine()->getRepository(Like::class);
+                    $qb = $em->GetQueryBuilder();
+                    $qb = $em->GetLikesCount($qb, $sharedContent);
+                    $nbLikes = $qb->getQuery()->getSingleScalarResult();
+
+                    $em = $this->getDoctrine()->getRepository(View::class);
+                    $qb = $em->GetQueryBuilder();
+                    $qb = $em->GetViewsCount($qb, $sharedContent);
+                    $nbViews = $qb->getQuery()->getSingleScalarResult();
+
                 }else if($shareTypeId == 2){
                     $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
                 }
@@ -102,7 +117,9 @@ class ChatController extends Controller
 
             $response[] = array(
                 "chat" => $chat,
-                "sharedContent" => $sharedContent
+                "sharedContent" => $sharedContent,
+                "likes" => intval($nbLikes),
+                "views" => intval($nbViews)
             );
 
         }
