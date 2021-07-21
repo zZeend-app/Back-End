@@ -41,6 +41,7 @@ class ChatController extends Controller
             $chat->setContact($contact);
             $chat->setCreatedAtAutomatically();
             $chat->setFilePath(null);
+            $chat->setFileType(null);
             $currentUser = $this->getUser();
             $chat->setUser($currentUser);
             $chat->setShare(null);
@@ -112,6 +113,9 @@ class ChatController extends Controller
 
                 }else if($shareTypeId == 2){
                     $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
+                }else if($shareTypeId == 3){
+                    //chat shared retrieved
+                    $sharedContent = $this->getDoctrine()->getRepository(Chat::class)->find($relatedId);
                 }
             }
 

@@ -40,8 +40,20 @@ class PostController extends Controller
             } else {
                 $post->setText(null);
             }
-            $post->setFilePath($file_path);
-            $post->setFileType($file_type);
+
+            if (array_key_exists('filePath', $data)) {
+                $filePath = $data['filePath'];
+                $post->setFilePath($filePath);
+            } else {
+                $post->setFilePath($file_path);
+            }
+
+            if (array_key_exists('fileType', $data)) {
+                $fileType = $data['fileType'];
+                $post->setFileType($fileType);
+            } else {
+                $post->setFileType($file_type);
+            }
 
             if (array_key_exists('link', $data)) {
                 $link = $data['link'];

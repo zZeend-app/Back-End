@@ -44,6 +44,13 @@ class Chat implements JsonSerializable
     private $filePath;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="file_type", type="string", length=255, unique=false, nullable=true)
+     */
+    private $fileType;
+
+    /**
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="chats")
      * @ORM\JoinColumn(name="sender_id", referencedColumnName="id")
      */
@@ -179,6 +186,28 @@ class Chat implements JsonSerializable
     }
 
     /**
+     * Set fileType.
+     *
+     * @param string $fileType
+     *
+     */
+    public function setFileType($fileType)
+    {
+        $this->fileType = $fileType;
+    }
+
+
+    /**
+     * Get fileType.
+     *
+     * @return string
+     */
+    public function getFileType()
+    {
+        return $this->fileType;
+    }
+
+    /**
      * Set users.
      *
      * @param Contact $contact
@@ -202,6 +231,10 @@ class Chat implements JsonSerializable
 
         if (!$entityClass instanceof Chat || in_array("filePath", $include)) {
             $json["filePath"] = $this->filePath;
+        }
+
+        if(!$entityClass instanceof Post || in_array("fileType",$include)){
+            $json["fileType"] = $this->fileType;
         }
 
         if (!$entityClass instanceof Chat || in_array("mainUse", $include)) {

@@ -60,9 +60,31 @@ class ShareController extends Controller
                 }
             } else if ($shareType->getId() == 2) {
                 //if the share is a profile
-                $chat = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
-                if ($chat !== null) {
+                $user = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
+                if ($user !== null) {
                     $share->setRelatedId($relatedId);
+                } else {
+                    return new JsonResponse(array("code" => "action_not_Allowed"));
+                }
+            } else if ($shareType->getId() == 3) {
+                //if the share is a chat
+                $chat = $this->getDoctrine()->getRepository(Chat::class)->find($relatedId);
+                if ($chat !== null) {
+
+                    if($chat->getShare() !== null){
+
+                        $tempShare = $chat->getShare();
+
+                        $tempShareType = $tempShare->getShareType();
+
+                        $share->setShareType($tempShareType);
+                        $share->setRelatedId($tempShare->getRelatedId());
+
+                    }else {
+
+                        $share->setRelatedId($relatedId);
+
+                    }
                 } else {
                     return new JsonResponse(array("code" => "action_not_Allowed"));
                 }
