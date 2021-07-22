@@ -1,4 +1,19 @@
-add:
+service-add:
     path:     /add
     defaults: { _controller: ApiBundle:Service:addServices }
+    methods: [POST]
+
+service-edit:
+    path:     /edit
+    defaults: { _controller: ApiBundle:Service:editService }
+    methods: [PUT]
+
+service-delete:
+    path:     /{serviceId}
+    defaults: { _controller: ApiBundle:Service:deleteService }
+    methods: [DELETE]
+
+service-change-position:
+    path:     /change-position
+    defaults: { _controller: ApiBundle:Service:changeServicePosition }
     methods: [POST]

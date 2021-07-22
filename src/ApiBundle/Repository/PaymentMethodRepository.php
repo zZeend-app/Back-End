@@ -28,4 +28,10 @@ class PaymentMethodRepository extends \Doctrine\ORM\EntityRepository
             ->addOrderBy('pm.id', 'DESC');
     }
 
+    public function GetCount(QueryBuilder $queryBuilder)
+    {
+        return $queryBuilder
+            ->select('count(pm.id)');
+    }
+
 }

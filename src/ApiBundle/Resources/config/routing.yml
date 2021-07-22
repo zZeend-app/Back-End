@@ -65,3 +65,7 @@ plan:
 share:
     resource: "@ApiBundle/Resources/config/Share/routingShare.yml"
     prefix:   /share
+
+menu-statistics:
+    resource: "@ApiBundle/Resources/config/Statistics/routingStatistics.yml"
+    prefix:   /statistics

@@ -31,5 +31,12 @@ class ZzeendRepository extends \Doctrine\ORM\EntityRepository
             ->addOrderBy('z.id', 'DESC');
     }
 
+    public function GetCount(QueryBuilder $queryBuilder)
+    {
+        return $queryBuilder
+            ->select('count(z.id)');
+    }
+
+
 
 }

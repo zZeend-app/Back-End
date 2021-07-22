@@ -43,6 +43,16 @@ class Service implements JsonSerializable
     private $user;
 
     /**
+     * Get id.
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Set service.
      *
      * @param string $serviceName

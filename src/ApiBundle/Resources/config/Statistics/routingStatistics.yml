@@ -1,0 +1,4 @@
+menu-statistics:
+    path:     /menu
+    defaults: { _controller: ApiBundle:Statistics:getMenuStats }
+    methods: [GET]

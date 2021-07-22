@@ -41,5 +41,152 @@ class ServiceController extends Controller
         return new JsonResponse($response);
     }
 
+    public function editServiceAction(Request $request)
+    {
+        $response = array();
+        $update = [];
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $serviceId = $data['serviceId'];
+        $service = $data['service'];
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $serviceObject = $this->getDoctrine()->getRepository(Service::class)->find($serviceId);
+
+        if($serviceObject !== null){
+            if($serviceObject->getService() !== $service){
+                $serviceObject->setService($service);
+                $entityManager->persist($serviceObject);
+                $entityManager->flush();
+                $update[] = "service";
+
+                $response = array("updated" => $update);
+            }
+
+        }else{
+            $response = array("code" => "action_not_allowed");
+        }
+
+        return new JsonResponse($response);
+
+    }
+
+    public function deleteServiceAction($serviceId)
+    {
+        $response = array();
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $serviceObject = $this->getDoctrine()->getRepository(Service::class)->find($serviceId);
+
+        if($serviceObject !== null){
+            $entityManager->remove($serviceObject);
+            $entityManager->flush();
+
+            $response = array('code' => 'service_deleted');
+
+        }else{
+            $response = array("code" => "action_not_allowed");
+        }
+
+        return new JsonResponse($response);
+
+    }
+
+    public function changeServicePositionAction(Request $request)
+    {
+        $response = array();
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $fromId = $data['fromId'];
+        $toId = $data['toId'];
+
+//        $em = $this->getDoctrine()->getManager();
+//        $RAW_QUERY = 'UPDATE service SET service = "vb-a---000wewewewsc" where id = :id;';
+//
+//        $statement = $em->getConnection()->prepare($RAW_QUERY);
+//        $statement->bindValue('id', $fromId);
+//        $statement->execute();
+
+        $values = [];
+
+        $currentService = null;
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $fromService = $this->getDoctrine()->getRepository(Service::class)->find($fromId);
+        $toService = $this->getDoctrine()->getRepository(Service::class)->find($toId);
+        $cool = '';
+        if ($fromService !== null && $toService !== null) {
+
+            $services = $this->getDoctrine()->getRepository(Service::class)->findAll();
+
+            if($fromId < $toId){
+                $services = array_reverse($services);
+            }
+
+            $temp_to = null;
+            $temp_fromId = 0;
+            $precedent = null;
+
+            for($i = 0; $i < count($services); $i++){
+
+                if($services[$i]->getId() == $toId){
+
+                    $precedent = $services[$i];
+                    $temp_to = $services[$i];
+
+                }else{
+
+                    if($precedent !== null){
+
+                            if($temp_to !== null){
+
+                                if($services[$i]->getId() == $fromId){
+
+                                    $values[] = $precedent;
+                                    $clonedService = clone $services[$i];
+                                    $services[$i]->setService($precedent->getService());
+                                    $entityManager->persist($services[$i]);
+                                    $entityManager->flush();
+
+                                    $temp_from = $services[$i]->getId();
+                                    $entityManager = $this->getDoctrine()->getManager();
+                                    $toObject = $this->getDoctrine()->getRepository(Service::class)->find($toId);
+                                    $toObject->setService($clonedService->getService());
+                                    $entityManager->persist($services[$i]);
+                                    $entityManager->flush();
+                                    break;
+
+                                }else{
+
+                                    $values[] = $precedent;
+                                    $clonedService = clone $services[$i];
+                                    $services[$i]->setService($precedent->getService());
+                                    $entityManager->persist($services[$i]);
+                                    $entityManager->flush();
+
+                                    $precedent = $clonedService;
+                                }
+                            }
+                    }else {
+                        $precedent = $services[$i];
+                    }
+                }
+            }
+
+            $response = array('code' => 'service_position_changed');
+
+        }else{
+            $response = array("code" => "action_not_allowed");
+        }
+
+        return new JsonResponse($response);
+
+    }
+
 
 }

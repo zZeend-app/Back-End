@@ -11,12 +11,20 @@ class RequestRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder = $this->createQueryBuilder('r');
     }
 
-    public function OrWhereUser(QueryBuilder $queryBuilder, $sender, $receiver){
+    public function OrWhereUser(QueryBuilder $queryBuilder, $user){
+        return $queryBuilder
+            ->orWhere('r.sender = :sender')
+            ->setParameter('sender', $user)
+            ->orWhere('r.receiver = :receiver')
+            ->setParameter('receiver', $user);
+    }
+
+    public function _OrWhereUser(QueryBuilder $queryBuilder, $sender){
         return $queryBuilder
             ->orWhere('r.sender = :sender')
             ->setParameter('sender', $sender)
             ->orWhere('r.receiver = :receiver')
-            ->setParameter('receiver', $receiver);
+            ->setParameter('receiver', $sender);
     }
 
     public function WhereSenderOrReceiver(QueryBuilder $queryBuilder, $user){
@@ -60,6 +68,12 @@ class RequestRepository extends \Doctrine\ORM\EntityRepository
     public function OrderBy(QueryBuilder $queryBuilder){
         return $queryBuilder
             ->addOrderBy('r.id', 'DESC');
+    }
+
+    public function GetCount(QueryBuilder $queryBuilder)
+    {
+        return $queryBuilder
+            ->select('count(r.id)');
     }
 
 }

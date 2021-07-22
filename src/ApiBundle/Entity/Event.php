@@ -127,7 +127,7 @@ class Event implements JsonSerializable
      *
      * @return string
      */
-    public function gettTtle()
+    public function getTitle()
     {
         return $this->title;
     }
