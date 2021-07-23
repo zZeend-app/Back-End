@@ -94,6 +94,7 @@ class User extends BaseUser implements JsonSerializable
 
     /**
      * @ORM\OneToMany(targetEntity="ApiBundle\Entity\Service", mappedBy="user")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $services;
 
@@ -138,7 +139,7 @@ class User extends BaseUser implements JsonSerializable
     public function __construct()
     {
         parent::__construct();
-        $this->services = new Service();
+//        $this->services = new Service();
     }
 
     /**

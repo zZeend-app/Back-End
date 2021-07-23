@@ -41,6 +41,8 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
           ->orWhere('u.jobTitle Like :keyword')
           ->setParameter('keyword', '%'.$keyword.'%')
           ->orWhere('u.jobDescription Like :keyword')
+          ->setParameter('keyword', '%'.$keyword.'%')
+          ->orWhere('services.service Like :keyword')
           ->setParameter('keyword', '%'.$keyword.'%');
     }
 
