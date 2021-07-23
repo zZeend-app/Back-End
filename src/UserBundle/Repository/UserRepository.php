@@ -10,7 +10,9 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 {
 
     public function GetQueryBuilder(){
-        return $queryBuilder = $this->createQueryBuilder('u');
+        return $queryBuilder = $this->createQueryBuilder('u')
+            ->leftJoin('u.services', 'services')
+            ->addSelect('services');
     }
     public function FindByEmail($email){
         $queryBuilder = $this->createQueryBuilder('u');
@@ -39,7 +41,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
           ->orWhere('u.jobTitle Like :keyword')
           ->setParameter('keyword', '%'.$keyword.'%')
           ->orWhere('u.jobDescription Like :keyword')
-          ->setParameter('keyword', '%'.$keyword.'%');;
+          ->setParameter('keyword', '%'.$keyword.'%');
     }
 
     public function WhereCountryLike(QueryBuilder $queryBuilder, $country){

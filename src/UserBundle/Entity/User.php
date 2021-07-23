@@ -138,7 +138,7 @@ class User extends BaseUser implements JsonSerializable
     public function __construct()
     {
         parent::__construct();
-        $this->services = new ArrayCollection();
+        $this->services = new Service();
     }
 
     /**

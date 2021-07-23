@@ -76,4 +76,16 @@ class RequestRepository extends \Doctrine\ORM\EntityRepository
             ->select('count(r.id)');
     }
 
+    public function RequestStateIsNull(QueryBuilder $queryBuilder){
+        return $queryBuilder
+            ->andWhere('r.accepted is NULL')
+            ->andWhere('r.rejected is NULL');
+    }
+
+    public function WhereUserReceiver(QueryBuilder $queryBuilder, $user){
+        return $queryBuilder
+            ->andWhere('r.receiver = :receiver')
+            ->setParameter('receiver', $user);
+    }
+
 }

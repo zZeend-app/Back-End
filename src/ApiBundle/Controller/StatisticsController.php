@@ -32,17 +32,19 @@ class StatisticsController extends Controller
         $em = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class);
         $qb = $em->GetQueryBuilder();
         $qb = $em->GetCount($qb);
-        $qb = $em->OrWhereUser($qb, $currentUser);
+        $qb = $em->WhereUserReceiver($qb, $currentUser);
+        $qb = $em->RequestStateIsNull($qb);
         $nbRequests = $qb->getQuery()->getSingleScalarResult();
 
-        $em = $this->getDoctrine()->getManager();
-        $RAW_QUERY = 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where request.sender_id = :userId OR request.receiver_id = :userId AND notification.viewed = :flag;';
+        $nbNotifications = 0;
 
-        $statement = $em->getConnection()->prepare($RAW_QUERY);
-        $statement->bindValue('userId', $currentUser->getId());
-        $statement->bindValue('flag', false);
-        $statement->execute();
-        $nbNotifications = count($statement->fetchAll());
+        $nbNotifications = $this->notificationStatistics($currentUser, 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where notification.notification_type_id = 1 AND request.receiver_id = :userId AND notification.viewed = :flag;');
+
+        $nbNotifications_2 = $this->notificationStatistics($currentUser, 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where notification.notification_type_id = 2 AND request.sender_id = :userId AND notification.viewed = :flag;');
+
+        $nbNotifications_3 = $this->notificationStatistics($currentUser, 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where notification.notification_type_id = 3 AND request.sender_id = :userId AND notification.viewed = :flag;');
+
+        $nbNotifications = $nbNotifications + $nbNotifications_2 + $nbNotifications_3;
 
         $em = $this->getDoctrine()->getRepository(PaymentMethod::class);
         $qb = $em->GetQueryBuilder();
@@ -57,6 +59,16 @@ class StatisticsController extends Controller
             "paymentMethods" => intval($nbPaymentMethods));
 
        return new JsonResponse($response);
+    }
+
+    private function notificationStatistics($currentUser, $RAW_QUERY){
+        $em = $this->getDoctrine()->getManager();
+
+        $statement = $em->getConnection()->prepare($RAW_QUERY);
+        $statement->bindValue('userId', $currentUser->getId());
+        $statement->bindValue('flag', false);
+        $statement->execute();
+        return count($statement->fetchAll());
     }
 
 
