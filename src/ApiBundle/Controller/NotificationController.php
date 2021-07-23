@@ -79,4 +79,26 @@ class NotificationController extends Controller
         return new JsonResponse($returnObject);
     }
 
+    public function markAsViewedAction(Request $request){
+        $response = array();
+        $data = $request->getContent();
+
+        $viewedNotifications = json_decode($data, true);
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        for($i = 0; $i < count($viewedNotifications); $i++){
+            $notificationId = $viewedNotifications[$i];
+            $notification = $this->getDoctrine()->getRepository(Notification::class)->find($notificationId);
+            $notification->setViewed(true);
+            $entityManager->persist($notification);
+        }
+
+        $entityManager->flush();
+
+        $response = array("code" => "marked_as_viewed");
+
+        return new JsonResponse($response);
+    }
+
 }

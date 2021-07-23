@@ -2,3 +2,8 @@ ntf-get-all:
     path:     /get-all
     defaults: { _controller: ApiBundle:Notification:getAll }
     methods: [POST]
+
+mark-as-viewed:
+    path:     /mark-as-viewed
+    defaults: { _controller: ApiBundle:Notification:markAsViewed }
+    methods: [PUT]
