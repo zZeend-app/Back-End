@@ -1,0 +1,4 @@
+add-indexing:
+    path:     /create
+    defaults: { _controller: ApiBundle:Indexing:createIndexing }
+    methods: [POST]

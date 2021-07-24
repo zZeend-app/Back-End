@@ -72,6 +72,13 @@ class Post implements JsonSerializable
     private $isProfileRelated;
 
     /**
+     * @var array
+     *
+     * @ORM\Column(name="tags", type="array", length=255, unique=false, nullable=false)
+     */
+    private $tags;
+
+    /**
      * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\Share", inversedBy="posts")
      * @ORM\JoinColumn(name="share_id", referencedColumnName="id")
      */
@@ -237,6 +244,25 @@ class Post implements JsonSerializable
         return $this->share;
     }
 
+    /**
+     * Set tags.
+     *
+     * @return void
+     */
+    public function setTags($tags)
+    {
+        $this->tags = $tags;
+    }
+
+    /**
+     * Get tags.
+     *
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
@@ -290,6 +316,11 @@ class Post implements JsonSerializable
         if(!$entityClass instanceof Post || in_array("isProfileRelated",$include)){
             $json["isProfileRelated"] = $this->isProfileRelated;
         }
+
+        if(!$entityClass instanceof Post || in_array("tags",$include)){
+            $json["tags"] = $this->tags;
+        }
+
 
         if(!$entityClass instanceof Post || in_array("share",$include)){
             $json["share"] = $this->share;

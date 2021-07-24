@@ -104,15 +104,6 @@ class ServiceController extends Controller
         $fromId = $data['fromId'];
         $toId = $data['toId'];
 
-//        $em = $this->getDoctrine()->getManager();
-//        $RAW_QUERY = 'UPDATE service SET service = "vb-a---000wewewewsc" where id = :id;';
-//
-//        $statement = $em->getConnection()->prepare($RAW_QUERY);
-//        $statement->bindValue('id', $fromId);
-//        $statement->execute();
-
-        $values = [];
-
         $currentService = null;
 
         $entityManager = $this->getDoctrine()->getManager();

@@ -69,3 +69,11 @@ share:
 menu-statistics:
     resource: "@ApiBundle/Resources/config/Statistics/routingStatistics.yml"
     prefix:   /statistics
+
+tags:
+    resource: "@ApiBundle/Resources/config/Tags/routingTags.yml"
+    prefix:   /tags
+
+indexing:
+    resource: "@ApiBundle/Resources/config/Indexing/routingIndexing.yml"
+    prefix:   /indexing

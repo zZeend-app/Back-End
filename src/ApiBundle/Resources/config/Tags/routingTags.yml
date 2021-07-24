@@ -1,0 +1,25 @@
+add-tags:
+    path:     /add
+    defaults: { _controller: ApiBundle:Tags:addTags }
+    methods: [POST]
+
+get-all:
+    path:     /get-all
+    defaults: { _controller: ApiBundle:Tags:getAllTags }
+    methods: [GET]
+
+edit-tag:
+    path:     /edit
+    defaults: { _controller: ApiBundle:Tags:editTag }
+    methods: [Post]
+
+delete-tag:
+    path:     /delete
+    defaults: { _controller: ApiBundle:Tags:deleteTag }
+    methods: [Post]
+
+change-position-tag:
+    path:     /change-position
+    defaults: { _controller: ApiBundle:Tags:changePosition }
+    methods: [Post]
+

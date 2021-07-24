@@ -62,6 +62,15 @@ class PostController extends Controller
                 $post->setLink(null);
             }
 
+            if (array_key_exists('tags', $data)) {
+                $tags = $data['tags'];
+                $post->setTags($tags);
+            } else {
+                $post->setLink(null);
+            }
+
+
+
             $post->setShare(null);
             $post->setCreatedAtAutomatically();
 
