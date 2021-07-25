@@ -31,7 +31,7 @@ class Tag implements JsonSerializable
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="services")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="tags")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $user;
@@ -65,8 +65,7 @@ class Tag implements JsonSerializable
     }
 
     /**
-     * Set service.
-     *
+     * Set title.
      *
      */
     public function setTitle($title)

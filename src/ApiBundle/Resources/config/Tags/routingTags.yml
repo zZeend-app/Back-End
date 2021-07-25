@@ -4,19 +4,19 @@ add-tags:
     methods: [POST]
 
 get-all:
-    path:     /get-all
+    path:     /
     defaults: { _controller: ApiBundle:Tags:getAllTags }
     methods: [GET]
 
 edit-tag:
     path:     /edit
     defaults: { _controller: ApiBundle:Tags:editTag }
-    methods: [Post]
+    methods: [PUT]
 
 delete-tag:
-    path:     /delete
+    path:     /{tagId}
     defaults: { _controller: ApiBundle:Tags:deleteTag }
-    methods: [Post]
+    methods: [Delete]
 
 change-position-tag:
     path:     /change-position

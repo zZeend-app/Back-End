@@ -31,14 +31,14 @@ class Indexing implements JsonSerializable
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="services")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="indexings")
      * @ORM\JoinColumn(name="actioned_user_id", referencedColumnName="id")
      */
     private $actionedUser;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\IndexingType", inversedBy="services")
-     * @ORM\JoinColumn(name="actioned_user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\IndexingType", inversedBy="indexings")
+     * @ORM\JoinColumn(name="indexing_type_id", referencedColumnName="id")
      */
     private $indexingType;
 

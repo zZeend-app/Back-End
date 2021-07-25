@@ -51,10 +51,10 @@ class ViewController extends Controller
                 $entityManager->persist($view);
                 $entityManager->flush();
 
-                $response = array("code" => "content_viwed");
+                $response = array("code" => "content_viewed");
 
             } else {
-                $response = array("code" => "already_viwed");
+                $response = array("code" => "already_viewed");
             }
 
         } else {

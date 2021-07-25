@@ -63,6 +63,8 @@ class ServiceController extends Controller
                 $update[] = "service";
 
                 $response = array("updated" => $update);
+            }else{
+                $response = array("updated" => $update);
             }
 
         }else{
@@ -104,13 +106,11 @@ class ServiceController extends Controller
         $fromId = $data['fromId'];
         $toId = $data['toId'];
 
-        $currentService = null;
-
         $entityManager = $this->getDoctrine()->getManager();
 
         $fromService = $this->getDoctrine()->getRepository(Service::class)->find($fromId);
         $toService = $this->getDoctrine()->getRepository(Service::class)->find($toId);
-        $cool = '';
+
         if ($fromService !== null && $toService !== null) {
 
             $services = $this->getDoctrine()->getRepository(Service::class)->findAll();
@@ -120,7 +120,6 @@ class ServiceController extends Controller
             }
 
             $temp_to = null;
-            $temp_fromId = 0;
             $precedent = null;
 
             for($i = 0; $i < count($services); $i++){
@@ -138,13 +137,11 @@ class ServiceController extends Controller
 
                                 if($services[$i]->getId() == $fromId){
 
-                                    $values[] = $precedent;
                                     $clonedService = clone $services[$i];
                                     $services[$i]->setService($precedent->getService());
                                     $entityManager->persist($services[$i]);
                                     $entityManager->flush();
 
-                                    $temp_from = $services[$i]->getId();
                                     $entityManager = $this->getDoctrine()->getManager();
                                     $toObject = $this->getDoctrine()->getRepository(Service::class)->find($toId);
                                     $toObject->setService($clonedService->getService());
@@ -174,6 +171,21 @@ class ServiceController extends Controller
         }else{
             $response = array("code" => "action_not_allowed");
         }
+
+        return new JsonResponse($response);
+
+    }
+
+    public function getAllServicesAction(){
+
+        $response = array();
+
+        $currentUser = $this->getUser();
+
+        $em = $this->getDoctrine()->getRepository(Service::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereUser($qb, $currentUser);
+        $response = $qb->getQuery()->getResult();
 
         return new JsonResponse($response);
 

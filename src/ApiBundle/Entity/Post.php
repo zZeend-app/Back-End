@@ -74,7 +74,7 @@ class Post implements JsonSerializable
     /**
      * @var array
      *
-     * @ORM\Column(name="tags", type="array", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="tags", type="array", length=255, unique=false, nullable=true)
      */
     private $tags;
 

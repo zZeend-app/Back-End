@@ -3,6 +3,11 @@ service-add:
     defaults: { _controller: ApiBundle:Service:addServices }
     methods: [POST]
 
+service-get-all:
+    path:     /get-all
+    defaults: { _controller: ApiBundle:Service:getAllServices }
+    methods: [Get]
+
 service-edit:
     path:     /edit
     defaults: { _controller: ApiBundle:Service:editService }
