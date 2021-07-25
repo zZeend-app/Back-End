@@ -92,6 +92,13 @@ class Zzeend implements JsonSerializable
     private $done;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="canceled", type="boolean", unique=false, nullable=false)
+     */
+    private $canceled;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
@@ -320,6 +327,29 @@ class Zzeend implements JsonSerializable
     }
 
     /**
+     * Set canceled.
+     *
+     * @param boolean $canceled
+     *
+     */
+    public function setCanceled(bool $canceled)
+    {
+        $this->canceled = $canceled;
+
+    }
+
+
+    /**
+     * Get canceled.
+     *
+     * @return boolean
+     */
+    public function getCanceled()
+    {
+        return $this->canceled;
+    }
+
+    /**
      * Set paymentLimitDate.
      *
      * @param datetime
@@ -434,6 +464,10 @@ class Zzeend implements JsonSerializable
 
         if(!$entityClass instanceof Zzeend || in_array("done",$include)){
             $json["done"] = $this->done;
+        }
+
+        if(!$entityClass instanceof Zzeend || in_array("canceled",$include)){
+            $json["canceled"] = $this->canceled;
         }
 
         if(!$entityClass instanceof Zzeend || in_array("createdAt",$include)){

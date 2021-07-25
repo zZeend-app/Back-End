@@ -19,7 +19,8 @@ use UserBundle\Entity\User;
 class ZzeendController extends Controller
 {
 
-    public function createAction(Request $request){
+    public function createAction(Request $request)
+    {
         $response = array();
 
         $data = $request->getContent();
@@ -34,7 +35,7 @@ class ZzeendController extends Controller
 
         $currenetUser = $this->getUser();
 
-        if($currenetUser->isGranted('ROLE_OWNER')){
+        if ($currenetUser->isGranted('ROLE_OWNER')) {
             $userAssigned = $this->getDoctrine()->getRepository(User::class)->find($user_assigned_id);
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -49,6 +50,7 @@ class ZzeendController extends Controller
             $zZeend->setCreatedAtAutomatically();
             $zZeend->setUpdatedAtAutomatically();
             $zZeend->setDone(false);
+            $zZeend->setCanceled(false);
             $zZeend->setTransaction(null);
 
             $zZeendStatus = $this->getDoctrine()->getRepository(ZzeendStatus::class)->find(1);
@@ -59,15 +61,16 @@ class ZzeendController extends Controller
 
             $response = array("code" => $zZeend->getId());
 
-        }else{
+        } else {
             $response = array('code' => 'action_not_allowed');
         }
 
-       return  new JsonResponse($response);
+        return new JsonResponse($response);
 
     }
 
-    public function getZzeendsAction(Request $request){
+    public function getZzeendsAction(Request $request)
+    {
 
         $response = array();
         $currenetUser = $this->getUser();
@@ -87,7 +90,7 @@ class ZzeendController extends Controller
 
         $status = $this->getDoctrine()->getRepository(ZzeendStatus::class)->find($zZeendStatusId);
 
-        if($status !== null) {
+        if ($status !== null) {
 
             $em = $this->getDoctrine()->getRepository(Zzeend::class);
             $qb = $em->GetQueryBuilder();
@@ -96,7 +99,7 @@ class ZzeendController extends Controller
             $qb = $em->OrderById($qb);
             $zZeends = $jsonManager->setQueryLimit($qb, $filtersInclude);
 
-        }else{
+        } else {
             $zZeends = [];
         }
 
@@ -104,7 +107,8 @@ class ZzeendController extends Controller
 
     }
 
-    public function getZzeendAction($ZzeendId){
+    public function getZzeendAction($ZzeendId)
+    {
 
         $response = array();
         $currenetUser = $this->getUser();
@@ -115,7 +119,8 @@ class ZzeendController extends Controller
 
     }
 
-    public function paymentAction(Request $request){
+    public function paymentAction(Request $request)
+    {
         $response = array();
 
         $data = $request->getContent();
@@ -133,7 +138,7 @@ class ZzeendController extends Controller
 
         $paymentType = $this->getDoctrine()->getRepository(PaymentType::class)->find($payment_type);
 
-        if($paymentType){
+        if ($paymentType) {
 
             $entityManager = $this->getDoctrine()->getManager();
             $transaction = new Transaction();
@@ -149,25 +154,26 @@ class ZzeendController extends Controller
             $entityManager->persist($transaction);
 
             $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($zZeend_id);
-            if($zZeend){
+            if ($zZeend) {
                 $zZeend->setTransaction($transaction);
                 $zZeend->setUpdatedAtAutomatically();
 
                 $entityManager->persist($zZeend);
                 $entityManager->flush();
                 $response = array("code" => "payment_success");
-            }else{
+            } else {
                 $response = array("code" => "action_not_allowed");
             }
 
-        }else{
+        } else {
             $response = array("code" => "action_not_allowed");
         }
 
         return new JsonResponse($response);
     }
 
-    public function doneAction(Request $request){
+    public function doneAction(Request $request)
+    {
 
         $zZeendCommission = 5;
         $response = array();
@@ -179,7 +185,7 @@ class ZzeendController extends Controller
 
 
         $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($zZeend_id);
-        if($zZeend) {
+        if ($zZeend) {
 
             $entityManager = $this->getDoctrine()->getManager();
 
@@ -193,7 +199,7 @@ class ZzeendController extends Controller
             $finance = new Finance();
             $finance->setUser($mainZzeendUser);
 
-            $zZeendCost  = $zZeendCost - $zZeendCommission;
+            $zZeendCost = $zZeendCost - $zZeendCommission;
             //todo trsansfer the 5$ to zZeend account (stripe)
 
             $financialStatus = $this->getDoctrine()->getRepository(FinancialStatus::class)->find(1);
@@ -215,7 +221,7 @@ class ZzeendController extends Controller
 
             $event = $this->getDoctrine()->getRepository(Event::class)->findOneBy(['zZeend', $zZeend]);
 
-            if($event !== null) {
+            if ($event !== null) {
 
                 $event->setActive(false);
 
@@ -228,7 +234,111 @@ class ZzeendController extends Controller
 
             $response = array("code" => "zZeend_done");
 
-        }else{
+        } else {
+            $response = array("code" => "action_not_allowed");
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function cancelAction(Request $request)
+    {
+        $response = array();
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $zZeendId = $data['zZeendId'];
+
+        $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($zZeendId);
+
+        if ($zZeend !== null) {
+
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $zZeend->setCanceled(true);
+
+            $entityManager->persist($zZeend);
+            $entityManager->flush();
+
+            //todo not forgot to send back client money
+
+            $response = array("code" => "zZeend_canceled");
+
+        } else {
+            $response = array("code" => "action_not_allowed");
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function editAction(Request $request)
+    {
+        $response = array();
+        $update = array();
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $zZeendId = $data['zZeendId'];
+
+        $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($zZeendId);
+
+        if ($zZeend !== null) {
+
+            $entityManager = $this->getDoctrine()->getManager();
+
+            if (array_key_exists("title", $data)) {
+                $title = $data['title'];
+                if ($zZeend->getTitle() !== $title) {
+                    $zZeend->setTitle($title);
+                    $entityManager->persist($zZeend);
+                    $update[] = "title";
+                }
+            }
+
+            if (array_key_exists("cost", $data)) {
+                $cost = $data['cost'];
+                if ($zZeend->getCost() !== $cost) {
+                    $zZeend->setCost($cost);
+                    $entityManager->persist($zZeend);
+                    $update[] = "cost";
+                }
+            }
+
+            if (array_key_exists("from", $data)) {
+                $from = $data['from'];
+                if ($zZeend->getFrom() !== new \DateTime($from)) {
+                    $zZeend->setFrom(new \DateTime($from));
+                    $entityManager->persist($zZeend);
+                    $update[] = "from";
+                }
+            }
+
+            if (array_key_exists("to", $data)) {
+                $to = $data['to'];
+                if ($zZeend->getTo() !== new \DateTime($to)) {
+                    $zZeend->setTo(new \DateTime($to));
+                    $entityManager->persist($zZeend);
+                    $update[] = "to";
+                }
+            }
+
+            if (array_key_exists("payment_limit_date", $data)) {
+                $paymentLimitDate = $data['payment_limit_date'];
+                if ($zZeend->getPaymentLimitDate() !== new \DateTime($paymentLimitDate)) {
+                    $zZeend->setPaymentLimitDate(new \DateTime($paymentLimitDate));
+                    $entityManager->persist($zZeend);
+                    $update[] = "payment_limit_date";
+                }
+            }
+
+            $entityManager->flush();
+
+
+            $response = array("updated" => $update);
+
+        } else {
             $response = array("code" => "action_not_allowed");
         }
 

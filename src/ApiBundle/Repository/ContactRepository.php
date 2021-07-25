@@ -20,6 +20,13 @@ class ContactRepository extends \Doctrine\ORM\EntityRepository
             ->addOrderBy('c.secondUser', 'DESC');
     }
 
+    public function WhereSecondUser(QueryBuilder $queryBuilder, $currentUser, $secondUser){
+        return $queryBuilder
+            ->Where('c.mainUser = :mainUser and c.secondUser = :secondUser or c.mainUser = :secondUser and c.secondUser = :mainUser')
+            ->setParameter('mainUser', $currentUser)
+            ->setParameter('secondUser', $secondUser);
+    }
+
     public function WhereContactId(QueryBuilder $queryBuilder, $contactId){
         return $queryBuilder
             ->andWhere('c.id = :contactId')

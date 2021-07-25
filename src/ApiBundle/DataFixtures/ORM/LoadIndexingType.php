@@ -15,7 +15,8 @@ class LoadIndexingType implements FixtureInterface
 
         $indexings = array(
             "Post",
-            'Profile'
+            'Profile',
+            'Story'
         );
 
         foreach ($indexings as $indexing) {

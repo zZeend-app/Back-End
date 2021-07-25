@@ -22,3 +22,13 @@ finalize:
     path:     /finalize
     defaults: { _controller: ApiBundle:Zzeend:done }
     methods: [POST]
+
+znd-cancel:
+    path:     /cancel
+    defaults: { _controller: ApiBundle:Zzeend:cancel }
+    methods: [POST]
+
+znd-edit:
+    path:     /edit
+    defaults: { _controller: ApiBundle:Zzeend:edit }
+    methods: [POST]

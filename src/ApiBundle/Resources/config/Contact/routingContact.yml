@@ -2,3 +2,8 @@ conatct:
     path:     /get
     defaults: { _controller: ApiBundle:Contact:getContacts }
     methods: [POST]
+
+second_user_contact:
+    path:     /{secondUserId}
+    defaults: { _controller: ApiBundle:Contact:getContactBySecondUserId }
+    methods: [GET]
