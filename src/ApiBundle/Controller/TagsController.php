@@ -27,13 +27,15 @@ class TagsController extends Controller
         for ($i = 0; $i < count($tags); $i++) {
             $title = $tags[$i];
 
-            $tag = new Tag();
-            $tag->setUser($currentUser);
-            $tag->setTitle($title);
-            $tag->setCreatedAtAutomatically();
-            $tag->setUpdatedAtAutomatically();
+            if(trim($tags[$i]) !== ''){
+                $tag = new Tag();
+                $tag->setUser($currentUser);
+                $tag->setTitle($title);
+                $tag->setCreatedAtAutomatically();
+                $tag->setUpdatedAtAutomatically();
 
-            $entityManager->persist($tag);
+                $entityManager->persist($tag);
+            }
 
         }
 
