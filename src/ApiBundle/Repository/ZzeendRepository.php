@@ -26,6 +26,13 @@ class ZzeendRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('status', $status);
     }
 
+    public function WhereCanceled(QueryBuilder $queryBuilder, $flag){
+        return $queryBuilder
+            ->andWhere('z.canceled = :flag')
+            ->setParameter('flag', $flag);
+    }
+
+
     public function OrderById(QueryBuilder $queryBuilder){
         return $queryBuilder
             ->addOrderBy('z.id', 'DESC');
