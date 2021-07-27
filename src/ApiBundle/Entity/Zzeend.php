@@ -251,9 +251,9 @@ class Zzeend implements JsonSerializable
      *
      * @return User
      */
-    public function getUserAssigned($userAssigned)
+    public function getUserAssigned()
     {
-        return $this->userAssigned = $userAssigned;
+        return $this->userAssigned;
     }
 
     /**

@@ -65,9 +65,10 @@ class StatisticsController extends Controller
                 $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($relatedId);
 
                 $zZeendCreator = $zZeend->getUser();
+                $zZeendAssignedUser = $zZeend->getUserAssigned();
 
                 //if am not the one who created the current so, add this notification
-                if($zZeendCreator !== $currentUser){
+                if($zZeendCreator !== $currentUser && $zZeendAssignedUser == $currentUser){
                     $nbNotifications++;
                 }
 

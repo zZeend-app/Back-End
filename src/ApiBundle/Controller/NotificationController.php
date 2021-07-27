@@ -39,7 +39,6 @@ class NotificationController extends Controller
 
         $em = $this->getDoctrine()->getRepository(Notification::class);
         $qb = $em->GetQueryBuilder();
-        $qb = $em->WhereViewed($qb, false);
 
         if (array_key_exists("order", $data)) {
             $qb = $em->OrderByJson($qb, $data["order"]);
@@ -60,11 +59,15 @@ class NotificationController extends Controller
 
                 $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($relatedId);
 
-                if($zZeend !== null && $zZeend->getUser() !== $currentUser){
+                $zZeendAssignedUser = $zZeend->getUserAssigned();
+
+
+                if($zZeend !== null && $zZeend->getUser() !== $currentUser && $zZeendAssignedUser == $this->getUser()){
                     $returnObject[] = array("id" => $notification->getId(),
                         "notificationType" => $notificationType,
                         "relatedObject" => $zZeend,
-                        "viewed" => $notification->getViewed());
+                        "viewed" => $notification->getViewed(),
+                        "createdAt" => $notification->getCreatedAt());
                 }
 
             }
