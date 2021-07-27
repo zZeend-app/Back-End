@@ -34,17 +34,6 @@ class RequestController extends Controller
         $entityManager->persist($zZeendRequest);
         $entityManager->flush();
 
-        $notificationType = $this->getDoctrine()->getRepository(NotificationType::class)->find(1);
-
-        $entityManager = $this->getDoctrine()->getManager();
-        $notification = new Notification();
-        $notification->setRelatedId($zZeendRequest->getId());
-        $notification->setCreatedAtAutomatically();
-        $notification->setViewed(false);
-        $notification->setNotificationType($notificationType);
-        $entityManager->persist($notification);
-        $entityManager->flush();
-
         $response = array('code' => 'request_sent');
 
         return new JsonResponse($response);

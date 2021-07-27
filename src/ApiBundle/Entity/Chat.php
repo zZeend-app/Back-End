@@ -68,6 +68,13 @@ class Chat implements JsonSerializable
      */
     private $share;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="viewed", type="boolean", length=255, unique=false, nullable=true)
+     */
+    private $viewed;
+
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -111,11 +118,32 @@ class Chat implements JsonSerializable
     /**
      * Get share.
      *
-     * @return Share
+     * @return Chat
      */
     public function getShare()
     {
         return $this->share;
+    }
+
+    /**
+     * Set viewed.
+     *
+     * @param $viewed
+     *
+     */
+    public function setViewed($viewed)
+    {
+        $this->viewed = $viewed;
+    }
+
+    /**
+     * Get viewed.
+     *
+     * @return boolean
+     */
+    public function getViewed()
+    {
+        return $this->viewed;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -248,6 +276,11 @@ class Chat implements JsonSerializable
         if (!$entityClass instanceof Chat || in_array("share", $include)) {
             $json["share"] = $this->share;
         }
+
+        if (!$entityClass instanceof Chat || in_array("viewed", $include)) {
+            $json["viewed"] = $this->viewed;
+        }
+
 
         if (!$entityClass instanceof Chat || in_array("createdAt", $include)) {
             $json["createdAt"] = $this->createdAt;

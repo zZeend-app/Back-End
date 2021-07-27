@@ -4,12 +4,15 @@
 namespace ApiBundle\Controller;
 
 
+use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
 use ApiBundle\Entity\Like;
 use ApiBundle\Entity\Notification;
 use ApiBundle\Entity\PaymentMethod;
 use ApiBundle\Entity\Post;
 use ApiBundle\Entity\Zzeend;
+use ApiBundle\Entity\ZzeendStatus;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,8 +28,10 @@ class StatisticsController extends Controller
 
         $em = $this->getDoctrine()->getRepository(Zzeend::class);
         $qb = $em->GetQueryBuilder();
-        $qb = $em->GetCount($qb);
+
+        $status = $this->getDoctrine()->getRepository(ZzeendStatus::class)->find(1);
         $qb = $em->OrWhereUser($qb, $currentUser);
+        $qb = $em->GetCount($qb, false, $status);
         $nbZzeends = $qb->getQuery()->getSingleScalarResult();
 
         $em = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class);
@@ -36,15 +41,42 @@ class StatisticsController extends Controller
         $qb = $em->RequestStateIsNull($qb);
         $nbRequests = $qb->getQuery()->getSingleScalarResult();
 
+
+        $em = $this->getDoctrine()->getRepository(Notification::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereViewed($qb, false);
+
+        $notifications = $qb->getQuery()->getResult();
+
         $nbNotifications = 0;
 
-        $nbNotifications = $this->notificationStatistics($currentUser, 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where notification.notification_type_id = 1 AND request.receiver_id = :userId AND notification.viewed = :flag;');
+        for($i = 0; $i < count($notifications); $i++){
 
-        $nbNotifications_2 = $this->notificationStatistics($currentUser, 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where notification.notification_type_id = 2 AND request.sender_id = :userId AND notification.viewed = :flag;');
+            $notification = $notifications[$i];
 
-        $nbNotifications_3 = $this->notificationStatistics($currentUser, 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where notification.notification_type_id = 3 AND request.sender_id = :userId AND notification.viewed = :flag;');
+            $notificationType = $notification->getNotificationType();
+            $notificationTypeId = $notificationType->getId();
 
-        $nbNotifications = $nbNotifications + $nbNotifications_2 + $nbNotifications_3;
+            $relatedId = $notification->getRelatedId();
+
+            //zZeend notification
+            if($notificationTypeId == 1 || $notificationTypeId == 2 || $notificationTypeId == 3 || $notificationTypeId == 4 || $notificationTypeId == 5){
+
+                $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($relatedId);
+
+                $zZeendCreator = $zZeend->getUser();
+
+                //if am not the one who created the current so, add this notification
+                if($zZeendCreator !== $currentUser){
+                    $nbNotifications++;
+                }
+
+
+            }
+
+
+        }
+
 
         $em = $this->getDoctrine()->getRepository(PaymentMethod::class);
         $qb = $em->GetQueryBuilder();
@@ -52,24 +84,19 @@ class StatisticsController extends Controller
         $qb = $em->WhereUser($qb, $currentUser);
         $nbPaymentMethods = $qb->getQuery()->getSingleScalarResult();
 
+        $em = $this->getDoctrine()->getRepository(Chat::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->GetCount($qb, false, $currentUser);
+        $nbNewChats = $qb->getQuery()->getResult();
+
         $response = array("zZeends" => intval($nbZzeends),
             "notifications" => intval($nbNotifications),
             "requests" => intval($nbRequests),
             "events" => '',
-            "paymentMethods" => intval($nbPaymentMethods));
+            "paymentMethods" => intval($nbPaymentMethods),
+            "chats" => intval($nbNewChats));
 
        return new JsonResponse($response);
     }
-
-    private function notificationStatistics($currentUser, $RAW_QUERY){
-        $em = $this->getDoctrine()->getManager();
-
-        $statement = $em->getConnection()->prepare($RAW_QUERY);
-        $statement->bindValue('userId', $currentUser->getId());
-        $statement->bindValue('flag', false);
-        $statement->execute();
-        return count($statement->fetchAll());
-    }
-
 
 }

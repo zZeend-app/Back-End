@@ -12,3 +12,8 @@ contact:
     path:     /contact
     defaults: { _controller: ApiBundle:Chat:getChatContact }
     methods: [POST]
+
+chat-mark-as-viewed:
+    path:     /mark-as-viewed
+    defaults: { _controller: ApiBundle:Chat:markAsViewed }
+    methods: [PUT]

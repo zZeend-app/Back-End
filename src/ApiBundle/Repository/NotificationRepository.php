@@ -38,6 +38,23 @@ class NotificationRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('flag', false);
     }
 
+    public function WhereViewed(QueryBuilder $queryBuilder, $viewedFlag){
+        return $queryBuilder
+            ->andWhere('n.viewed = :viewed')
+            ->setParameter('viewed', $viewedFlag);
+    }
+
+    public function OrderByJson(QueryBuilder $queryBuilder, $data)
+    {
+        foreach ($data as $order) {
+            foreach ($order as $key => $value) {
+                $queryBuilder = $queryBuilder->addOrderBy("n." . $key, $value);
+            }
+        }
+
+        return $queryBuilder;
+    }
+
 
 
 }

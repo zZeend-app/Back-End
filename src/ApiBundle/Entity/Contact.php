@@ -38,6 +38,12 @@ class Contact implements JsonSerializable
     private $mainUser;
 
     /**
+     * @ORM\OneToMany(targetEntity="ApiBundle\Entity\Contact", mappedBy="user")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $chats;
+
+    /**
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="request")
      * @ORM\JoinColumn(name="second_user_id", referencedColumnName="id")
      */

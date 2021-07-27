@@ -19,7 +19,6 @@ use UserBundle\Entity\User;
 
 class KernelRequestListener
 {
-    private $em;
     private $api_keys;
 
 

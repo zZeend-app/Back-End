@@ -59,6 +59,10 @@ class ZzeendController extends Controller
             $entityManager->persist($zZeend);
             $entityManager->flush();
 
+            $createNotificationManager = $this->get("ionicapi.NotificationManager");
+            $createNotificationManager->newNotification(1, $zZeend->getId());
+
+
             $response = array("code" => $zZeend->getId());
 
         } else {
@@ -160,6 +164,10 @@ class ZzeendController extends Controller
 
                 $entityManager->persist($zZeend);
                 $entityManager->flush();
+
+                $createNotificationManager = $this->get("ionicapi.NotificationManager");
+                $createNotificationManager->newNotification(2, $zZeend->getId());
+
                 $response = array("code" => "payment_success");
             } else {
                 $response = array("code" => "action_not_allowed");
@@ -230,6 +238,9 @@ class ZzeendController extends Controller
                 $entityManager->persist($event);
                 $entityManager->flush();
 
+                $createNotificationManager = $this->get("ionicapi.NotificationManager");
+                $createNotificationManager->newNotification(3, $zZeend->getId());
+
             }
 
             $response = array("code" => "zZeend_done");
@@ -263,6 +274,9 @@ class ZzeendController extends Controller
 
             //todo not forgot to send back client money
 
+            $createNotificationManager = $this->get("ionicapi.NotificationManager");
+            $createNotificationManager->newNotification(4, $zZeend->getId());
+
             $response = array("code" => "zZeend_canceled");
 
         } else {
@@ -276,6 +290,8 @@ class ZzeendController extends Controller
     {
         $response = array();
         $update = array();
+
+        $atLeastOne = false;
 
         $data = $request->getContent();
         $data = json_decode($data, true);
@@ -294,6 +310,7 @@ class ZzeendController extends Controller
                     $zZeend->setTitle($title);
                     $entityManager->persist($zZeend);
                     $update[] = "title";
+                    $atLeastOne = true;
                 }
             }
 
@@ -303,6 +320,7 @@ class ZzeendController extends Controller
                     $zZeend->setCost($cost);
                     $entityManager->persist($zZeend);
                     $update[] = "cost";
+                    $atLeastOne = true;
                 }
             }
 
@@ -312,6 +330,7 @@ class ZzeendController extends Controller
                     $zZeend->setFrom(new \DateTime($from));
                     $entityManager->persist($zZeend);
                     $update[] = "from";
+                    $atLeastOne = true;
                 }
             }
 
@@ -321,6 +340,7 @@ class ZzeendController extends Controller
                     $zZeend->setTo(new \DateTime($to));
                     $entityManager->persist($zZeend);
                     $update[] = "to";
+                    $atLeastOne = true;
                 }
             }
 
@@ -330,8 +350,17 @@ class ZzeendController extends Controller
                     $zZeend->setPaymentLimitDate(new \DateTime($paymentLimitDate));
                     $entityManager->persist($zZeend);
                     $update[] = "payment_limit_date";
+                    $atLeastOne = true;
                 }
             }
+
+            if($atLeastOne){
+
+                $createNotificationManager = $this->get("ionicapi.NotificationManager");
+                $createNotificationManager->newNotification(5, $zZeend->getId());
+
+            }
+
 
             $entityManager->flush();
 

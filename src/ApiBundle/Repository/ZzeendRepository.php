@@ -12,6 +12,12 @@ class ZzeendRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder = $this->createQueryBuilder('z');
     }
 
+    public function WhereZzeendId(QueryBuilder $queryBuilder, $zZeendId){
+        return $queryBuilder
+            ->andWhere('z.id = :id')
+            ->setParameter('id', $zZeendId);
+    }
+
     public function OrWhereUser(QueryBuilder $queryBuilder, $user){
         return $queryBuilder
             ->orWhere('z.user = :user')
@@ -38,10 +44,14 @@ class ZzeendRepository extends \Doctrine\ORM\EntityRepository
             ->addOrderBy('z.id', 'DESC');
     }
 
-    public function GetCount(QueryBuilder $queryBuilder)
+    public function GetCount(QueryBuilder $queryBuilder, $flag, $status)
     {
         return $queryBuilder
-            ->select('count(z.id)');
+            ->select('count(z.id)')
+            ->andWhere('z.canceled = :canceledFlag')
+            ->setParameter('canceledFlag', $flag)
+            ->andWhere('z.status = :status')
+            ->setParameter('status', $status);
     }
 
 

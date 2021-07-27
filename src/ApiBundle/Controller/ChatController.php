@@ -7,8 +7,10 @@ namespace ApiBundle\Controller;
 use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
 use ApiBundle\Entity\Like;
+use ApiBundle\Entity\Notification;
 use ApiBundle\Entity\Post;
 use ApiBundle\Entity\View;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,6 +44,7 @@ class ChatController extends Controller
             $chat->setCreatedAtAutomatically();
             $chat->setFilePath(null);
             $chat->setFileType(null);
+            $chat->setViewed(false);
             $currentUser = $this->getUser();
             $chat->setUser($currentUser);
             $chat->setShare(null);
@@ -168,12 +171,52 @@ class ChatController extends Controller
         for ($i = 0; $i < count($chatContactIds); $i++) {
             $chatContactId = intval($chatContactIds[$i]["contact_id"]);
 
-            $contacts[] = $this->getDoctrine()->getRepository(Contact::class)->find($chatContactId);
+            $contact = $this->getDoctrine()->getRepository(Contact::class)->find($chatContactId);
 
+            $em = $this->getDoctrine()->getRepository(Chat::class);
+            $qb = $em->GetQueryBuilder();
+            $qb = $em->GetCountForEachChatContact($qb, $contact, false);
+
+            $nbUnViewed = $qb->getQuery()->getSingleScalarResult();
+
+            $contacts[] = array( "contact" => $contact, "nbUnViewed" => intval($nbUnViewed));
         }
 
 
         return new JsonResponse($contacts);
+    }
+
+    public function markAsViewedAction(Request $request){
+        $response = array();
+        $data = $request->getContent();
+
+        $data = json_decode($data, true);
+
+        $contactId = $data['contactId'];
+
+        $contact = $this->getDoctrine()->getRepository(Contact::class)->find($contactId);
+
+        if($contact !== null){
+
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $em = $this->getDoctrine()->getManager();
+            $RAW_QUERY = 'UPDATE chat SET chat.viewed = true WHERE chat.contact_id = :contactId;';
+
+            $statement = $em->getConnection()->prepare($RAW_QUERY);
+            $statement->bindValue('contactId', $contactId);
+            $statement->execute();
+
+
+            $response = array("code" => "marked_as_viewed");
+
+        }else{
+
+            $response = array("code" => "action_no_allowed");
+
+        }
+
+        return new JsonResponse($response);
     }
 
 

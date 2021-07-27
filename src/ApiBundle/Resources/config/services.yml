@@ -6,3 +6,7 @@ services:
     ionicapi.jsonManager:
       class: ApiBundle\Manager\JsonManager
       arguments: [ 11 ]
+
+    ionicapi.notificationManager:
+      class: ApiBundle\Manager\NotificationManager
+      arguments: [ "@doctrine.orm.entity_manager" ]

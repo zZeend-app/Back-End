@@ -4,8 +4,11 @@
 namespace ApiBundle\Controller;
 
 
+use ApiBundle\Entity\Chat;
+use ApiBundle\Entity\Contact;
 use ApiBundle\Entity\Notification;
 use ApiBundle\Entity\NotificationType;
+use ApiBundle\Entity\Zzeend;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +24,6 @@ class NotificationController extends Controller
         $currentUser = $this->getUser();
 
         $returnObject = array();
-        $requestObject = array();
 
         $data = $request->getContent();
 
@@ -35,46 +37,41 @@ class NotificationController extends Controller
         //get restriction
         $filtersInclude = $data["filters"]["include"];
 
-        $count = $filtersInclude['count'];
-        $offset = $filtersInclude['offset'];
+        $em = $this->getDoctrine()->getRepository(Notification::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereViewed($qb, false);
 
-        $limit = $offset + 19;
+        if (array_key_exists("order", $data)) {
+            $qb = $em->OrderByJson($qb, $data["order"]);
+        }
+        $notifications = $jsonManager->setQueryLimit($qb, $filtersInclude);
 
-                $em = $this->getDoctrine()->getManager();
+        for($i = 0; $i < count($notifications); $i++){
 
-                $RAW_QUERY = 'SELECT notification.id, notification.viewed, request.sender_id, request.receiver_id, request.accepted, request.rejected, notification.created_at as notification_created_at, request.created_at as request_created_at, notification.notification_type_id FROM request INNER JOIN notification ON request.id = notification.related_id where request.sender_id = :userId OR request.receiver_id = :userId ORDER BY notification.id DESC LIMIT '.$offset.', '.$limit.';';
+            $notification = $notifications[$i];
 
-                $statement = $em->getConnection()->prepare($RAW_QUERY);
-                $statement->bindValue('userId', $currentUser->getId());
-                $statement->execute();
+            $notificationType = $notification->getNotificationType();
+            $notificationTypeId = $notificationType->getId();
 
-                $requests = $statement->fetchAll();
+            $relatedId = $notification->getRelatedId();
 
-                for ($i = 0; $i < count($requests); $i++) {
+            //zZeend notification
+            if($notificationTypeId == 1 || $notificationTypeId == 2 || $notificationTypeId == 3 || $notificationTypeId == 4 || $notificationTypeId == 5){
 
-                    $request = $requests[$i];
+                $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($relatedId);
 
-                    $sender = $this->getDoctrine()->getRepository(User::class)->find(intval($request['sender_id']));
-                    $receiver = $this->getDoctrine()->getRepository(User::class)->find(intval($request['receiver_id']));
-                    $notificationType = $this->getDoctrine()->getRepository(NotificationType::class)->find(intval($request['notification_type_id']));
-
-                    $requestObject = array("id" => intval($request['id']),
-                        "sender" => $sender,
-                        "receiver" => $receiver,
-                        "accepted" => boolval($request['accepted']),
-                        "rejected" => boolval($request['rejected']),
-                        "createdAt" => array("date" => $request['request_created_at'],
-                            "timezone_type" => null,
-                            "timezone" => null));
-
-                    $returnObject[] = array("id" => $request['id'],
+                if($zZeend !== null && $zZeend->getUser() !== $currentUser){
+                    $returnObject[] = array("id" => $notification->getId(),
                         "notificationType" => $notificationType,
-                        "request" => $requestObject,
-                        "viewed" => boolval($request['viewed']),
-                        "createdAt" => array("date" => $request['notification_created_at'],
-                            "timezone_type" => null,
-                            "timezone" => null));
+                        "relatedObject" => $zZeend,
+                        "viewed" => $notification->getViewed());
                 }
+
+            }
+
+
+        }
+
 
         return new JsonResponse($returnObject);
     }
@@ -90,8 +87,15 @@ class NotificationController extends Controller
         for($i = 0; $i < count($viewedNotifications); $i++){
             $notificationId = $viewedNotifications[$i];
             $notification = $this->getDoctrine()->getRepository(Notification::class)->find($notificationId);
-            $notification->setViewed(true);
-            $entityManager->persist($notification);
+
+            if($notification !== null){
+                $notification->setViewed(true);
+                $entityManager->persist($notification);
+            }else{
+                $response = array("code" => "action_not_allowed");
+                return new JsonResponse($response);
+            }
+
         }
 
         $entityManager->flush();
