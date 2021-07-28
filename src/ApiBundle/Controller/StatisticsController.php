@@ -67,11 +67,32 @@ class StatisticsController extends Controller
                 $zZeendCreator = $zZeend->getUser();
                 $zZeendAssignedUser = $zZeend->getUserAssigned();
 
-                //if am not the one who created the current so, add this notification
-                if($zZeendCreator !== $currentUser && $zZeendAssignedUser == $currentUser){
-                    $nbNotifications++;
+                if ($notificationTypeId == 1 || $notificationTypeId == 4 || $notificationTypeId == 5) {
+
+                    //if am not the one who created the current so, add this notification
+                    if($zZeendCreator !== $currentUser && $zZeendAssignedUser == $currentUser){
+                        $nbNotifications++;
+                    }
+
+                }else{
+
+                    if($zZeendCreator === $currentUser && $zZeendAssignedUser !== $currentUser){
+                        $nbNotifications++;
+                    }
                 }
 
+
+
+            } // request notification
+            else if($notificationTypeId == 6 || $notificationTypeId == 7){
+
+                $request = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class)->find($relatedId);
+
+                $sender = $request->getSender();
+
+                if($sender == $currentUser){
+                    $nbNotifications++;
+                }
 
             }
 
@@ -85,17 +106,42 @@ class StatisticsController extends Controller
         $qb = $em->WhereUser($qb, $currentUser);
         $nbPaymentMethods = $qb->getQuery()->getSingleScalarResult();
 
-        $em = $this->getDoctrine()->getRepository(Chat::class);
-        $qb = $em->GetQueryBuilder();
-        $qb = $em->GetCount($qb, false, $currentUser);
-        $nbNewChats = $qb->getQuery()->getResult();
+
+
+        $nbUnViewed = 0;
+        $em = $this->getDoctrine()->getManager();
+        $RAW_QUERY = 'SELECT chat.contact_id FROM chat INNER JOIN contact WHERE (contact.main_user_id = :main_user_id OR contact.second_user_id = :main_user_id) AND chat.contact_id = contact.id GROUP BY chat.contact_id ORDER BY chat.id;';
+
+        $statement = $em->getConnection()->prepare($RAW_QUERY);
+        $statement->bindValue('main_user_id', $currentUser->getId());
+        $statement->execute();
+
+        $chatContactIds = $statement->fetchAll();
+
+        $unViewedChatContact = 0;
+        for ($i = 0; $i < count($chatContactIds); $i++) {
+            $chatContactId = intval($chatContactIds[$i]["contact_id"]);
+
+            $contact = $this->getDoctrine()->getRepository(Contact::class)->find($chatContactId);
+
+            $em = $this->getDoctrine()->getRepository(Chat::class);
+            $qb = $em->GetQueryBuilder();
+            $qb = $em->GetCountForEachChatContact($qb, $contact, false, $currentUser);
+
+            $nbUnViewed = $qb->getQuery()->getSingleScalarResult();
+
+            if($nbUnViewed > 0){
+                $unViewedChatContact += 1;
+            }
+
+        }
 
         $response = array("zZeends" => intval($nbZzeends),
             "notifications" => intval($nbNotifications),
             "requests" => intval($nbRequests),
             "events" => '',
             "paymentMethods" => intval($nbPaymentMethods),
-            "chats" => intval($nbNewChats));
+            "chats" => $unViewedChatContact);
 
        return new JsonResponse($response);
     }

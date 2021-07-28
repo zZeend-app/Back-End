@@ -120,6 +120,7 @@ class ShareController extends Controller
                     $chat->setContact($contact);
                     $chat->setUser($currentUser);
                     $chat->setShare($share);
+                    $chat->setViewed(false);
                     $chat->setCreatedAtAutomatically();
                     $entityManager->persist($chat);
                 }else{

@@ -97,6 +97,16 @@ class Request implements JsonSerializable
     }
 
     /**
+     * Get sender.
+     *
+     * @return User
+     */
+    public function getSender()
+    {
+        return $this->sender;
+    }
+
+    /**
      * Set accepted.
      *
      *

@@ -13,10 +13,12 @@ class LoadNotificationType implements FixtureInterface
 
         $notificationTitles = array(
             'New zZeend',
-            'zZeend Payment',
+            'zZeend payment',
             'zZeend finalize',
             'zZeend canceled',
-            'zZeend edited'
+            'zZeend edited',
+            'Request accepted',
+            'Request rejected'
         );
 
         foreach ($notificationTitles as $notificationTitle) {

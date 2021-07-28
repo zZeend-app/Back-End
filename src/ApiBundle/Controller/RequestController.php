@@ -57,7 +57,7 @@ class RequestController extends Controller
             $requestRejectedFlag = false;
 
             if ($requestState == true) {
-                $notificationTypeInt = 2;
+                $notificationTypeInt = 6;
                 $requestAcceptedFlag = true;
                 $requestRejectedFlag = false;
 
@@ -84,9 +84,10 @@ class RequestController extends Controller
                 }
 
             } else {
-                $notificationTypeInt = 3;
+                $notificationTypeInt = 7;
                 $requestAcceptedFlag = false;
                 $requestRejectedFlag = true;
+
                 $response = array('code' => 'request_rejected');
             }
 
@@ -96,16 +97,8 @@ class RequestController extends Controller
             $entityManager->persist($zZeendRequest);
             $entityManager->flush();
 
-            $notificationType = $this->getDoctrine()->getRepository(NotificationType::class)->find($notificationTypeInt);
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $notification = new Notification();
-            $notification->setRelatedId($zZeendRequest->getId());
-            $notification->setCreatedAtAutomatically();
-            $notification->setViewed(false);
-            $notification->setNotificationType($notificationType);
-            $entityManager->persist($notification);
-            $entityManager->flush();
+            $createNotificationManager = $this->get("ionicapi.NotificationManager");
+            $createNotificationManager->newNotification($notificationTypeInt, $zZeendRequest->getId());
 
 
         } else {

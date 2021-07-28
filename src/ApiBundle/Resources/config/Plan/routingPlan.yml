@@ -1,19 +1,19 @@
-get-all:
+plan-get-all:
     path:     /all
     defaults: { _controller: ApiBundle:Plan:getPlans }
     methods: [GET]
 
-get-subscription:
+plan-get-subscription:
     path:     /subscription
     defaults: { _controller: ApiBundle:Plan:getUserSubscription }
     methods: [GET]
 
-get-subscribe:
+plan-get-subscribe:
     path:     /subscribe
     defaults: { _controller: ApiBundle:Plan:planSubscribe }
     methods: [POST]
 
-get-update:
+plan-get-update:
     path:     /update
     defaults: { _controller: ApiBundle:Plan:updatePlanSubscription }
     methods: [PUT]
@@ -23,7 +23,7 @@ get-payment:
     defaults: { _controller: ApiBundle:Plan:planSubscriptionPayment }
     methods: [POST]
 
-taxes:
+plan-taxes:
     path:     /taxes
     defaults: { _controller: ApiBundle:Plan:makeTaxes }
     methods: [POST]

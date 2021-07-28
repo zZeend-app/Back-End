@@ -227,7 +227,7 @@ class ZzeendController extends Controller
             $entityManager->persist($zZeend);
             $entityManager->flush();
 
-            $event = $this->getDoctrine()->getRepository(Event::class)->findOneBy(['zZeend', $zZeend]);
+            $event = $this->getDoctrine()->getRepository(Event::class)->findOneBy(['zZeend' => $zZeend]);
 
             if ($event !== null) {
 

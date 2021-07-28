@@ -17,7 +17,8 @@ use UserBundle\Entity\User;
 class NotificationController extends Controller
 {
 
-    public function getAllAction(Request $request){
+    public function getAllAction(Request $request)
+    {
 
         $response = array();
 
@@ -45,7 +46,7 @@ class NotificationController extends Controller
         }
         $notifications = $jsonManager->setQueryLimit($qb, $filtersInclude);
 
-        for($i = 0; $i < count($notifications); $i++){
+        for ($i = 0; $i < count($notifications); $i++) {
 
             $notification = $notifications[$i];
 
@@ -55,23 +56,47 @@ class NotificationController extends Controller
             $relatedId = $notification->getRelatedId();
 
             //zZeend notification
-            if($notificationTypeId == 1 || $notificationTypeId == 2 || $notificationTypeId == 3 || $notificationTypeId == 4 || $notificationTypeId == 5){
+            if ($notificationTypeId == 1 || $notificationTypeId == 2 || $notificationTypeId == 3 || $notificationTypeId == 4 || $notificationTypeId == 5) {
 
                 $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($relatedId);
 
                 $zZeendAssignedUser = $zZeend->getUserAssigned();
 
+                if ($notificationTypeId == 1 || $notificationTypeId == 4 || $notificationTypeId == 5) {
 
-                if($zZeend !== null && $zZeend->getUser() !== $currentUser && $zZeendAssignedUser == $this->getUser()){
+                    if ($zZeend !== null && $zZeend->getUser() !== $currentUser && $zZeendAssignedUser == $this->getUser()) {
+                        $returnObject[] = array("id" => $notification->getId(),
+                            "notificationType" => $notificationType,
+                            "relatedObject" => $zZeend,
+                            "viewed" => $notification->getViewed(),
+                            "createdAt" => $notification->getCreatedAt());
+                    }
+
+                }else {
+                    if ($zZeend !== null && $zZeend->getUser() == $currentUser && $zZeendAssignedUser !== $this->getUser()) {
+                        $returnObject[] = array("id" => $notification->getId(),
+                            "notificationType" => $notificationType,
+                            "relatedObject" => $zZeend,
+                            "viewed" => $notification->getViewed(),
+                            "createdAt" => $notification->getCreatedAt());
+                    }
+                }
+            }// request notification
+            else if($notificationTypeId == 6 || $notificationTypeId == 7){
+
+                $request = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class)->find($relatedId);
+
+                $sender = $request->getSender();
+
+                if($sender == $currentUser){
                     $returnObject[] = array("id" => $notification->getId(),
                         "notificationType" => $notificationType,
-                        "relatedObject" => $zZeend,
+                        "relatedObject" => $request,
                         "viewed" => $notification->getViewed(),
                         "createdAt" => $notification->getCreatedAt());
                 }
 
             }
-
 
         }
 
@@ -79,7 +104,8 @@ class NotificationController extends Controller
         return new JsonResponse($returnObject);
     }
 
-    public function markAsViewedAction(Request $request){
+    public function markAsViewedAction(Request $request)
+    {
         $response = array();
         $data = $request->getContent();
 
@@ -87,14 +113,14 @@ class NotificationController extends Controller
 
         $entityManager = $this->getDoctrine()->getManager();
 
-        for($i = 0; $i < count($viewedNotifications); $i++){
+        for ($i = 0; $i < count($viewedNotifications); $i++) {
             $notificationId = $viewedNotifications[$i];
             $notification = $this->getDoctrine()->getRepository(Notification::class)->find($notificationId);
 
-            if($notification !== null){
+            if ($notification !== null) {
                 $notification->setViewed(true);
                 $entityManager->persist($notification);
-            }else{
+            } else {
                 $response = array("code" => "action_not_allowed");
                 return new JsonResponse($response);
             }

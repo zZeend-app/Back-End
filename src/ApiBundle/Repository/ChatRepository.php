@@ -61,17 +61,22 @@ class ChatRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('viewedFlag', $viewedFlag)
             ->andWhere('contact.mainUser = :user or contact.secondUser = :user ')
             ->setParameter('user', $user)
-            ->groupBy('contact');
+            ->andWhere('ch.sender != :user')
+            ->setParameter('user', $user)
+            ->groupBy('contact')
+        ;
     }
 
-    public function GetCountForEachChatContact(QueryBuilder $queryBuilder, $contact, $viewedFlag)
+    public function GetCountForEachChatContact(QueryBuilder $queryBuilder, $contact, $viewedFlag, $user)
     {
         return $queryBuilder
             ->select('count(ch.id)')
             ->andWhere('ch.viewed = :viewedFlag')
             ->setParameter('viewedFlag', $viewedFlag)
             ->andWhere('contact = :contact')
-            ->setParameter('contact', $contact);
+            ->setParameter('contact', $contact)
+            ->andWhere('ch.sender != :user')
+            ->setParameter('user', $user);
     }
 
 

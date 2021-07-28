@@ -175,7 +175,7 @@ class ChatController extends Controller
 
             $em = $this->getDoctrine()->getRepository(Chat::class);
             $qb = $em->GetQueryBuilder();
-            $qb = $em->GetCountForEachChatContact($qb, $contact, false);
+            $qb = $em->GetCountForEachChatContact($qb, $contact, false, $currentUser);
 
             $nbUnViewed = $qb->getQuery()->getSingleScalarResult();
 
