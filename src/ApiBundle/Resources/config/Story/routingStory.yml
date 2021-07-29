@@ -1,0 +1,4 @@
+str-get-all:
+    path:     /
+    defaults: { _controller: ApiBundle:Story:getStories }
+    methods: [POST]

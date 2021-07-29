@@ -77,3 +77,7 @@ tags:
 indexing:
     resource: "@ApiBundle/Resources/config/Indexing/routingIndexing.yml"
     prefix:   /indexing
+
+story:
+    resource: "@ApiBundle/Resources/config/Story/routingStory.yml"
+    prefix:   /story

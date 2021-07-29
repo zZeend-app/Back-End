@@ -18,4 +18,15 @@ class StoryRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('user', $user);
     }
 
+    public function OrderByJson(QueryBuilder $queryBuilder, $data)
+    {
+        foreach ($data as $order) {
+            foreach ($order as $key => $value) {
+                $queryBuilder = $queryBuilder->addOrderBy("str." . $key, $value);
+            }
+        }
+
+        return $queryBuilder;
+    }
+
 }
