@@ -158,7 +158,7 @@ class ChatController extends Controller
 
 
         $em = $this->getDoctrine()->getManager();
-        $RAW_QUERY = 'SELECT chat.contact_id FROM chat INNER JOIN contact WHERE (contact.main_user_id = :main_user_id OR contact.second_user_id = :main_user_id) AND chat.contact_id = contact.id GROUP BY chat.contact_id ORDER BY chat.id DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
+        $RAW_QUERY = 'SELECT chat.contact_id, MAX(chat.created_at) FROM chat INNER JOIN contact WHERE (contact.main_user_id = :main_user_id OR contact.second_user_id = :main_user_id) AND chat.contact_id = contact.id GROUP BY chat.contact_id ORDER BY MAX(chat.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 
         $statement = $em->getConnection()->prepare($RAW_QUERY);
         $statement->bindValue('main_user_id', $currentUser->getId());
