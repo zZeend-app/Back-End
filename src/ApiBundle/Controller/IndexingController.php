@@ -8,6 +8,7 @@ use ApiBundle\Entity\Contact;
 use ApiBundle\Entity\Indexing;
 use ApiBundle\Entity\IndexingType;
 use ApiBundle\Entity\Post;
+use ApiBundle\Entity\Story;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,6 +45,13 @@ class IndexingController extends Controller
                 $user = $this->getDoctrine()->getRepository(User::class)->find($related_id);
 
                 if($user == null){
+                    $response = array("code" => "action_not_allowed");
+                    return new JsonResponse($response);
+                }
+            }else if($indexing_type_id == 3){
+                $story = $this->getDoctrine()->getRepository(Story::class)->find($related_id);
+
+                if($story == null){
                     $response = array("code" => "action_not_allowed");
                     return new JsonResponse($response);
                 }

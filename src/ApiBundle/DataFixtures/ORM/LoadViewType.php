@@ -14,7 +14,8 @@ class LoadViewType implements FixtureInterface
 
         $viewTitles = array(
             'Post',
-            'Profile'
+            'Profile',
+            'Story'
         );
 
         foreach ($viewTitles as $viewTitle) {

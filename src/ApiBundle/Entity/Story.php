@@ -193,7 +193,7 @@ class Story implements JsonSerializable
         }
 
         if (!$entityClass instanceof Story || in_array("filePat", $include)) {
-            $json["filePat"] = $this->filePath;
+            $json["filePath"] = $this->filePath;
         }
 
 

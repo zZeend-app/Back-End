@@ -19,6 +19,7 @@ class StoryController extends Controller
     {
         $response = array();
         $myContactsStoriesUsers = array();
+        $currentUserStoryExists = false;
         $currentUser = $this->getUser();
 
         $data = $request->getContent();
@@ -66,15 +67,38 @@ class StoryController extends Controller
 
         }
 
+
         for ($i = 0; $i < count($myContactsStoriesUsers); $i++) {
             $userId = intval($myContactsStoriesUsers[$i]["user_id"]);
 
-            $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+            if($userId == $currentUser->getId()){
+                $currentUserStoryExists = true;
+            }else{
 
-            $stories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
+                $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+                $stories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
 
 
-            $response[] = array( "user" => $user, "stories" => $stories);
+                $response[] = array( "user" => $user, "stories" => $stories);
+
+            }
+
+        }
+
+
+        if($currentUserStoryExists){
+
+
+            $user = $this->getDoctrine()->getRepository(User::class)->find($currentUser->getId());
+
+            $currentUserStories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
+
+
+            $tempArray = array( "user" => $user, "stories" => $currentUserStories);
+
+           $response = array_merge([$tempArray], $response);
+
         }
 
 
