@@ -7,6 +7,7 @@ namespace ApiBundle\Controller;
 use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
 use ApiBundle\Entity\Story;
+use ApiBundle\Entity\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +22,7 @@ class StoryController extends Controller
         $myContactsStoriesUsers = array();
         $currentUserStoryExists = false;
         $currentUser = $this->getUser();
+        $contactNotFound = false;
 
         $data = $request->getContent();
 
@@ -39,52 +41,81 @@ class StoryController extends Controller
 
         $limit = $offset + 49;
 
-
         $em = $this->getDoctrine()->getManager();
+
         $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story INNER JOIN contact WHERE (contact.main_user_id = :main_user_id AND contact.second_user_id = story.user_id) OR (contact.main_user_id = story.user_id AND contact.second_user_id = :main_user_id) GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 
-        $statement = $em->getConnection()->prepare($RAW_QUERY);
-        $statement->bindValue('main_user_id', $currentUser->getId());
-        $statement->execute();
+        $dataGroupedByContact = $this->contactStories($currentUser, $RAW_QUERY);
 
-        $myContactsStoriesUsers = array_merge($myContactsStoriesUsers,$statement->fetchAll());
+        if(count($dataGroupedByContact) == 0){
+            $contactNotFound = true;
 
-        $nb_myContactsStoriesUser = count($myContactsStoriesUsers);
-        if($nb_myContactsStoriesUser < $count){
+            $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 
-            $count = $count - count($myContactsStoriesUsers);
-
-            $limit = $limit + count($myContactsStoriesUsers);
-
-            $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story INNER JOIN contact WHERE (contact.main_user_id = :main_user_id AND contact.second_user_id != story.user_id) OR (contact.main_user_id != story.user_id AND contact.second_user_id = :main_user_id) GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
-
-            $statement = $em->getConnection()->prepare($RAW_QUERY);
-            $statement->bindValue('main_user_id', $currentUser->getId());
-            $statement->execute();
-
-            $myContactsStoriesUsers = array_merge($myContactsStoriesUsers,$statement->fetchAll());
+            $dataGroupedBy = $this->contactStories($currentUser, $RAW_QUERY);
 
 
         }
 
 
-        for ($i = 0; $i < count($myContactsStoriesUsers); $i++) {
-            $userId = intval($myContactsStoriesUsers[$i]["user_id"]);
+        $myContactsStoriesUsers = array_merge($myContactsStoriesUsers, $dataGroupedBy);
 
-            if($userId == $currentUser->getId()){
-                $currentUserStoryExists = true;
-            }else{
+        $nb_myContactsStoriesUser = count($myContactsStoriesUsers);
 
-                $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+        if($contactNotFound == false){
 
-                $stories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
+            if($nb_myContactsStoriesUser < $count){
 
+                $count = $count - count($myContactsStoriesUsers);
 
-                $response[] = array( "user" => $user, "stories" => $stories);
+                $limit = $limit + count($myContactsStoriesUsers);
+
+                $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story INNER JOIN contact WHERE (contact.main_user_id = :main_user_id AND contact.second_user_id != story.user_id) OR (contact.main_user_id != story.user_id AND contact.second_user_id = :main_user_id) GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
+
+                $statement = $em->getConnection()->prepare($RAW_QUERY);
+                $statement->bindValue('main_user_id', $currentUser->getId());
+                $statement->execute();
+
+                $myContactsStoriesUsers = array_merge($myContactsStoriesUsers,$statement->fetchAll());
+
 
             }
 
         }
+
+
+            for ($i = 0; $i < count($myContactsStoriesUsers); $i++) {
+                $userId = intval($myContactsStoriesUsers[$i]["user_id"]);
+
+                if($userId == $currentUser->getId()){
+                    $currentUserStoryExists = true;
+                }else{
+
+                    $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+                    $stories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
+
+                    $storyViewsState = array();
+                    for($k = 0; $k < count($stories); $k++){
+
+                        $story = $stories[$k];
+
+                        $em = $this->getDoctrine()->getRepository(View::class);
+                        $qb = $em->GetQueryBuilder();
+                        $qb = $em->WhereUserViewsStory($qb, $currentUser, $story->getId(), 3);
+                        $storyViewsState[] = $qb->getQuery()->getResult();
+
+                    }
+
+
+                    $response[] = array( "user" => $user, "stories" => $stories, 'storyViewsState' => $storyViewsState);
+
+                }
+
+            }
+
+
+
 
 
         if($currentUserStoryExists){
@@ -95,15 +126,27 @@ class StoryController extends Controller
             $currentUserStories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
 
 
-            $tempArray = array( "user" => $user, "stories" => $currentUserStories);
+            $tempArray = array( "user" => $user, "stories" => $currentUserStories, 'storyViewsState' => []);
 
            $response = array_merge([$tempArray], $response);
 
+        }else{
+            $tempArray = array( "user" => $currentUser, "stories" => [], 'storyViewsState' => []);
+            $response = array_merge([$tempArray], $response);
         }
 
 
 
         return new JsonResponse($response);
+    }
+
+    public function contactStories($currentUser, $RAW_QUERY){
+        $em = $this->getDoctrine()->getManager();
+        $statement = $em->getConnection()->prepare($RAW_QUERY);
+        $statement->bindValue('main_user_id', $currentUser->getId());
+        $statement->execute();
+
+        return $statement->fetchAll();
     }
 
     public function getContactBySecondUserIdAction($secondUserId)

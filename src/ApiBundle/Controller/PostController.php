@@ -8,6 +8,7 @@ use ApiBundle\Entity\Contact;
 use ApiBundle\Entity\Like;
 use ApiBundle\Entity\Post;
 use ApiBundle\Entity\View;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -99,6 +100,8 @@ class PostController extends Controller
 
         $data = $request->getContent();
 
+        $currentUser = $this->getUser();
+
         $data = json_decode($data, true);
 
         $jsonManager = $this->get("ionicapi.jsonManager");
@@ -142,6 +145,7 @@ class PostController extends Controller
             $qb = $em->GetViewsCount($qb, $post);
             $nbViews = $qb->getQuery()->getSingleScalarResult();
 
+
             if ($post->getShare() !== null) {
                 $shareTypeId = $post->getShare()->getShareType()->getId();
 
@@ -155,8 +159,14 @@ class PostController extends Controller
                 }
             }
 
+            $em = $this->getDoctrine()->getRepository(Like::class);
+            $qb = $em->GetQueryBuilder();
+            $qb =  $em->WhereUserLikesPost($qb, $currentUser, $post);
+            $postLikeState = $qb->getQuery()->getResult();
+
             $response[] = array(
                 "post" => $post,
+                "postLikeState" => $postLikeState,
                 "likes" => intval($nbLikes),
                 "views" => intval($nbViews),
                 "sharedContent" => $sharedContent

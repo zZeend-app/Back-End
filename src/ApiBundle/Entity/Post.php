@@ -79,6 +79,12 @@ class Post implements JsonSerializable
     private $tags;
 
     /**
+     * @ORM\OneToMany(targetEntity="ApiBundle\Entity\Like", mappedBy="post")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $likes;
+
+    /**
      * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\Share", inversedBy="posts")
      * @ORM\JoinColumn(name="share_id", referencedColumnName="id")
      */

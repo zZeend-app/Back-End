@@ -160,6 +160,10 @@ class Like implements JsonSerializable
             $json["createdAt"] = $this->createdAt;
         }
 
+        if(!$entityClass instanceof Service || in_array("active",$include)){
+            $json["active"] = $this->active;
+        }
+
         return $json;
     }
 }

@@ -36,4 +36,13 @@ class LikeRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('l.active = :active')
             ->setParameter('active', true);
     }
+
+    public function WhereUserLikesPost(QueryBuilder $queryBuilder, $user, $post)
+    {
+        return $queryBuilder
+            ->andWhere('l.post = :post')
+            ->setParameter('post', $post)
+            ->andWhere('l.user = :user')
+            ->setParameter('user', $user);
+    }
 }

@@ -37,5 +37,16 @@ class ViewRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('relatedId', $related_id);
     }
 
+    public function WhereUserViewsStory(QueryBuilder $queryBuilder, $user, $relatedId, $viewType)
+    {
+        return $queryBuilder
+            ->andWhere('v.relatedId = :relatedId')
+            ->setParameter('relatedId', $relatedId)
+            ->andWhere('v.viewType = :viewType')
+            ->setParameter('viewType', $viewType)
+            ->andWhere('v.user = :user')
+            ->setParameter('user', $user);
+    }
+
 
 }

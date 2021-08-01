@@ -29,4 +29,5 @@ class StoryRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder;
     }
 
+
 }
