@@ -52,13 +52,13 @@ class StoryController extends Controller
 
             $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 
-            $dataGroupedBy = $this->contactStories($currentUser, $RAW_QUERY);
+            $dataGroupedByContact = $this->contactStories($currentUser, $RAW_QUERY);
 
 
         }
 
 
-        $myContactsStoriesUsers = array_merge($myContactsStoriesUsers, $dataGroupedBy);
+        $myContactsStoriesUsers = array_merge($myContactsStoriesUsers, $dataGroupedByContact);
 
         $nb_myContactsStoriesUser = count($myContactsStoriesUsers);
 
@@ -70,13 +70,32 @@ class StoryController extends Controller
 
                 $limit = $limit + count($myContactsStoriesUsers);
 
-                $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story INNER JOIN contact WHERE (contact.main_user_id = :main_user_id AND contact.second_user_id != story.user_id) OR (contact.main_user_id != story.user_id AND contact.second_user_id = :main_user_id) GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
+                $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 
                 $statement = $em->getConnection()->prepare($RAW_QUERY);
                 $statement->bindValue('main_user_id', $currentUser->getId());
                 $statement->execute();
 
-                $myContactsStoriesUsers = array_merge($myContactsStoriesUsers,$statement->fetchAll());
+                $results = $statement->fetchAll();
+
+                for($q = 0; $q < count($myContactsStoriesUsers); $q++){
+
+                    $story = $myContactsStoriesUsers[$q];
+
+                    for($l = 0 ; $l < count($results); $l++){
+
+                        $result = $results[$l];
+
+                        if($story['user_id'] == $result['user_id']){
+                            unset($results[$l]);
+                        }
+
+                    }
+
+                }
+
+
+                $myContactsStoriesUsers = array_merge($myContactsStoriesUsers, $results);
 
 
             }
