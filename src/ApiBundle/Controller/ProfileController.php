@@ -119,14 +119,36 @@ class ProfileController extends Controller
     {
         $response = array();
         $updated = array();
+        $fileName = '';
+        $data = array();
 
         $currentUser = $this->getUser();
 
         $modification = false;
 
+        if (!empty($request->files->get('profilePhoto'))) {
 
-        $data = $request->getContent();
-        $data = json_decode($data, true);
+            $file = $request->files->get('profilePhoto');
+
+            $uploadDir = $this->getParameter('upload_dir');
+
+            $data = json_decode($_POST['data'], true);
+
+            $dataType = $data['dataType'];
+
+            $fileName = $this->get('ionicapi.fileUploader')->upload($file, $uploadDir, $dataType);
+
+            $data = $data['objectData'];
+
+        }
+
+        if($fileName == ''){
+
+            //if no upload has made
+            $data = $request->getContent();
+            $data = json_decode($data, true);
+        }
+
 
         $fullname = $data['fullname'];
         $job_title = $data['job_title'];
@@ -163,6 +185,12 @@ class ProfileController extends Controller
         if ($zip_code !== '' and $zip_code !== $currentUser->getZipCode()) {
             $currentUser->setZipCode($zip_code);
             $updated[] = "zip_code";
+            $modification = true;
+        }
+
+        if($fileName !== ''){
+            $currentUser->setImage('profile/'.$fileName);
+            $updated[] = "profile_photo";
             $modification = true;
         }
 
@@ -315,7 +343,8 @@ class ProfileController extends Controller
         return new JsonResponse($socialNetworks);
     }
 
-    public function upgradeAccountAction(){
+    public function upgradeAccountAction()
+    {
 
         $currentUser = $this->getUser();
 

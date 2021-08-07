@@ -23,6 +23,7 @@ class PostController extends Controller
         $currentUser = $this->getUser();
 
         if ($currentUser !== null) {
+
             $data = $request->getContent();
             $data = json_decode($data, true);
 

@@ -51,6 +51,14 @@ security:
             pattern: ^/api/auth/reset-password
             anonymous: true
 
+        media-file:
+            pattern: ^/api/auth/media/file
+            anonymous: true
+
+        add-profile-photo:
+            pattern: ^/api/auth/add-profile-photo
+            anonymous: true
+
         api:
             pattern:   ^/api
             stateless: true
@@ -84,4 +92,6 @@ security:
         - { path: ^/api/auth/password-recovery, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/auth/password-forgot, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/auth/reset-password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/media/file, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/add-profile-photo, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

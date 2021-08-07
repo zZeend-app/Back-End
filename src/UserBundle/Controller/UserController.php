@@ -62,7 +62,7 @@ class UserController extends Controller
 
 
         //generate a codeGen for email verification
-        $codeGen = $user->generateCode();
+        $codeGen = $this->get('ionicapi.tokenGenerator')->createToken();
 
         //save codeGen
         $entityManager = $this->getDoctrine()->getManager();
@@ -81,7 +81,7 @@ class UserController extends Controller
 
         $this->sendMail('Email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
 
-        $response = array('code' => 'auth/registered');
+        $response = array('code' => 'auth/registered', 'relatedId' => $user->getId());
         return new JsonResponse($response);
     }
 
@@ -116,7 +116,7 @@ class UserController extends Controller
             return new JsonResponse($response);
         }else{
             //generate a codeGen for email verification
-            $codeGen = $user->generateCode();
+            $codeGen = $this->get('ionicapi.tokenGenerator')->createToken();
 
             //save codeGen
             $entityManager = $this->getDoctrine()->getManager();
@@ -145,7 +145,7 @@ class UserController extends Controller
         $user = $em->FindByEmail($email);
         if($user !== null) {
             //generate a codeGen for email verification
-            $codeGen = $user->generateCode();
+            $codeGen = $this->get('ionicapi.tokenGenerator')->createToken();
 
             //save codeGen
             $entityManager = $this->getDoctrine()->getManager();
@@ -181,7 +181,7 @@ class UserController extends Controller
         if($user !== null) {
 
             //generate a codeGen for email verification
-            $codeGen = $user->generateCode();
+            $codeGen = $this->get('ionicapi.tokenGenerator')->createToken();
 
             //save codeGen
             $entityManager = $this->getDoctrine()->getManager();

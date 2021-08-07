@@ -31,21 +31,29 @@ class KernelRequestListener
     public function onKernelRequest(GetResponseEvent $event)
     {
 
-        $response = array("code" => "auth/unknown_source");
-        $headers = $event->getRequest()->headers;
+        if(strpos($event->getRequest()->getUri(), 'media/file')){
 
-        if ($headers->has('SourceKey')) {
+            return $event;
 
-            $sourceKey = $headers->get('SourceKey');
-            $app_source_key = $this->api_keys['app_source_key'];
+        }else{
 
-            if ($sourceKey === $app_source_key) {
-                return $event;
+            $response = array("code" => "auth/unknown_source");
+            $headers = $event->getRequest()->headers;
+
+            if ($headers->has('SourceKey')) {
+
+                $sourceKey = $headers->get('SourceKey');
+                $app_source_key = $this->api_keys['app_source_key'];
+
+                if ($sourceKey === $app_source_key) {
+                    return $event;
+                }
+
             }
 
-        }
+            $event->setResponse(new JsonResponse( $response, 403));
 
-        $event->setResponse(new JsonResponse( $response, 403));
+        }
 
     }
 

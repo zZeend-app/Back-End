@@ -19,6 +19,8 @@ parameters:
     api_keys:
         app_source_key: 'rLxO#JGPCvY1*oH&F9D1qSiOdG50MvO&X7O*Va&vmQqhVeNVMfaeD0OxWObUemDw2GwQn@FfY*CsF3rKTf39zT7SmH9uoQp00@e'
 
+    upload_dir: '../web/assets/uploads'
+
 framework:
     #esi: ~
     translator: { fallbacks: ['%locale%'] }

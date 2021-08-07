@@ -157,18 +157,6 @@ class User extends BaseUser implements JsonSerializable
         return in_array($role, $this->getRoles());
     }
 
-    function generateCode($length = 20) {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGKLMNOPQRSTUVWXYZ0123456789';
-        $count = mb_strlen($chars);
-
-        for ($i = 0, $result = ''; $i < $length; $i++) {
-            $index = rand(0, $count - 1);
-            $result .= mb_substr($chars, $index, 1);
-        }
-
-        return $result;
-    }
-
 
     /**
      * Get id.

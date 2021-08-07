@@ -11,7 +11,7 @@ get-user:
 update-profile:
     path:     /update
     defaults: { _controller: ApiBundle:Profile:updateCurrentUser }
-    methods: [PUT]
+    methods: [PUT, POST]
 
 visibility:
     path:     /visibility
@@ -32,6 +32,7 @@ upgrade-ccount:
     path:     /upgrade-account
     defaults: { _controller: ApiBundle:Profile:upgradeAccount }
     methods: [POST]
+
 
 
 #view-get-all:

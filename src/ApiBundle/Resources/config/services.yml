@@ -10,3 +10,11 @@ services:
     ionicapi.notificationManager:
       class: ApiBundle\Manager\NotificationManager
       arguments: [ "@doctrine.orm.entity_manager" ]
+
+    ionicapi.tokenGenerator:
+      class: ApiBundle\Manager\TokenGenerator
+      arguments: [ 11 ]
+
+    ionicapi.fileUploader:
+      class: ApiBundle\Manager\FileUploader
+      arguments: [ 11 ]

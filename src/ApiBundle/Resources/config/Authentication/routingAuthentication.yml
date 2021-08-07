@@ -33,3 +33,13 @@ reset-password:
     defaults: { _controller: ApiBundle:Authentication:resetPassword }
     methods: [POST]
 
+get-file:
+    path:     /media/file/{fileType}/{fileName}
+    defaults: { _controller: ApiBundle:Authentication:getFile }
+    methods: [GET]
+
+add-profile-photo:
+    path:     /add-profile-photo
+    defaults: { _controller: ApiBundle:Authentication:addPhoto }
+    methods: [POST]
+

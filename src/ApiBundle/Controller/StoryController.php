@@ -18,6 +18,7 @@ class StoryController extends Controller
 
     public function getStoriesAction(Request $request)
     {
+        $rt = array();
         $response = array();
         $myContactsStoriesUsers = array();
         $currentUserStoryExists = false;
@@ -77,6 +78,7 @@ class StoryController extends Controller
                 $statement->execute();
 
                 $results = $statement->fetchAll();
+                $rt = $results;
 
                 for($q = 0; $q < count($myContactsStoriesUsers); $q++){
 
@@ -84,7 +86,7 @@ class StoryController extends Controller
 
                     for($l = 0 ; $l < count($results); $l++){
 
-                        $result = $results[$l];
+                        $result = $rt[$l];
 
                         if($story['user_id'] == $result['user_id']){
                             unset($results[$l]);

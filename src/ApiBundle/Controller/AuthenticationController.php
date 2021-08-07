@@ -7,6 +7,9 @@ namespace ApiBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use UserBundle\Entity\User;
 
 class AuthenticationController extends Controller
 {
@@ -104,6 +107,73 @@ class AuthenticationController extends Controller
 
         return $this->forward("WebBundle:Web:resetPasswordRender", [
         ]);
+    }
+
+    public function getFileAction($fileType, $fileName){
+
+        $uploadDir = $this->getParameter('upload_dir');
+        $filepath = '';
+
+        if($fileType == 'profile'){
+
+            $filepath = $uploadDir.'/profile_photos/'.$fileName;
+
+        }
+
+        //expose image file to the web
+
+        $response = new Response();
+        $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $fileName);
+        $response->headers->set('Content-Disposition', $disposition);
+        $response->headers->set('Content-Type', 'image/jpeg');
+        $response->setContent(file_get_contents($filepath));
+
+        return $response;
+
+    }
+
+    public function addPhotoAction(Request $request){
+
+        if (!empty($request->files->get('profilePhoto'))) {
+
+            $response = array();
+
+            $file = $request->files->get('profilePhoto');
+
+            $uploadDir = $this->getParameter('upload_dir');
+
+            $data = json_decode($_POST['data'], true);
+
+            $dataType = $data['dataType'];
+
+            $fileName = $this->get('ionicapi.fileUploader')->upload($file, $uploadDir, $dataType);
+
+            $data = $data['objectData'];
+            $relatedId = $data['relatedId'];
+
+            if($fileName !== ''){
+                $currentUser = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
+
+                if($currentUser !== null){
+
+                    $currentUser->setImage('profile/'.$fileName);
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($currentUser);
+                    $entityManager->flush();
+
+                }
+
+            }
+
+
+        }else{
+
+            $response = array("code" => "action_not_allowed");
+
+        }
+
+        return new JsonResponse($response);
+
     }
 
 }
