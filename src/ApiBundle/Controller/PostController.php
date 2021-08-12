@@ -68,7 +68,7 @@ class PostController extends Controller
                 $tags = $data['tags'];
                 $post->setTags($tags);
             } else {
-                $post->setLink(null);
+                $post->setTags(null);
             }
 
 

@@ -48,6 +48,10 @@ class SearchController extends Controller
 
             if (array_key_exists('specificArea', $filter) and $filter['specificArea'] !== '') {
                 $qb = $em->WhereSpecificAreaLike($qb, $filter['specificArea']);
+
+                $qb = $em->WhereAdministrativeAreaOrSubAdministrativeArea($qb, $filter['specificArea']);
+
+                $qb = $em->WhereSubLocality($qb, $filter['specificArea']);
             }
 
             if (array_key_exists('zZeendScore', $filter)) {

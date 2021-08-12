@@ -33,6 +33,11 @@ upgrade-ccount:
     defaults: { _controller: ApiBundle:Profile:upgradeAccount }
     methods: [POST]
 
+update-current-position:
+    path:     /update-user-current-position
+    defaults: { _controller: ApiBundle:Profile:updateCurrentPosition }
+    methods: [PUT]
+
 
 
 #view-get-all:

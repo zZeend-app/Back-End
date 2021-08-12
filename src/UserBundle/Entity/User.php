@@ -113,6 +113,48 @@ class User extends BaseUser implements JsonSerializable
     private $spokenLanguages;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="sub_locality", type="string", length=255, unique=false, nullable=false)
+     */
+    private $subLocality;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="latitude", type="string", length=255, unique=false, nullable=false)
+     */
+    private $latitude;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="longitude", type="string", length=255, unique=false, nullable=false)
+     */
+    private $longitude;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="sub_administrative_area", type="string", length=255, unique=false, nullable=false)
+     */
+    private $subAdministrativeArea;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="administrative_area", type="string", length=255, unique=false, nullable=false)
+     */
+    private $administrativeArea;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="country_code", type="string", length=255, unique=false, nullable=false)
+     */
+    private $countryCode;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="visibility", type="boolean", length=255, unique=false, nullable=false)
@@ -263,6 +305,150 @@ class User extends BaseUser implements JsonSerializable
     public function getSpokenLanguages()
     {
         return $this->spokenLanguages;
+    }
+
+    /**
+     * Set subLocality.
+     *
+     * @param string $subLocality
+     *
+     * @return User
+     */
+    public function setSubLocality($subLocality)
+    {
+        $this->subLocality = $subLocality;
+
+        return $this;
+    }
+
+    /**
+     * Get subLocality.
+     *
+     * @return string
+     */
+    public function getSubLocality()
+    {
+        return $this->subLocality;
+    }
+
+    /**
+     * Set latitude.
+     *
+     * @param string $latitude
+     *
+     * @return User
+     */
+    public function setLatitude($latitude)
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    /**
+     * Get latitude.
+     *
+     * @return string
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * Set longitude.
+     *
+     * @param string $longitude
+     *
+     * @return User
+     */
+    public function setLongitude($longitude)
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    /**
+     * Get longitude.
+     *
+     * @return string
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * Set subAdministrativeArea.
+     *
+     * @param string $subAdministrativeArea
+     *
+     * @return User
+     */
+    public function setSubAdministrativeArea($subAdministrativeArea)
+    {
+        $this->subAdministrativeArea = $subAdministrativeArea;
+
+        return $this;
+    }
+
+    /**
+     * Get subAdministrativeArea.
+     *
+     * @return string
+     */
+    public function getSubAdministrativeArea()
+    {
+        return $this->subAdministrativeArea;
+    }
+
+    /**
+     * Set administrativeArea.
+     *
+     * @param string $administrativeArea
+     *
+     * @return User
+     */
+    public function setAdministrativeArea($administrativeArea)
+    {
+        $this->administrativeArea = $administrativeArea;
+
+        return $this;
+    }
+
+    /**
+     * Get administrativeArea.
+     *
+     * @return string
+     */
+    public function getAdministrativeArea()
+    {
+        return $this->administrativeArea;
+    }
+
+    /**
+     * Set countryCode.
+     *
+     * @param string $countryCode
+     *
+     * @return User
+     */
+    public function setCountryCode($countryCode)
+    {
+        $this->countryCode = $countryCode;
+
+        return $this;
+    }
+
+    /**
+     * Get countryCode.
+     *
+     * @return string
+     */
+    public function getCountryCode()
+    {
+        return $this->countryCode;
     }
 
     /**
@@ -591,13 +777,30 @@ class User extends BaseUser implements JsonSerializable
             $json["spokenLanguages"] = $this->spokenLanguages;
         }
 
-        if(!$entityClass instanceof User || in_array("visibility",$include)){
-            $json["visibility"] = $this->visibility;
+        if(!$entityClass instanceof User || in_array("subLocality",$include)){
+            $json["subLocality"] = $this->subLocality;
         }
 
-        if(!$entityClass instanceof User || in_array("mainVisibility",$include)){
-            $json["mainVisibility"] = $this->mainVisibility;
+        if(!$entityClass instanceof User || in_array("latitude",$include)){
+            $json["latitude"] = $this->latitude;
         }
+
+        if(!$entityClass instanceof User || in_array("longitude",$include)){
+            $json["longitude"] = $this->longitude;
+        }
+
+        if(!$entityClass instanceof User || in_array("subAdministrativeArea",$include)){
+            $json["subAdministrativeArea"] = $this->subAdministrativeArea;
+        }
+
+        if(!$entityClass instanceof User || in_array("administrativeArea",$include)){
+            $json["administrativeArea"] = $this->administrativeArea;
+        }
+
+        if(!$entityClass instanceof User || in_array("countryCode",$include)){
+            $json["countryCode"] = $this->countryCode;
+        }
+
 
         if(!$entityClass instanceof User || in_array("createdAt",$include)){
             $json["createdAt"] = $this->createdAt;

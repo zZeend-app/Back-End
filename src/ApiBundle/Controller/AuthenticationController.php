@@ -36,6 +36,12 @@ class AuthenticationController extends Controller
                 $jobTitle = $data['jobTitle'];
                 $jobDescription = $data['jobDescription'];
                 $spokenLanguages = $data['spokenLanguages'];
+                $subLocality = $data['subLocality'];
+                $latitude = $data['latitude'];
+                $longitude = $data['longitude'];
+                $subAdministrativeArea = $data['subAdministrativeArea'];
+                $administrativeArea = $data['administrativeArea'];
+                $countryCode = $data['countryCode'];
 
                 $response = $this->forward("UserBundle:User:newUser", [
                     'email' => $email,
@@ -50,7 +56,13 @@ class AuthenticationController extends Controller
                     'phoneNumber' => $phoneNumber,
                     'jobTitle' => $jobTitle,
                     'jobDescription' => $jobDescription,
-                    'spokenLanguages' => $spokenLanguages
+                    'spokenLanguages' => $spokenLanguages,
+                    'subLocality' => $subLocality,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'subAdministrativeArea' => $subAdministrativeArea,
+                    'administrativeArea' => $administrativeArea,
+                    'countryCode' => $countryCode,
                 ]);
             }else{
                 $response = array('code' => 'auth/imcomplete_data');

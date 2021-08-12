@@ -142,7 +142,7 @@ class ProfileController extends Controller
 
         }
 
-        if($fileName == ''){
+        if ($fileName == '') {
 
             //if no upload has made
             $data = $request->getContent();
@@ -188,8 +188,8 @@ class ProfileController extends Controller
             $modification = true;
         }
 
-        if($fileName !== ''){
-            $currentUser->setImage('profile/'.$fileName);
+        if ($fileName !== '') {
+            $currentUser->setImage('profile/' . $fileName);
             $updated[] = "profile_photo";
             $modification = true;
         }
@@ -360,6 +360,63 @@ class ProfileController extends Controller
         $response = array("code" => "user/account_upgraded");
 
         return new JsonResponse($response);
+    }
+
+    public function updateCurrentPositionAction(Request $request)
+    {
+
+        $response = array();
+
+        $currentUser = $this->getUser();
+
+        $data = $request->getContent();
+
+        $data = json_decode($data, true);
+
+        $city = $data['city'];
+        $address = $data['address'];
+        $administrativeArea = $data['administrativeArea'];
+        $countryCode = $data['countryCode'];
+        $zipCode = $data['zipCode'];
+        $latitude = $data['latitude'];
+        $longitude = $data['longitude'];
+        $subLocality = $data['subLocality'];
+        $subAdministrativeArea = $data['subAdministrativeArea'];
+        $countryName = $data['countryName'];
+        $updateProfile = $data['updateProfile'];
+
+        if (trim($city) !== '' && trim($address) !== '') {
+
+            if(!$updateProfile){
+
+                $currentUser->setCity($city);
+                $currentUser->setAddress($address);
+                $currentUser->setZipCode($zipCode);
+
+            }
+
+            $currentUser->setAdministrativeArea($administrativeArea);
+            $currentUser->setCountryCode($countryCode);
+            $currentUser->setCountry($countryName);
+            $currentUser->setLatitude($latitude);
+            $currentUser->setLongitude($longitude);
+            $currentUser->setSubLocality($subLocality);
+            $currentUser->setSubAdministrativeArea($subAdministrativeArea);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($currentUser);
+            $entityManager->flush();
+
+            $response = array("code" => "current_position_updated");
+
+        } else {
+
+            $response = array("code" => "action_not_allowed");
+
+        }
+
+        return new JsonResponse($response);
+
     }
 
 }

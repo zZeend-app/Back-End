@@ -66,6 +66,19 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
+    public function WhereAdministrativeAreaOrSubAdministrativeArea(QueryBuilder $queryBuilder, $specificArea){
+        return $queryBuilder
+            ->orWhere('u.administrativeArea Like :administrativeArea or u.subAdministrativeArea Like :subAdministrativeArea')
+            ->setParameter('administrativeArea', '%'.$specificArea.'%')
+            ->setParameter('subAdministrativeArea', '%'.$specificArea.'%');
+    }
+
+    public function WhereSubLocality(QueryBuilder $queryBuilder, $specificArea){
+        return $queryBuilder
+            ->orWhere('u.subLocality Like :subLocality')
+            ->setParameter('subLocality', '%'.$specificArea.'%');
+    }
+
     public function WhereSpecificAreaLike(QueryBuilder $queryBuilder, $specificArea){
         return $queryBuilder
             ->andWhere('u.address Like :address or u.city Like :city')
