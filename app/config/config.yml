@@ -21,6 +21,8 @@ parameters:
 
     upload_dir: '../web/assets/uploads'
 
+    app_mail: 'no-reply@zzeend.com'
+
 framework:
     #esi: ~
     translator: { fallbacks: ['%locale%'] }

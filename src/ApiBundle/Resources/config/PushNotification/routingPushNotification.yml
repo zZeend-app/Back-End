@@ -1,0 +1,4 @@
+register-device:
+    path:     /register-device
+    defaults: { _controller: ApiBundle:PushNotification:registerDevice }
+    methods: [PUT]

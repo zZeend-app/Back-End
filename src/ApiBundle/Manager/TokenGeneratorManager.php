@@ -7,7 +7,7 @@ namespace ApiBundle\Manager;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
-class TokenGenerator
+class TokenGeneratorManager
 {
 
     public function createToken($length = 20)

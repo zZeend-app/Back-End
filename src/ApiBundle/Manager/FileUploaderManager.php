@@ -9,7 +9,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class FileUploader
+class FileUploaderManager
 {
 
     public function upload($file, $uploadDir, $dataType)

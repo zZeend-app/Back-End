@@ -81,3 +81,7 @@ indexing:
 story:
     resource: "@ApiBundle/Resources/config/Story/routingStory.yml"
     prefix:   /story
+
+push-notification:
+    resource: "@ApiBundle/Resources/config/PushNotification/routingPushNotification.yml"
+    prefix:   /push-notification

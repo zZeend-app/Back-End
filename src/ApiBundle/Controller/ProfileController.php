@@ -136,7 +136,7 @@ class ProfileController extends Controller
 
             $dataType = $data['dataType'];
 
-            $fileName = $this->get('ionicapi.fileUploader')->upload($file, $uploadDir, $dataType);
+            $fileName = $this->get('ionicapi.fileUploaderManager')->upload($file, $uploadDir, $dataType);
 
             $data = $data['objectData'];
 

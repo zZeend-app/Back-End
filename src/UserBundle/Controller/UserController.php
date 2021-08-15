@@ -68,7 +68,7 @@ class UserController extends Controller
 
 
         //generate a codeGen for email verification
-        $codeGen = $this->get('ionicapi.tokenGenerator')->createToken();
+        $codeGen = $this->get('ionicapi.tokenGeneratorManager')->createToken();
 
         //save codeGen
         $entityManager = $this->getDoctrine()->getManager();
@@ -85,30 +85,13 @@ class UserController extends Controller
             'baseUrl' => $this->getParameter("baseUrl")
         );
 
-        $this->sendMail('Email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
+        $emailManager = $this->get('ionicapi.emailManager');
+        $app_mail = $this->getParameter('app_mail');
+        $emailManager->send($app_mail, $user->getEmailCanonical(), 'Email verification', '@User/Email/emailVerification.twig', $data);
+
 
         $response = array('code' => 'auth/registered', 'relatedId' => $user->getId());
         return new JsonResponse($response);
-    }
-
-    public function sendMail($subject, $from, $to, $data, $template)
-    {
-        //$from = array($this->getParameter('crm_mode') == 'prod' ? $this->getParameter('crm_sender_email_prod') : $this->getParameter('crm_sender_email_dev') => 'CRM Trévi');
-        $message = '';
-            $message = (new \Swift_Message($subject))
-                ->setFrom('zZeend-noreply@zzeend.com')
-                ->setTo($to)
-                ->setBody(
-                    $this->renderView(
-                        $template,
-                        $data
-                    )
-                    , 'text/html'
-                );
-
-        $mailer = $this->get('mailer');
-        $mailer->send($message);
-
     }
 
 
@@ -122,7 +105,7 @@ class UserController extends Controller
             return new JsonResponse($response);
         }else{
             //generate a codeGen for email verification
-            $codeGen = $this->get('ionicapi.tokenGenerator')->createToken();
+            $codeGen = $this->get('ionicapi.tokenGeneratorManager')->createToken();
 
             //save codeGen
             $entityManager = $this->getDoctrine()->getManager();
@@ -139,45 +122,15 @@ class UserController extends Controller
                           'baseUrl' => $this->getParameter("baseUrl")
             );
 
-            $this->sendMail('Email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
+            $emailManager = $this->get('ionicapi.emailManager');
+            $app_mail = $this->getParameter('app_mail');
+            $emailManager->send($app_mail, $user->getEmailCanonical(), 'Email verification', '@User/Email/emailVerification.twig', $data);
 
             $response = array('code' => 'auth/email_verification_sent');
             return new JsonResponse($response);
         }
     }
 
-    public function sendVerificationMailAction($email){
-        $em = $this->getDoctrine()->getRepository(User::class);
-        $user = $em->FindByEmail($email);
-        if($user !== null) {
-            //generate a codeGen for email verification
-            $codeGen = $this->get('ionicapi.tokenGenerator')->createToken();
-
-            //save codeGen
-            $entityManager = $this->getDoctrine()->getManager();
-            $accountVerification = new AccountVerification();
-            $accountVerification->setUser($user);
-            $accountVerification->setCodeGen($codeGen);
-            $accountVerification->setCreatedAtAutomatically();
-            $accountVerification->setUpdatedAtAutomatically();
-
-            $entityManager->persist($accountVerification);
-            $entityManager->flush();
-
-            $data = array(
-                'name' => $user->getFullname(),
-                'codeGen' => $codeGen,
-                'baseUrl' => $this->getParameter("baseUrl")
-            );
-
-            $this->sendMail('Email verification', null, $user->getEmailCanonical(), $data, '@User/Email/emailVerification.twig');
-
-            $response = array('code' => 'auth/email_verification_sent');
-        }else{
-            $response = array('code' => 'auth/user_not_found');
-        }
-        return new JsonResponse($response);
-    }
 
     public function sendPasswordForgotMailAction($email){
         $response = array();
@@ -187,7 +140,7 @@ class UserController extends Controller
         if($user !== null) {
 
             //generate a codeGen for email verification
-            $codeGen = $this->get('ionicapi.tokenGenerator')->createToken();
+            $codeGen = $this->get('ionicapi.tokenGeneratorManager')->createToken();
 
             //save codeGen
             $entityManager = $this->getDoctrine()->getManager();
@@ -206,7 +159,9 @@ class UserController extends Controller
                 'baseUrl' => $this->getParameter("baseUrl")
             );
 
-            $this->sendMail('Password recovery', null, $user->getEmailCanonical(), $data, '@User/Email/passwordForgot.twig');
+            $emailManager = $this->get('ionicapi.emailManager');
+            $app_mail = $this->getParameter('app_mail');
+            $emailManager->send($app_mail, $user->getEmailCanonical(), 'Password recovery', '@User/Email/passwordForgot.twig', $data);
 
             $response = array('code' => 'recovery_mail_sent');
 

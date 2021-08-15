@@ -169,6 +169,12 @@ class User extends BaseUser implements JsonSerializable
     private $mainVisibility;
 
     /**
+     * @ORM\OneToMany(targetEntity="ApiBundle\Entity\Device", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $devices;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
@@ -713,6 +719,44 @@ class User extends BaseUser implements JsonSerializable
     {
         $this->setUpdatedAt(new DateTime());
     }
+
+
+    /**
+     * Add device.
+     *
+     * @param \ApiBundle\Entity\Device $device
+     *
+     * @return User
+     */
+    public function addDevice(\ApiBundle\Entity\Device $device)
+    {
+        $this->devices[] = $device;
+
+        return $this;
+    }
+
+    /**
+     * Remove device.
+     *
+     * @param \ApiBundle\Entity\Device $device
+     *
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     */
+    public function removeDevice(\ApiBundle\Entity\Device $device)
+    {
+        return $this->devices->removeElement($device);
+    }
+
+    /**
+     * Get devices.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getDevices()
+    {
+        return $this->devices;
+    }
+
 
 
     public function jsonSerialize($entityClass = null,$include = []){

@@ -62,6 +62,26 @@ class ZzeendController extends Controller
             $createNotificationManager = $this->get("ionicapi.NotificationManager");
             $createNotificationManager->newNotification(1, $zZeend->getId());
 
+            $subject = 'You were assigned to a new zZeend';
+
+            //send mail
+
+            $emailManager = $this->get('ionicapi.emailManager');
+
+            $data = array(
+                'name' => 'sdsdsd',
+                'codeGen' => 'sdsdsd',
+                'baseUrl' => 'sdsd'
+            );
+
+            $app_mail = $this->getParameter('app_mail');
+            $emailManager->send($app_mail, $userAssigned->getEmailCanonical(), $subject, '@User/Email/emailVerification.twig', $data);
+
+
+            //send notification
+            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+            $data = array("zZeend" => $zZeend);
+            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend', $subject.' by ' . $currenetUser->getFullname(), $data);
 
             $response = array("code" => $zZeend->getId());
 
@@ -354,7 +374,7 @@ class ZzeendController extends Controller
                 }
             }
 
-            if($atLeastOne){
+            if ($atLeastOne) {
 
                 $createNotificationManager = $this->get("ionicapi.NotificationManager");
                 $createNotificationManager->newNotification(5, $zZeend->getId());
