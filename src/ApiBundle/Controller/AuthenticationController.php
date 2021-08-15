@@ -132,6 +132,12 @@ class AuthenticationController extends Controller
 
         }
 
+        if($fileType == 'post'){
+
+            $filepath = $uploadDir.'/post_photos/'.$fileName;
+
+        }
+
         //expose image file to the web
 
         $response = new Response();

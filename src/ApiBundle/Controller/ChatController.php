@@ -92,7 +92,9 @@ class ChatController extends Controller
             $sharedContent = null;
             $nbLikes = null;
             $nbViews = null;
+            $postLikeState = [];
             $chat = $chats[$i];
+            $currentUser = $this->getUser();
 
             if($chat->getShare() !== null){
                 $shareTypeId = $chat->getShare()->getShareType()->getId();
@@ -114,6 +116,11 @@ class ChatController extends Controller
                     $qb = $em->GetViewsCount($qb, $sharedContent);
                     $nbViews = $qb->getQuery()->getSingleScalarResult();
 
+                    $em = $this->getDoctrine()->getRepository(Like::class);
+                    $qb = $em->GetQueryBuilder();
+                    $qb =  $em->WhereUserLikesPost($qb, $currentUser, $sharedContent);
+                    $postLikeState = $qb->getQuery()->getResult();
+
                 }else if($shareTypeId == 2){
                     $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
                 }else if($shareTypeId == 3){
@@ -125,6 +132,7 @@ class ChatController extends Controller
             $response[] = array(
                 "chat" => $chat,
                 "sharedContent" => $sharedContent,
+                "postLikeState" => $postLikeState,
                 "likes" => intval($nbLikes),
                 "views" => intval($nbViews)
             );

@@ -22,13 +22,39 @@ class PostController extends Controller
         $response = array();
         $currentUser = $this->getUser();
 
+        $updated = array();
+        $fileName = '';
+        $data = array();
+
+        $file_type = null;
+
         if ($currentUser !== null) {
 
-            $data = $request->getContent();
-            $data = json_decode($data, true);
+            if (!empty($request->files->get('postFile'))) {
 
-            $file_path = null;
-            $file_type = null;
+                $file = $request->files->get('postFile');
+
+                $uploadDir = $this->getParameter('upload_dir');
+
+                $data = json_decode($_POST['data'], true);
+
+                $dataType = $data['dataType'];
+
+                $fileName = $this->get('ionicapi.fileUploader')->upload($file, $uploadDir, $dataType);
+
+                $data = $data['objectData'];
+                $file_type = 'image';
+
+            }
+
+
+            if ($fileName == '') {
+
+                //if no upload has made
+                $data = $request->getContent();
+                $data = json_decode($data, true);
+            }
+
 
             $entityManager = $this->getDoctrine()->getManager();
 
@@ -43,18 +69,16 @@ class PostController extends Controller
                 $post->setText(null);
             }
 
-            if (array_key_exists('filePath', $data)) {
-                $filePath = $data['filePath'];
-                $post->setFilePath($filePath);
+            if ($fileName !== '') {
+                $post->setFilePath('post/' . $fileName);
             } else {
-                $post->setFilePath($file_path);
+                $post->setFilePath('');
             }
 
-            if (array_key_exists('fileType', $data)) {
-                $fileType = $data['fileType'];
-                $post->setFileType($fileType);
-            } else {
+            if ($file_type !== null) {
                 $post->setFileType($file_type);
+            } else {
+                $post->setFileType('');
             }
 
             if (array_key_exists('link', $data)) {
@@ -155,6 +179,7 @@ class PostController extends Controller
 
                 if ($shareTypeId == 1) {
                     $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
+
                 } else if ($shareTypeId == 2) {
                     $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
                 }
