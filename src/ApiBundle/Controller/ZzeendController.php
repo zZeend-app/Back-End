@@ -68,20 +68,49 @@ class ZzeendController extends Controller
 
             $emailManager = $this->get('ionicapi.emailManager');
 
+            $status = '';
+            $statusId = $zZeend->getStatus()->getId();
+            if ($statusId == 1) {
+
+                $status = 'In progress';
+
+            } else if ($statusId == 2) {
+
+                $status = 'Uncompleted';
+
+            } else if ($statusId == 3) {
+
+                $status = 'Completed';
+
+            }
+
             $data = array(
-                'name' => 'sdsdsd',
-                'codeGen' => 'sdsdsd',
-                'baseUrl' => 'sdsd'
+                'name' => $zZeend->getUserAssigned()->getFullname(),
+                'text' => $zZeend->getUser()->getFullname() . ' just created a new zZeend in your name. Check this out!!!',
+                'id' => 'n° ' . $zZeend->getId(),
+                'title' => $zZeend->getTitle(),
+                'cost' => $zZeend->getCost() . ' $',
+                'from' => $zZeend->getFrom()->format('Y-m-d H:i:s'),
+                'to' => $zZeend->getTo()->format('Y-m-d H:i:s'),
+                'paymentLimitDate' => $zZeend->getPaymentLimitDate()->format('Y-m-d H:i:s'),
+                'serviceOwner' => $zZeend->getUser()->getFullname(),
+                'status' => $status,
+                'payment' => $zZeend->getTransaction() !== null ? 'Yes' : 'Not yet',
+                'finalized' => $zZeend->getDone() == true ? 'Yes' : 'Not yet',
+                'canceled' => $zZeend->getCanceled() == true ? 'Yes' : 'No',
+                'createdAt' => $zZeend->getCreatedAt()->format('Y-m-d H:i:s')
+
             );
 
             $app_mail = $this->getParameter('app_mail');
-            $emailManager->send($app_mail, $userAssigned->getEmailCanonical(), $subject, '@User/Email/emailVerification.twig', $data);
+            $emailManager->send($app_mail, $userAssigned->getEmailCanonical(), $subject, '@User/Email/zZeend.twig', $data);
 
 
             //send notification
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
-            $data = array("zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend', $subject.' by ' . $currenetUser->getFullname(), $data);
+            $data = array("type" => 1,
+                "zZeend" => $zZeend);
+            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend', $subject . ' by ' . $currenetUser->getFullname(), $data);
 
             $response = array("code" => $zZeend->getId());
 

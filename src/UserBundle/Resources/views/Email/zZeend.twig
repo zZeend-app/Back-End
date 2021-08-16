@@ -1,0 +1,75 @@
+{% extends('@Api/Core/emailCore.html.twig') %}
+
+
+{% block Content %}
+
+    <p>
+        Hello {{ name }}
+    </p>
+
+    <p>
+        {{ text }}
+    </p>
+
+    <div>
+
+        <h1>{{ title }}</h1>
+        <table>
+            <thead>
+            <tr>
+                <th class="days">Id</th>
+                <td>{{ id }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th>Cost</th>
+                <td>{{ cost }}</td>
+            </tr>
+            <tr>
+                <th>From</th>
+                <td>{{ from }}</td>
+            </tr>
+            <tr>
+                <th>To</th>
+                <td>{{ to }}</td>
+            </tr>
+            <tr>
+                <th>Payment date limit</th>
+                <td>{{ paymentLimitDate }}</td>
+            </tr>
+            <tr>
+                <th>Service owner</th>
+                <td>{{ serviceOwner }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ status }}</td>
+            </tr>
+            <tr>
+                <th>Payment</th>
+                <td>{{ payment }}</td>
+            </tr>
+            <tr>
+                <th>Finalized</th>
+                <td>{{ finalized }}</td>
+            </tr>
+            {% if canceled == 'Yes' %}
+            <tr>
+                <th>Canceled</th>
+                <td>{{ canceled }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>Created at</th>
+                <td>{{ createdAt }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <br>
+
+    <h4>zZeend Team</h4>
+{% endblock %}

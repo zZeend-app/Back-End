@@ -274,9 +274,9 @@ class Zzeend implements JsonSerializable
      *
      * @return ZzeendStatus
      */
-    public function getStatus($status)
+    public function getStatus()
     {
-        return $this->status = $status;
+        return $this->status;
     }
 
 
@@ -439,10 +439,6 @@ class Zzeend implements JsonSerializable
         }
 
         if(!$entityClass instanceof Zzeend || in_array("paymentLimitDate",$include)){
-            $json["paymentLimitDate"] = $this->paymentLimitDate;
-        }
-
-        if(!$entityClass instanceof Zzeend || in_array("title",$include)){
             $json["paymentLimitDate"] = $this->paymentLimitDate;
         }
 
