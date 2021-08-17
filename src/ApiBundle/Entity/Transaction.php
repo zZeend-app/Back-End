@@ -13,8 +13,8 @@ use UserBundle\Entity\User;
 
 /**
  * Service
- *
- * @ORM\Table(name="`transaction`")
+ * @ORM\Entity
+ * @ORM\Table(name="`transaction`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\TransactionRepository")
  */
 

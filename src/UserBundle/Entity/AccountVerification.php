@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * AccountVerification
  * @ORM\Entity
- * @ORM\Table(name="account_verification")
+ * @ORM\Table(name="account_verification", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  *
  */
 class AccountVerification

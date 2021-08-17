@@ -12,8 +12,8 @@ use UserBundle\Entity\User;
 
 /**
  * Service
- *
- * @ORM\Table(name="`financial_status`")
+ * @ORM\Entity
+ * @ORM\Table(name="`financial_status`" , options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\FinancialStatusRepository")
  */
 

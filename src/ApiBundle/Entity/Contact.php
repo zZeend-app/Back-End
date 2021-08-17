@@ -13,8 +13,8 @@ use UserBundle\Entity\User;
 
 /**
  * Request
- *
- * @ORM\Table(name="`contact`")
+ * @ORM\Entity
+ * @ORM\Table(name="`contact`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\ContactRepository")
  */
 

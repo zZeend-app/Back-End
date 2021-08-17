@@ -62,7 +62,7 @@ class ZzeendController extends Controller
             $createNotificationManager = $this->get("ionicapi.NotificationManager");
             $createNotificationManager->newNotification(1, $zZeend->getId());
 
-            $subject = 'You were assigned to a new zZeend';
+            $subject = 'You were assigned to a new zZeend ('.$zZeend->getTitle().')';
 
             //send mail
 
@@ -110,7 +110,7 @@ class ZzeendController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 1,
                 "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend', $subject . ' by ' . $currenetUser->getFullname(), $data);
+            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend (n° '.$zZeend->getId().' )', $subject . ' by ' . $currenetUser->getFullname(), $data);
 
             $response = array("code" => $zZeend->getId());
 
@@ -217,6 +217,17 @@ class ZzeendController extends Controller
                 $createNotificationManager = $this->get("ionicapi.NotificationManager");
                 $createNotificationManager->newNotification(2, $zZeend->getId());
 
+                $serviceOwner = $zZeend->getUser();
+
+                $subject = $currentUser->getFullname().' just made a payment for '.$zZeend->getTitle().').';
+                //send notification
+                $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+                $data = array("type" => 5,
+                    "payment" => array("message" => "This zZeend has been paid"));
+                $pushNotificationManager->sendNotification($serviceOwner, 'zZeend paid (n° '.$zZeend->getId().')', $subject , $data);
+
+
+
                 $response = array("code" => "payment_success");
             } else {
                 $response = array("code" => "action_not_allowed");
@@ -234,6 +245,8 @@ class ZzeendController extends Controller
 
         $zZeendCommission = 5;
         $response = array();
+
+        $currentUser = $this->getUser();
 
         $data = $request->getContent();
         $data = json_decode($data, true);
@@ -292,6 +305,16 @@ class ZzeendController extends Controller
 
             }
 
+            $serviceOwner = $zZeend->getUser();
+
+            $subject = $currentUser->getFullname().' has finalized this zZeend ('.$zZeend->getTitle().')';
+            //send notification
+            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+            $data = array("type" => 6,
+                "zZeend" => $zZeend);
+            $pushNotificationManager->sendNotification($serviceOwner, 'zZeend finalized (n° '.$zZeend->getId().')', $subject , $data);
+
+
             $response = array("code" => "zZeend_done");
 
         } else {
@@ -307,6 +330,8 @@ class ZzeendController extends Controller
 
         $data = $request->getContent();
         $data = json_decode($data, true);
+
+        $currentUser = $this->getUser();
 
         $zZeendId = $data['zZeendId'];
 
@@ -326,6 +351,17 @@ class ZzeendController extends Controller
             $createNotificationManager = $this->get("ionicapi.NotificationManager");
             $createNotificationManager->newNotification(4, $zZeend->getId());
 
+            $serviceSeeker = $zZeend->getUserAssigned();
+
+            $subject = $currentUser->getFullname().' has canceled this zZeend ('.$zZeend->getTitle().')';
+            //send notification
+            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+            $data = array("type" => 7,
+                "zZeend" => $zZeend);
+            $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend canceled (n° '.$zZeend->getId().')', $subject , $data);
+
+
+
             $response = array("code" => "zZeend_canceled");
 
         } else {
@@ -339,6 +375,8 @@ class ZzeendController extends Controller
     {
         $response = array();
         $update = array();
+
+        $currentUser = $this->getUser();
 
         $atLeastOne = false;
 
@@ -407,6 +445,16 @@ class ZzeendController extends Controller
 
                 $createNotificationManager = $this->get("ionicapi.NotificationManager");
                 $createNotificationManager->newNotification(5, $zZeend->getId());
+
+                $serviceSeeker = $zZeend->getUserAssigned();
+
+                $subject = $currentUser->getFullname().' edited this zZeend ('.$zZeend->getTitle().')';
+                //send notification
+                $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+                $data = array("type" => 8,
+                    "zZeend" => $zZeend);
+                $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend update (n° '.$zZeend->getId().')', $subject , $data);
+
 
             }
 

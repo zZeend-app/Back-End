@@ -13,8 +13,8 @@ use UserBundle\Entity\User;
 
 /**
  * Notification
- *
- * @ORM\Table(name="`notification`")
+ * @ORM\Entity
+ * @ORM\Table(name="`notification`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\NotificationRepository")
  */
 

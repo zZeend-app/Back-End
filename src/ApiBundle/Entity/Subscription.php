@@ -14,8 +14,8 @@ use UserBundle\Entity\User;
 
 /**
  * Service
- *
- * @ORM\Table(name="`subscription`")
+ * @ORM\Entity
+ * @ORM\Table(name="`subscription`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\SubscriptionRepository")
  */
 

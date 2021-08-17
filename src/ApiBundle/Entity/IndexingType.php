@@ -12,8 +12,8 @@ use UserBundle\Entity\User;
 
 /**
  * Service
- *
- * @ORM\Table(name="`indexing_type`")
+ * @ORM\Entity
+ * @ORM\Table(name="`indexing_type`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\IndexingTypeRepository")
  */
 

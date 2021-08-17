@@ -13,8 +13,8 @@ use UserBundle\Entity\User;
 
 /**
  * Service
- *
- * @ORM\Table(name="`event`")
+ * @ORM\Entity
+ * @ORM\Table(name="`event`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\EventRepository")
  */
 

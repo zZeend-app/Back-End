@@ -51,7 +51,30 @@ class ChatController extends Controller
             $entityManager->persist($chat);
             $entityManager->flush();
 
-            $response = array("code" => "chat_sent");
+            $mainUser = $contact->getUsers()['mainUser'];
+            $secondUser = $contact->getUsers()['secondUser'];
+
+            $receiver = null;
+
+            if($mainUser->getId() == $currentUser->getId()){
+
+                $receiver = $secondUser;
+
+            }else if($secondUser->getId() == $currentUser->getId()){
+
+                $receiver = $mainUser;
+            }
+
+            $subject = $chat->getDiscussion();
+            //send notification
+            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+            $data = array("type" => 9,
+                "chat" => $chat);
+            $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname().' sent a chat ', $subject , $data);
+
+
+
+            $response = array("code" => $chat);
         } else {
             $response = array("code" => "action_not_allowed");
         }

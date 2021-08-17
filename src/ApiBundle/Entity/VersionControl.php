@@ -6,8 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * VersionControl
- *
- * @ORM\Table(name="version_control")
+ * @ORM\Entity
+ * @ORM\Table(name="version_control", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\VersionControlRepository")
  */
 class VersionControl

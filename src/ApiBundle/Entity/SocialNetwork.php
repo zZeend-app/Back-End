@@ -14,8 +14,8 @@ use UserBundle\Entity\User;
 
 /**
  * Service
- *
- * @ORM\Table(name="`social_network`")
+ * @ORM\Entity
+ * @ORM\Table(name="`social_network`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\SocialNetworkRepository")
  */
 

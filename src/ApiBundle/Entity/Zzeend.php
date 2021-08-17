@@ -14,8 +14,8 @@ use UserBundle\Entity\User;
 
 /**
  * Zzeend
- *
- * @ORM\Table(name="`zzeend`")
+ * @ORM\Entity
+ * @ORM\Table(name="`zzeend`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\ZzeendRepository")
  */
 

@@ -14,7 +14,8 @@ use UserBundle\Entity\User;
 /**
  * Request
  *
- * @ORM\Table(name="`chat`")
+ * @ORM\Entity
+ * @ORM\Table(name="`chat`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\ChatRepository")
  */
 class Chat implements JsonSerializable

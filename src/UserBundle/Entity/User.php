@@ -14,8 +14,8 @@ use ApiBundle\Entity\Service;
 
 /**
  * User
- *
- * @ORM\Table(name="`user`")
+ * @ORM\Entity
+ * @ORM\Table(name="`user`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
  */
 class User extends BaseUser implements JsonSerializable
@@ -803,6 +803,10 @@ class User extends BaseUser implements JsonSerializable
 
         if(!$entityClass instanceof User || in_array("phoneNumber",$include)){
             $json["phoneNumber"] = $this->phoneNumber;
+        }
+
+        if(!$entityClass instanceof User || in_array("visibility",$include)){
+            $json["visibility"] = $this->visibility;
         }
 
         if(!$entityClass instanceof User || in_array("roles",$include)){

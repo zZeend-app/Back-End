@@ -14,8 +14,8 @@ use UserBundle\Entity\User;
 
 /**
  * Service
- *
- * @ORM\Table(name="`like`")
+ * @ORM\Entity
+ * @ORM\Table(name="`like`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\LikeRepository")
  */
 

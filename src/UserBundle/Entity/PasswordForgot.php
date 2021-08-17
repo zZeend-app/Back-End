@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * PasswordForgot
  * @ORM\Entity
- * @ORM\Table(name="password_forgot")
+ * @ORM\Table(name="password_forgot", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  *
  */
 class PasswordForgot

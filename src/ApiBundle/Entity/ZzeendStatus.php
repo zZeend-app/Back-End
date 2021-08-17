@@ -12,8 +12,8 @@ use UserBundle\Entity\User;
 
 /**
  * Service
- *
- * @ORM\Table(name="`zzeend_status`")
+ * @ORM\Entity
+ * @ORM\Table(name="`zzeend_status`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\ZzeendStatusRepository")
  */
 

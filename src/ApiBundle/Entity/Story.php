@@ -13,8 +13,8 @@ use UserBundle\Entity\User;
 
 /**
  * Service
- *
- * @ORM\Table(name="`story`")
+ * @ORM\Entity
+ * @ORM\Table(name="`story`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
  * @ORM\Entity(repositoryClass="ApiBundle\Repository\StoryRepository")
  */
 class Story implements JsonSerializable

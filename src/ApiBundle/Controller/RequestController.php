@@ -36,6 +36,14 @@ class RequestController extends Controller
 
         $response = array('code' => 'request_sent');
 
+        $subject = $sender->getFullname().' sent you a request';
+
+        //send notification
+        $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+        $data = array("type" => 2,
+            "request" => $zZeendRequest);
+        $pushNotificationManager->sendNotification($receiver, 'New request', $subject , $data);
+
         return new JsonResponse($response);
     }
 
@@ -78,6 +86,7 @@ class RequestController extends Controller
 
                     $entityManager->flush();
 
+
                     $response = array('code' => 'request_accepted');
                 } else {
                     $response = array('code' => 'action_not_allowed');
@@ -99,6 +108,28 @@ class RequestController extends Controller
 
             $createNotificationManager = $this->get("ionicapi.NotificationManager");
             $createNotificationManager->newNotification($notificationTypeInt, $zZeendRequest->getId());
+
+            $pushNotificationType = 0;
+            $subject = '';
+            if ($requestState == true) {
+
+                $subject = $sender->getFullname().' accepted your request';
+                $pushNotificationType = 3;
+
+            }else{
+
+                $subject = $sender->getFullname().' rejected your request';
+                $pushNotificationType = 4;
+
+            }
+
+
+            //send notification
+            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+            $data = array("type" => $pushNotificationType,
+                "request" => $zZeendRequest);
+            $pushNotificationManager->sendNotification($receiver, 'New request', $subject , $data);
+
 
 
         } else {

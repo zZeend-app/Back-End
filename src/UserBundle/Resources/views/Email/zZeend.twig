@@ -14,55 +14,191 @@
     <div>
 
         <h1>{{ title }}</h1>
-        <table>
+        <table style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
             <thead>
-            <tr>
-                <th class="days">Id</th>
-                <td>{{ id }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Id</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ id }}</td>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <th>Cost</th>
-                <td>{{ cost }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Cost</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ cost }}</td>
             </tr>
-            <tr>
-                <th>From</th>
-                <td>{{ from }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">From</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ from }}</td>
             </tr>
-            <tr>
-                <th>To</th>
-                <td>{{ to }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">To</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ to }}</td>
             </tr>
-            <tr>
-                <th>Payment date limit</th>
-                <td>{{ paymentLimitDate }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Payment date limit</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ paymentLimitDate }}</td>
             </tr>
-            <tr>
-                <th>Service owner</th>
-                <td>{{ serviceOwner }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Service owner</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ serviceOwner }}</td>
             </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ status }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Status</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ status }}</td>
             </tr>
-            <tr>
-                <th>Payment</th>
-                <td>{{ payment }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Paid</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ payment }}</td>
             </tr>
-            <tr>
-                <th>Finalized</th>
-                <td>{{ finalized }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Finalized</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ finalized }}</td>
             </tr>
             {% if canceled == 'Yes' %}
-            <tr>
-                <th>Canceled</th>
-                <td>{{ canceled }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Canceled</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ canceled }}</td>
             </tr>
             {% endif %}
-            <tr>
-                <th>Created at</th>
-                <td>{{ createdAt }}</td>
+            <tr style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">
+                <th style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Created at</th>
+                <td style="border: 2px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            border-spacing: 5px;
+            margin: 10px;">{{ createdAt }}</td>
             </tr>
             </tbody>
         </table>
