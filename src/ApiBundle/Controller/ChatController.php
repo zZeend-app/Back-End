@@ -74,7 +74,7 @@ class ChatController extends Controller
 
 
 
-            $response = array("code" => $chat);
+            $response = array("chat" => $chat);
         } else {
             $response = array("code" => "action_not_allowed");
         }
