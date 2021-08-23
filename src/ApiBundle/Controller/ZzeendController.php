@@ -89,7 +89,7 @@ class ZzeendController extends Controller
                 'text' => $zZeend->getUser()->getFullname() . ' just created a new zZeend in your name. Check this out!!!',
                 'id' => 'n° ' . $zZeend->getId(),
                 'title' => $zZeend->getTitle(),
-                'cost' => $zZeend->getCost() . ' $',
+                'cost' => ' $'.$zZeend->getCost(),
                 'from' => $zZeend->getFrom()->format('Y-m-d H:i:s'),
                 'to' => $zZeend->getTo()->format('Y-m-d H:i:s'),
                 'paymentLimitDate' => $zZeend->getPaymentLimitDate()->format('Y-m-d H:i:s'),
