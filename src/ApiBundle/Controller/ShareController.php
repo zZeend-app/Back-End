@@ -63,6 +63,7 @@ class ShareController extends Controller
                 $user = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
                 if ($user !== null) {
                     $share->setRelatedId($relatedId);
+
                 } else {
                     return new JsonResponse(array("code" => "action_not_Allowed"));
                 }
@@ -109,6 +110,12 @@ class ShareController extends Controller
                 $post->setCreatedAtAutomatically();
                 $entityManager->persist($post);
 
+                $entityManager->persist($share);
+                $entityManager->flush();
+
+                return  $this->forward("ApiBundle:Post:getPostById", [
+                    'postId' => $post->getId()]);
+
             } else if ($sharedDestination == 2) {
                 //share to chat
 
@@ -123,6 +130,14 @@ class ShareController extends Controller
                     $chat->setViewed(false);
                     $chat->setCreatedAtAutomatically();
                     $entityManager->persist($chat);
+
+                    $entityManager->persist($share);
+                    $entityManager->flush();
+
+                    return  $this->forward("ApiBundle:Chat:getChatById", [
+                        'chatId' => $chat->getId()]);
+
+
                 }else{
                     return new JsonResponse(array("code" => "action_not_allowed"));
                 }
@@ -131,8 +146,6 @@ class ShareController extends Controller
                 return new JsonResponse(array("code" => "action_not_allowed"));
             }
 
-            $entityManager->persist($share);
-            $entityManager->flush();
 
             $response = array("code" => "content_shared");
 

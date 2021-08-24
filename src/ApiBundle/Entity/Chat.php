@@ -83,6 +83,16 @@ class Chat implements JsonSerializable
     private $createdAt;
 
     /**
+     * Get id.
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Set users.
      *
      * @param User $sender

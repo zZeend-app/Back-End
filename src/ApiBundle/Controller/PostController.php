@@ -66,7 +66,7 @@ class PostController extends Controller
                 $text = $data['text'];
                 $post->setText($text);
             } else {
-                $post->setText(null);
+                $post->setText('');
             }
 
             if ($fileName !== '') {
@@ -110,7 +110,7 @@ class PostController extends Controller
             $entityManager->persist($post);
             $entityManager->flush();
 
-            $response = array("code" => "post_added");
+            return $this->getPostByIdAction($post->getId());
         } else {
             $response = array("code" => "action_not_allowed");
         }
@@ -203,6 +203,61 @@ class PostController extends Controller
 
         return new JsonResponse($response);
     }
+
+    public function getPostByIdAction($postId)
+    {
+
+        $response = array();
+
+
+        $currentUser = $this->getUser();
+        $sharedContent = null;
+
+
+        $post = $this->getDoctrine()->getRepository(Post::class)->find($postId);
+
+            $em = $this->getDoctrine()->getRepository(Like::class);
+            $qb = $em->GetQueryBuilder();
+            $qb = $em->GetLikesCount($qb, $post);
+            $nbLikes = $qb->getQuery()->getSingleScalarResult();
+
+            $em = $this->getDoctrine()->getRepository(View::class);
+            $qb = $em->GetQueryBuilder();
+            $qb = $em->GetViewsCount($qb, $post);
+            $nbViews = $qb->getQuery()->getSingleScalarResult();
+
+
+            if ($post->getShare() !== null) {
+                $shareTypeId = $post->getShare()->getShareType()->getId();
+
+                $relatedId = $post->getShare()->getRelatedId();
+
+
+                if ($shareTypeId == 1) {
+                    $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
+
+                } else if ($shareTypeId == 2) {
+                    $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
+                }
+            }
+
+            $em = $this->getDoctrine()->getRepository(Like::class);
+            $qb = $em->GetQueryBuilder();
+            $qb =  $em->WhereUserLikesPost($qb, $currentUser, $post);
+            $postLikeState = $qb->getQuery()->getResult();
+
+            $response = array(
+                "post" => $post,
+                "postLikeState" => $postLikeState,
+                "likes" => intval($nbLikes),
+                "views" => intval($nbViews),
+                "sharedContent" => $sharedContent
+            );
+
+
+        return new JsonResponse($response);
+    }
+
 
     public function getCurrentUserAllPostsAction(Request $request)
     {

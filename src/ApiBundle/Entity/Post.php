@@ -95,6 +95,16 @@ class Post implements JsonSerializable
      */
     private $createdAt;
 
+    /**
+     * Get iid.
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
 
     /**
      * Set user.

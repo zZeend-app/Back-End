@@ -166,6 +166,68 @@ class ChatController extends Controller
         return new JsonResponse($response);
     }
 
+    public function getChatByIdAction($chatId)
+    {
+        $response = array();
+
+
+        $chat = $this->getDoctrine()->getRepository(Chat::class)->find($chatId);
+
+            $sharedContent = null;
+            $nbLikes = null;
+            $nbViews = null;
+            $postLikeState = [];
+            $currentUser = $this->getUser();
+
+            if($chat->getShare() !== null){
+                $shareTypeId = $chat->getShare()->getShareType()->getId();
+
+
+                $relatedId = $chat->getShare()->getRelatedId();
+
+
+                if($shareTypeId == 1){
+                    $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
+
+                    $em = $this->getDoctrine()->getRepository(Like::class);
+                    $qb = $em->GetQueryBuilder();
+                    $qb = $em->GetLikesCount($qb, $sharedContent);
+                    $nbLikes = $qb->getQuery()->getSingleScalarResult();
+
+                    $em = $this->getDoctrine()->getRepository(View::class);
+                    $qb = $em->GetQueryBuilder();
+                    $qb = $em->GetViewsCount($qb, $sharedContent);
+                    $nbViews = $qb->getQuery()->getSingleScalarResult();
+
+                    $em = $this->getDoctrine()->getRepository(Like::class);
+                    $qb = $em->GetQueryBuilder();
+                    $qb =  $em->WhereUserLikesPost($qb, $currentUser, $sharedContent);
+                    $postLikeState = $qb->getQuery()->getResult();
+
+                }else if($shareTypeId == 2){
+                    $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
+                }else if($shareTypeId == 3){
+                    //chat shared retrieved
+                    $sharedContent = $this->getDoctrine()->getRepository(Chat::class)->find($relatedId);
+                }
+            }
+
+            $response = array(
+                "chat" => $chat,
+                "sharedContent" => $sharedContent,
+                "postLikeState" => $postLikeState,
+                "likes" => intval($nbLikes),
+                "views" => intval($nbViews)
+            );
+
+
+
+
+        return new JsonResponse($response);
+    }
+
+
+
     public function getChatContactAction(Request $request)
     {
         $currentUser = $this->getUser();
