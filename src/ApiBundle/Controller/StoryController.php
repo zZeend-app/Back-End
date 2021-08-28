@@ -40,7 +40,7 @@ class StoryController extends Controller
         $count = $filtersInclude['count'];
         $offset = $filtersInclude['offset'];
 
-        $limit = $offset + 49;
+        $limit = $offset + 14;
 
         $em = $this->getDoctrine()->getManager();
 
@@ -117,6 +117,7 @@ class StoryController extends Controller
                     $stories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
 
                     $storyViewsState = array();
+                    $allViewsExceptCurrentUser = array();
                     for($k = 0; $k < count($stories); $k++){
 
                         $story = $stories[$k];
@@ -124,19 +125,28 @@ class StoryController extends Controller
                         $em = $this->getDoctrine()->getRepository(View::class);
                         $qb = $em->GetQueryBuilder();
                         $qb = $em->WhereUserViewsStory($qb, $currentUser, $story->getId(), 3);
+                        $_qb = $em->WhereAllViewsStory($qb, $story->getId(), 3);
                         $storyViewsState[] = $qb->getQuery()->getResult();
+                        $allViewsExceptCurrentUser[] = $_qb->getQuery()->getResult();
+
+                    }
+
+                    if(count($allViewsExceptCurrentUser) > 0){
+
+                        $response[] = array( "user" => $user, "stories" => $stories, 'storyViewsState' => $storyViewsState, 'views' => [$allViewsExceptCurrentUser][0]);
+
+
+                    }else{
+
+                        $response[] = array( "user" => $user, "stories" => $stories, 'storyViewsState' => $storyViewsState, 'views' => []);
+
 
                     }
 
 
-                    $response[] = array( "user" => $user, "stories" => $stories, 'storyViewsState' => $storyViewsState);
-
                 }
 
             }
-
-
-
 
 
         if($currentUserStoryExists){
@@ -146,8 +156,32 @@ class StoryController extends Controller
 
             $currentUserStories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
 
+            $allViewsExceptCurrentUser = array();
 
-            $tempArray = array( "user" => $user, "stories" => $currentUserStories, 'storyViewsState' => []);
+            for($k = 0; $k < count($currentUserStories); $k++){
+
+                $story = $stories[$k];
+
+                $em = $this->getDoctrine()->getRepository(View::class);
+                $qb = $em->GetQueryBuilder();
+                $_qb = $em->WhereAllViewsStory($qb, $story->getId(), 3);
+                $allViewsExceptCurrentUser[] = $_qb->getQuery()->getResult();
+
+            }
+
+
+            if($allViewsExceptCurrentUser > 0){
+
+                $tempArray = array( "user" => $user, "stories" => $currentUserStories, 'storyViewsState' => [], 'views' => $allViewsExceptCurrentUser[0]);
+
+
+            }else{
+
+                $tempArray = array( "user" => $user, "stories" => $currentUserStories, 'storyViewsState' => [], 'views' =>[]);
+
+
+            }
+
 
            $response = array_merge([$tempArray], $response);
 

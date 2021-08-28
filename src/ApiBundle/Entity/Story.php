@@ -49,9 +49,9 @@ class Story implements JsonSerializable
     private $fileType;
 
     /**
-     * @var string
+     * @var boolean
      *
-     * @ORM\Column(name="active", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="active", type="boolean", length=255, unique=false, nullable=false)
      */
     private $active;
 

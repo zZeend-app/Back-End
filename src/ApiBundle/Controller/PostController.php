@@ -64,7 +64,7 @@ class PostController extends Controller
 
             if (array_key_exists('text', $data)) {
                 $text = $data['text'];
-                $post->setText($text);
+                $post->setText(nl2br($text));
             } else {
                 $post->setText('');
             }

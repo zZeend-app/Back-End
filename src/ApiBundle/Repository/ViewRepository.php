@@ -49,4 +49,15 @@ class ViewRepository extends \Doctrine\ORM\EntityRepository
     }
 
 
+    public function WhereAllViewsStory(QueryBuilder $queryBuilder, $relatedId, $viewType)
+    {
+        return $queryBuilder
+            ->andWhere('v.relatedId = :relatedId')
+            ->setParameter('relatedId', $relatedId)
+            ->andWhere('v.viewType = :viewType')
+            ->setParameter('viewType', $viewType);
+    }
+
+
+
 }

@@ -39,7 +39,7 @@ class ChatController extends Controller
 
             $entityManager = $this->getDoctrine()->getManager();
             $chat = new Chat();
-            $chat->setDiscussion($chatFromClient);
+            $chat->setDiscussion(nl2br($chatFromClient));
             $chat->setContact($contact);
             $chat->setCreatedAtAutomatically();
             $chat->setFilePath(null);

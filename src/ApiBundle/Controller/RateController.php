@@ -39,7 +39,7 @@ class RateController extends Controller
             $rate->setUser($currentUser);
             $rate->setRatedUser($ratedUser);
             $rate->setStars($stars);
-            $rate->setPointOfView($point_of_views);
+            $rate->setPointOfView(nl2br($point_of_views));
             $rate->setCreatedAtAutomatically();
 
             $entityManager->persist($rate);
