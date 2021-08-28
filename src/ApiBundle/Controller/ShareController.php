@@ -98,7 +98,7 @@ class ShareController extends Controller
                 $text = '';
 
                 if(array_key_exists('text', $data)){
-                    $text = $data['text'];
+                    $text = nl2br($data['text']);
                 }
 
                 $post = new Post();
