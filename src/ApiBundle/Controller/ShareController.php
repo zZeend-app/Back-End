@@ -6,9 +6,11 @@ namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
+use ApiBundle\Entity\Like;
 use ApiBundle\Entity\Post;
 use ApiBundle\Entity\Share;
 use ApiBundle\Entity\ShareType;
+use ApiBundle\Entity\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -134,8 +136,33 @@ class ShareController extends Controller
                     $entityManager->persist($share);
                     $entityManager->flush();
 
-                    return  $this->forward("ApiBundle:Chat:getChatById", [
-                        'chatId' => $chat->getId()]);
+                    $mainUser = $contact->getUsers()['mainUser'];
+                    $secondUser = $contact->getUsers()['secondUser'];
+
+                    $receiver = null;
+
+                    if($mainUser->getId() == $currentUser->getId()){
+
+                        $receiver = $secondUser;
+
+                    }else if($secondUser->getId() == $currentUser->getId()){
+
+                        $receiver = $mainUser;
+                    }
+
+                    $subject = 'File content';
+                    //send notification
+
+                    $completeChatObject = $this->forward("ApiBundle:Chat:getChatById", [
+                        'chatId' => $chat->getId() ]);
+
+                    $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+                    $data = array("type" => 10,
+                        "chat" => $chat);
+                    $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname().' sent a chat ', $subject , $data);
+
+
+                    return  new JsonResponse($completeChatObject);
 
 
                 }else{
@@ -157,4 +184,6 @@ class ShareController extends Controller
         return new JsonResponse($response);
     }
 
+
 }
+

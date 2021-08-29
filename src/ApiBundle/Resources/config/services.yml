@@ -24,3 +24,7 @@ services:
       class: ApiBundle\Manager\EmailManager
       arguments:
         [ '@service_container' ]
+
+    ionicapi.chatManager:
+      class: ApiBundle\Manager\ChatManager
+      arguments: [ "@doctrine.orm.entity_manager" ]

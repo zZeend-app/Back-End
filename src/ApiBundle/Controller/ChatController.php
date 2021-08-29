@@ -56,22 +56,21 @@ class ChatController extends Controller
 
             $receiver = null;
 
-            if($mainUser->getId() == $currentUser->getId()){
+            if ($mainUser->getId() == $currentUser->getId()) {
 
                 $receiver = $secondUser;
 
-            }else if($secondUser->getId() == $currentUser->getId()){
+            } else if ($secondUser->getId() == $currentUser->getId()) {
 
                 $receiver = $mainUser;
             }
 
-            $subject = $chat->getDiscussion();
+            $subject = strip_tags($chat->getDiscussion());
             //send notification
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 9,
                 "chat" => $chat);
-            $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname().' sent a chat ', $subject , $data);
-
+            $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname() . ' sent a chat ', $subject, $data);
 
 
             $response = array("chat" => $chat);
@@ -119,14 +118,14 @@ class ChatController extends Controller
             $chat = $chats[$i];
             $currentUser = $this->getUser();
 
-            if($chat->getShare() !== null){
+            if ($chat->getShare() !== null) {
                 $shareTypeId = $chat->getShare()->getShareType()->getId();
 
 
                 $relatedId = $chat->getShare()->getRelatedId();
 
 
-                if($shareTypeId == 1){
+                if ($shareTypeId == 1) {
                     $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
 
                     $em = $this->getDoctrine()->getRepository(Like::class);
@@ -141,12 +140,12 @@ class ChatController extends Controller
 
                     $em = $this->getDoctrine()->getRepository(Like::class);
                     $qb = $em->GetQueryBuilder();
-                    $qb =  $em->WhereUserLikesPost($qb, $currentUser, $sharedContent);
+                    $qb = $em->WhereUserLikesPost($qb, $currentUser, $sharedContent);
                     $postLikeState = $qb->getQuery()->getResult();
 
-                }else if($shareTypeId == 2){
+                } else if ($shareTypeId == 2) {
                     $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
-                }else if($shareTypeId == 3){
+                } else if ($shareTypeId == 3) {
                     //chat shared retrieved
                     $sharedContent = $this->getDoctrine()->getRepository(Chat::class)->find($relatedId);
                 }
@@ -166,6 +165,15 @@ class ChatController extends Controller
         return new JsonResponse($response);
     }
 
+    public function getChatByIdWithRequestAction($chatId)
+    {
+
+        $response = array();
+        $response = $this->getChatByIdAction($chatId);
+
+        return new JsonResponse($response);
+    }
+
     public function getChatByIdAction($chatId)
     {
         $response = array();
@@ -173,59 +181,56 @@ class ChatController extends Controller
 
         $chat = $this->getDoctrine()->getRepository(Chat::class)->find($chatId);
 
-            $sharedContent = null;
-            $nbLikes = null;
-            $nbViews = null;
-            $postLikeState = [];
-            $currentUser = $this->getUser();
+        $sharedContent = null;
+        $nbLikes = null;
+        $nbViews = null;
+        $postLikeState = [];
+        $currentUser = $this->getUser();
 
-            if($chat->getShare() !== null){
-                $shareTypeId = $chat->getShare()->getShareType()->getId();
-
-
-                $relatedId = $chat->getShare()->getRelatedId();
+        if ($chat->getShare() !== null) {
+            $shareTypeId = $chat->getShare()->getShareType()->getId();
 
 
-                if($shareTypeId == 1){
-                    $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
+            $relatedId = $chat->getShare()->getRelatedId();
 
-                    $em = $this->getDoctrine()->getRepository(Like::class);
-                    $qb = $em->GetQueryBuilder();
-                    $qb = $em->GetLikesCount($qb, $sharedContent);
-                    $nbLikes = $qb->getQuery()->getSingleScalarResult();
 
-                    $em = $this->getDoctrine()->getRepository(View::class);
-                    $qb = $em->GetQueryBuilder();
-                    $qb = $em->GetViewsCount($qb, $sharedContent);
-                    $nbViews = $qb->getQuery()->getSingleScalarResult();
+            if ($shareTypeId == 1) {
+                $sharedContent = $this->getDoctrine()->getRepository(Post::class)->find($relatedId);
 
-                    $em = $this->getDoctrine()->getRepository(Like::class);
-                    $qb = $em->GetQueryBuilder();
-                    $qb =  $em->WhereUserLikesPost($qb, $currentUser, $sharedContent);
-                    $postLikeState = $qb->getQuery()->getResult();
+                $em = $this->getDoctrine()->getRepository(Like::class);
+                $qb = $em->GetQueryBuilder();
+                $qb = $em->GetLikesCount($qb, $sharedContent);
+                $nbLikes = $qb->getQuery()->getSingleScalarResult();
 
-                }else if($shareTypeId == 2){
-                    $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
-                }else if($shareTypeId == 3){
-                    //chat shared retrieved
-                    $sharedContent = $this->getDoctrine()->getRepository(Chat::class)->find($relatedId);
-                }
+                $em = $this->getDoctrine()->getRepository(View::class);
+                $qb = $em->GetQueryBuilder();
+                $qb = $em->GetViewsCount($qb, $sharedContent);
+                $nbViews = $qb->getQuery()->getSingleScalarResult();
+
+                $em = $this->getDoctrine()->getRepository(Like::class);
+                $qb = $em->GetQueryBuilder();
+                $qb = $em->WhereUserLikesPost($qb, $currentUser, $sharedContent);
+                $postLikeState = $qb->getQuery()->getResult();
+
+            } else if ($shareTypeId == 2) {
+                $sharedContent = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
+            } else if ($shareTypeId == 3) {
+                //chat shared retrieved
+                $sharedContent = $this->getDoctrine()->getRepository(Chat::class)->find($relatedId);
             }
+        }
 
-            $response = array(
-                "chat" => $chat,
-                "sharedContent" => $sharedContent,
-                "postLikeState" => $postLikeState,
-                "likes" => intval($nbLikes),
-                "views" => intval($nbViews)
-            );
+        $response = array(
+            "chat" => $chat,
+            "sharedContent" => $sharedContent,
+            "postLikeState" => $postLikeState,
+            "likes" => intval($nbLikes),
+            "views" => intval($nbViews)
+        );
 
 
-
-
-        return new JsonResponse($response);
+        return $response;
     }
-
 
 
     public function getChatContactAction(Request $request)
@@ -272,14 +277,15 @@ class ChatController extends Controller
 
             $nbUnViewed = $qb->getQuery()->getSingleScalarResult();
 
-            $contacts[] = array( "contact" => $contact, "nbUnViewed" => intval($nbUnViewed));
+            $contacts[] = array("contact" => $contact, "nbUnViewed" => intval($nbUnViewed));
         }
 
 
         return new JsonResponse($contacts);
     }
 
-    public function markAsViewedAction(Request $request){
+    public function markAsViewedAction(Request $request)
+    {
         $response = array();
         $data = $request->getContent();
 
@@ -289,7 +295,7 @@ class ChatController extends Controller
 
         $contact = $this->getDoctrine()->getRepository(Contact::class)->find($contactId);
 
-        if($contact !== null){
+        if ($contact !== null) {
 
             $entityManager = $this->getDoctrine()->getManager();
 
@@ -303,7 +309,7 @@ class ChatController extends Controller
 
             $response = array("code" => "marked_as_viewed");
 
-        }else{
+        } else {
 
             $response = array("code" => "action_no_allowed");
 

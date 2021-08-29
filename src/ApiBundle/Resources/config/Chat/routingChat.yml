@@ -17,3 +17,8 @@ chat-mark-as-viewed:
     path:     /mark-as-viewed
     defaults: { _controller: ApiBundle:Chat:markAsViewed }
     methods: [PUT]
+
+get-unique-chat:
+    path:     /{chatId}
+    defaults: { _controller: ApiBundle:Chat:getChatByIdWithRequest }
+    methods: [GET]
