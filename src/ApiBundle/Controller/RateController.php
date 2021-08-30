@@ -45,7 +45,7 @@ class RateController extends Controller
             $entityManager->persist($rate);
             $entityManager->flush();
 
-            $subject = $currentUser.' just rated you.';
+            $subject = $currentUser->getFullname().' just rated you.';
 
             //send notification
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
