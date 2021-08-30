@@ -45,6 +45,15 @@ class RateController extends Controller
             $entityManager->persist($rate);
             $entityManager->flush();
 
+            $subject = $currentUser.' just rated you.';
+
+            //send notification
+            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+            $data = array("type" => 11,
+                "rate" => $rate);
+            $pushNotificationManager->sendNotification($ratedUser, 'zZeend rates', $subject, $data);
+
+
             $response = array("code" => "rate_added");
         } else {
             $response = array("code" => "action_not_allowed");

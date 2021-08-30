@@ -158,9 +158,9 @@ class StoryController extends Controller
 
             $allViewsExceptCurrentUser = array();
 
-            for($k = 0; $k < count($currentUserStories); $k++){
+            for($j = 0; $j < count($currentUserStories); $j++){
 
-                $story = $stories[$k];
+                $story = $currentUserStories[$j];
 
                 $em = $this->getDoctrine()->getRepository(View::class);
                 $qb = $em->GetQueryBuilder();

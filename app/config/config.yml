@@ -154,4 +154,5 @@ lexik_jwt_authentication:
 #    8: canceled zZeend
 #    9: chat received
 #    10: shared content in chat received
+#    11: rate publish
 
