@@ -10,6 +10,7 @@ use ApiBundle\Entity\Like;
 use ApiBundle\Entity\Notification;
 use ApiBundle\Entity\PaymentMethod;
 use ApiBundle\Entity\Post;
+use ApiBundle\Entity\Rate;
 use ApiBundle\Entity\Zzeend;
 use ApiBundle\Entity\ZzeendStatus;
 use Doctrine\ORM\QueryBuilder;
@@ -50,7 +51,7 @@ class StatisticsController extends Controller
 
         $nbNotifications = 0;
 
-        for($i = 0; $i < count($notifications); $i++){
+        for ($i = 0; $i < count($notifications); $i++) {
 
             $notification = $notifications[$i];
 
@@ -60,7 +61,7 @@ class StatisticsController extends Controller
             $relatedId = $notification->getRelatedId();
 
             //zZeend notification
-            if($notificationTypeId == 1 || $notificationTypeId == 2 || $notificationTypeId == 3 || $notificationTypeId == 4 || $notificationTypeId == 5){
+            if ($notificationTypeId == 1 || $notificationTypeId == 2 || $notificationTypeId == 3 || $notificationTypeId == 4 || $notificationTypeId == 5) {
 
                 $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($relatedId);
 
@@ -70,28 +71,41 @@ class StatisticsController extends Controller
                 if ($notificationTypeId == 1 || $notificationTypeId == 4 || $notificationTypeId == 5) {
 
                     //if am not the one who created the current so, add this notification
-                    if($zZeendCreator !== $currentUser && $zZeendAssignedUser == $currentUser){
+                    if ($zZeendCreator !== $currentUser && $zZeendAssignedUser == $currentUser) {
                         $nbNotifications++;
                     }
 
-                }else{
+                } else {
 
-                    if($zZeendCreator === $currentUser && $zZeendAssignedUser !== $currentUser){
+                    if ($zZeendCreator === $currentUser && $zZeendAssignedUser !== $currentUser) {
                         $nbNotifications++;
                     }
                 }
 
 
-
             } // request notification
-            else if($notificationTypeId == 6 || $notificationTypeId == 7){
+            else if ($notificationTypeId == 6 || $notificationTypeId == 7) {
 
                 $request = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class)->find($relatedId);
 
                 $sender = $request->getSender();
 
-                if($sender == $currentUser){
+                if ($sender == $currentUser) {
                     $nbNotifications++;
+                }
+
+            } else {
+
+                if ($notificationTypeId == 8) {
+                    $rate = $this->getDoctrine()->getRepository(Rate::class)->find($relatedId);
+
+                    $ratedUser = $rate->getRatedUser();
+
+                    if ($ratedUser == $currentUser) {
+
+                        $nbNotifications++;
+
+                    }
                 }
 
             }
@@ -105,7 +119,6 @@ class StatisticsController extends Controller
         $qb = $em->GetCount($qb);
         $qb = $em->WhereUser($qb, $currentUser);
         $nbPaymentMethods = $qb->getQuery()->getSingleScalarResult();
-
 
 
         $nbUnViewed = 0;
@@ -130,7 +143,7 @@ class StatisticsController extends Controller
 
             $nbUnViewed = $qb->getQuery()->getSingleScalarResult();
 
-            if($nbUnViewed > 0){
+            if ($nbUnViewed > 0) {
                 $unViewedChatContact += 1;
             }
 
@@ -143,7 +156,7 @@ class StatisticsController extends Controller
             "paymentMethods" => intval($nbPaymentMethods),
             "chats" => $unViewedChatContact);
 
-       return new JsonResponse($response);
+        return new JsonResponse($response);
     }
 
 }

@@ -18,7 +18,8 @@ class LoadNotificationType implements FixtureInterface
             'zZeend canceled',
             'zZeend edited',
             'Request accepted',
-            'Request rejected'
+            'Request rejected',
+            'Rate'
         );
 
         foreach ($notificationTitles as $notificationTitle) {

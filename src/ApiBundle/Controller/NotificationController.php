@@ -8,6 +8,7 @@ use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
 use ApiBundle\Entity\Notification;
 use ApiBundle\Entity\NotificationType;
+use ApiBundle\Entity\Rate;
 use ApiBundle\Entity\Zzeend;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -92,6 +93,20 @@ class NotificationController extends Controller
                     $returnObject[] = array("id" => $notification->getId(),
                         "notificationType" => $notificationType,
                         "relatedObject" => $request,
+                        "viewed" => $notification->getViewed(),
+                        "createdAt" => $notification->getCreatedAt());
+                }
+
+            }else if($notificationTypeId == 8){
+
+                $rate = $this->getDoctrine()->getRepository(Rate::class)->find($relatedId);
+
+                $ratedUser = $rate->getRatedUser();
+
+                if($ratedUser == $currentUser){
+                    $returnObject[] = array("id" => $notification->getId(),
+                        "notificationType" => $notificationType,
+                        "relatedObject" => $rate,
                         "viewed" => $notification->getViewed(),
                         "createdAt" => $notification->getCreatedAt());
                 }
