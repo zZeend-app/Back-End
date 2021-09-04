@@ -809,6 +809,10 @@ class User extends BaseUser implements JsonSerializable
             $json["visibility"] = $this->visibility;
         }
 
+        if(!$entityClass instanceof User || in_array("mainVisibility",$include)){
+            $json["mainVisibility"] = $this->mainVisibility;
+        }
+
         if(!$entityClass instanceof User || in_array("roles",$include)){
             $json["roles"] = $this->roles;
         }

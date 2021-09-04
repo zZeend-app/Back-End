@@ -223,7 +223,7 @@ class ZzeendController extends Controller
                 //send notification
                 $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                 $data = array("type" => 5,
-                    "payment" => array("message" => "This zZeend has been paid"));
+                    "zZeend" => $zZeend);
                 $pushNotificationManager->sendNotification($serviceOwner, 'zZeend paid (n° '.$zZeend->getId().')', $subject , $data);
 
 

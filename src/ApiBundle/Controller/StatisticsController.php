@@ -88,6 +88,8 @@ class StatisticsController extends Controller
 
                 $request = $this->getDoctrine()->getRepository(\ApiBundle\Entity\Request::class)->find($relatedId);
 
+
+
                 $sender = $request->getSender();
 
                 if ($sender == $currentUser) {

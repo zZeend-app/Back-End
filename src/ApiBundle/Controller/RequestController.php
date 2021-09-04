@@ -64,15 +64,15 @@ class RequestController extends Controller
             $requestAcceptedFlag = false;
             $requestRejectedFlag = false;
 
+            $users = $zZeendRequest->getUsers();
+
+            $sender = $users['sender'];
+            $receiver = $users['receiver'];
+
             if ($requestState == true) {
                 $notificationTypeInt = 6;
                 $requestAcceptedFlag = true;
                 $requestRejectedFlag = false;
-
-                $users = $zZeendRequest->getUsers();
-
-                $sender = $users['sender'];
-                $receiver = $users['receiver'];
 
                 if ($receiver->isGranted('ROLE_OWNER')) {
 
@@ -128,7 +128,7 @@ class RequestController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => $pushNotificationType,
                 "request" => $zZeendRequest);
-            $pushNotificationManager->sendNotification($receiver, 'New request', $subject , $data);
+            $pushNotificationManager->sendNotification($sender, 'New request', $subject , $data);
 
 
 
