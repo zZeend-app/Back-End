@@ -78,7 +78,7 @@ class Event implements JsonSerializable
     /**
      * @var integer
      *
-     * @ORM\Column(name="deveice_event_id", type="integer", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="device_event_id", type="integer", length=255, unique=false, nullable=false)
      */
     private $deviceEventId;
 

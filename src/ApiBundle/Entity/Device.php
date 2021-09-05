@@ -5,6 +5,7 @@ namespace ApiBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 /**
  * Device
@@ -14,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 
 
-class Device
+class Device implements JsonSerializable
 {
 
 
@@ -96,6 +97,24 @@ class Device
     public function getUser()
     {
         return $this->user;
+    }
+
+    public function jsonSerialize($entityClass = null,$include = [])
+    {
+        $json = [
+            "id" => $this->id,
+        ];
+
+        if(!$entityClass instanceof Device || in_array("user",$include)){
+            $json["user"] = $this->user;
+        }
+
+        if(!$entityClass instanceof Device || in_array("token",$include)){
+            $json["token"] = $this->token;
+        }
+
+        return $json;
+
     }
 
 
