@@ -151,7 +151,7 @@ lexik_jwt_authentication:
 #    5: zZeend payment
 #    6: zZeend finalized
 #    7: canceled zZeend
-#    8: canceled zZeend
+#    8: edit zZeend
 #    9: chat received
 #    10: shared content in chat received
 #    11: rate publish
