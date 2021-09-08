@@ -96,6 +96,7 @@ class PostController extends Controller
                 $file->setFileSize($fileSize);
                 $file->setThumbnail('');
                 $file->setFileName($fileOriginalName);
+                $file->setCreatedAtAutomatically();
 
                 $fileEntityManager->persist($file);
                 $fileEntityManager->flush();
