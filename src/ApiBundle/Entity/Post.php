@@ -44,18 +44,10 @@ class Post implements JsonSerializable
     private $text;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="file_path", type="string", length=255, unique=false, nullable=true)
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\File", inversedBy="files")
+     * @ORM\JoinColumn(name="file", referencedColumnName="id")
      */
-    private $filePath;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="file_type", type="string", length=255, unique=false, nullable=true)
-     */
-    private $fileType;
+    private $file;
 
     /**
      * @var string
@@ -129,6 +121,28 @@ class Post implements JsonSerializable
     }
 
     /**
+     * Set file.
+     *
+     * @param File $file
+     *
+     * @return void
+     */
+    public function setFile($file)
+    {
+        $this->file = $file;
+    }
+
+    /**
+     * Get file.
+     *
+     * @return File
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
      * Set text.
      *
      * @param string $text
@@ -170,50 +184,6 @@ class Post implements JsonSerializable
     public function getLink()
     {
         return $this->link;
-    }
-
-    /**
-     * Set filePath.
-     *
-     * @param string $filePath
-     *
-     */
-    public function setFilePath($filePath)
-    {
-        $this->filePath = $filePath;
-    }
-
-
-    /**
-     * Get filePath.
-     *
-     * @return string
-     */
-    public function getFilePath()
-    {
-        return $this->filePath;
-    }
-
-    /**
-     * Set fileType.
-     *
-     * @param string $fileType
-     *
-     */
-    public function setFileType($fileType)
-    {
-        $this->fileType = $fileType;
-    }
-
-
-    /**
-     * Get fileType.
-     *
-     * @return string
-     */
-    public function getFileType()
-    {
-        return $this->fileType;
     }
 
     /**
@@ -317,12 +287,8 @@ class Post implements JsonSerializable
             $json["text"] = $this->text;
         }
 
-        if(!$entityClass instanceof Post || in_array("filePath",$include)){
-            $json["filePath"] = $this->filePath;
-        }
-
-        if(!$entityClass instanceof Post || in_array("fileType",$include)){
-            $json["fileType"] = $this->fileType;
+        if(!$entityClass instanceof Post || in_array("file",$include)){
+            $json["file"] = $this->file;
         }
 
         if(!$entityClass instanceof Post || in_array("link",$include)){

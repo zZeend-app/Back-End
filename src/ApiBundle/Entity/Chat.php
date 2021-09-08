@@ -38,18 +38,10 @@ class Chat implements JsonSerializable
     private $discussion;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="file_path", type="string", length=255, unique=false, nullable=true)
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\File", inversedBy="files")
+     * @ORM\JoinColumn(name="file", referencedColumnName="id")
      */
-    private $filePath;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="file_type", type="string", length=255, unique=false, nullable=true)
-     */
-    private $fileType;
+    private $file;
 
     /**
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="chats")
@@ -202,48 +194,25 @@ class Chat implements JsonSerializable
     }
 
     /**
-     * Set filePath.
+     * Set file.
      *
-     * @param string $filePath
+     * @param File $file
      *
-     * @return Chat
+     * @return void
      */
-    public function setFilePath(?string $filePath)
+    public function setFile($file)
     {
-        $this->filePath = $filePath;
-    }
-
-
-    /**
-     * Get filePath.
-     *
-     * @return string
-     */
-    public function getFilePath()
-    {
-        return $this->filePath;
+        $this->file = $file;
     }
 
     /**
-     * Set fileType.
+     * Get file.
      *
-     * @param string $fileType
-     *
+     * @return File
      */
-    public function setFileType($fileType)
+    public function getFile()
     {
-        $this->fileType = $fileType;
-    }
-
-
-    /**
-     * Get fileType.
-     *
-     * @return string
-     */
-    public function getFileType()
-    {
-        return $this->fileType;
+        return $this->file;
     }
 
     /**
@@ -268,13 +237,10 @@ class Chat implements JsonSerializable
             $json["discussion"] = $this->discussion;
         }
 
-        if (!$entityClass instanceof Chat || in_array("filePath", $include)) {
-            $json["filePath"] = $this->filePath;
+        if (!$entityClass instanceof Chat || in_array("file", $include)) {
+            $json["file"] = $this->file;
         }
 
-        if(!$entityClass instanceof Post || in_array("fileType",$include)){
-            $json["fileType"] = $this->fileType;
-        }
 
         if (!$entityClass instanceof Chat || in_array("mainUse", $include)) {
             $json["sender"] = $this->sender;

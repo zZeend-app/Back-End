@@ -2,6 +2,7 @@
 
 namespace UserBundle\Entity;
 
+use ApiBundle\Entity\File;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -37,11 +38,10 @@ class User extends BaseUser implements JsonSerializable
     private $fullname;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="image", type="string", length=255, unique=false, nullable=false)
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\File", inversedBy="files")
+     * @ORM\JoinColumn(name="photo", referencedColumnName="id")
      */
-    private $image;
+    private $photo;
 
     /**
      * @var string
@@ -458,27 +458,27 @@ class User extends BaseUser implements JsonSerializable
     }
 
     /**
-     * Set image.
+     * Set photo.
      *
-     * @param string $image
+     * @param File $photo
      *
      * @return User
      */
-    public function setImage($mage)
+    public function setPhoto(File $photo)
     {
-        $this->image = $mage;
+        $this->photo = $photo;
 
         return $this;
     }
 
     /**
-     * Get image.
+     * Get photo.
      *
-     * @return string
+     * @return File
      */
-    public function getImage()
+    public function getPhoto()
     {
-        return $this->image;
+        return $this->photo;
     }
 
     /**
@@ -773,8 +773,8 @@ class User extends BaseUser implements JsonSerializable
             $json["email"] = $this->email;
         }
 
-        if(!$entityClass instanceof User || in_array("image",$include)){
-            $json["image"] = $this->image;
+        if(!$entityClass instanceof User || in_array("photo",$include)){
+            $json["photo"] = $this->photo;
         }
 
         if(!$entityClass instanceof User || in_array("country",$include)){

@@ -5,6 +5,7 @@ namespace ApiBundle\Controller;
 
 
 use ApiBundle\Entity\Contact;
+use ApiBundle\Entity\File;
 use ApiBundle\Entity\Rate;
 use ApiBundle\Entity\Service;
 use ApiBundle\Entity\SocialNetwork;
@@ -122,6 +123,9 @@ class ProfileController extends Controller
         $fileName = '';
         $data = array();
 
+        $fileOriginalName = '';
+        $fileSize = 0;
+
         $currentUser = $this->getUser();
 
         $modification = false;
@@ -137,6 +141,10 @@ class ProfileController extends Controller
             $dataType = $data['dataType'];
 
             $fileName = $this->get('ionicapi.fileUploaderManager')->upload($file, $uploadDir, $dataType);
+
+            $fileOriginalName = $file->getClientOriginalName();
+
+            $fileSize = $file->getClientSize();
 
             $data = $data['objectData'];
 
@@ -189,7 +197,22 @@ class ProfileController extends Controller
         }
 
         if ($fileName !== '') {
-            $currentUser->setImage('profile/' . $fileName);
+
+            $fileEntityManager = $this->getDoctrine()->getManager();
+
+            $file = new File();
+            $file->setUser($currentUser);
+            $file->setFilePath('profile/' . $fileName);
+            $file->setFileType('image');
+            $file->setFileSize($fileSize);
+            $file->setThumbnail('');
+            $file->setFileName($fileOriginalName);
+
+            $fileEntityManager->persist($file);
+            $fileEntityManager->flush();
+
+
+            $currentUser->setPhoto($file);
             $updated[] = "profile_photo";
             $modification = true;
         }

@@ -85,3 +85,7 @@ story:
 push-notification:
     resource: "@ApiBundle/Resources/config/PushNotification/routingPushNotification.yml"
     prefix:   /push-notification
+
+media:
+    resource: "@ApiBundle/Resources/config/Media/routingMedia.yml"
+    prefix:   /media

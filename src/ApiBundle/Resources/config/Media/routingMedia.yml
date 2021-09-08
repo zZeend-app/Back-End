@@ -1,0 +1,9 @@
+photos:
+    path:     /photos
+    defaults: { _controller: ApiBundle:Media:getPhohots }
+    methods: [POST]
+
+videos:
+    path:     /videos
+    defaults: { _controller: ApiBundle:Media:getVideos }
+    methods: [POST]

@@ -35,18 +35,10 @@ class Story implements JsonSerializable
     private $user;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="file_path", type="string", length=255, unique=false, nullable=false)
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\File", inversedBy="files")
+     * @ORM\JoinColumn(name="file", referencedColumnName="id")
      */
-    private $filePath;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="file_type", type="string", length=255, unique=false, nullable=false)
-     */
-    private $fileType;
+    private $file;
 
     /**
      * @var boolean
@@ -94,48 +86,27 @@ class Story implements JsonSerializable
         return $this->user;
     }
 
-    /**
-     * Set filePath.
-     *
-     * @param string $filePath
-     *
-     */
-    public function setFilePath(string $filePath)
-    {
-        $this->filePath = $filePath;
 
+    /**
+     * Set file.
+     *
+     * @param File $file
+     *
+     * @return void
+     */
+    public function setFile($file)
+    {
+        $this->file = $file;
     }
 
     /**
-     * Get filePath.
+     * Get file.
      *
-     * @return string
+     * @return File
      */
-    public function getFilePath()
+    public function getFile()
     {
-        return $this->filePath;
-    }
-
-    /**
-     * Set fileType.
-     *
-     * @param string $fileType
-     *
-     */
-    public function setFileType(string $fileType)
-    {
-        $this->fileType = $fileType;
-
-    }
-
-    /**
-     * Get fileType.
-     *
-     * @return string
-     */
-    public function getFileType()
-    {
-        return $this->fileType;
+        return $this->file;
     }
 
 
@@ -192,15 +163,9 @@ class Story implements JsonSerializable
             $json["user"] = $this->user;
         }
 
-        if (!$entityClass instanceof Story || in_array("filePat", $include)) {
-            $json["filePath"] = $this->filePath;
+        if (!$entityClass instanceof Story || in_array("file", $include)) {
+            $json["file"] = $this->file;
         }
-
-
-        if (!$entityClass instanceof Story || in_array("fileType", $include)) {
-            $json["fileType"] = $this->fileType;
-        }
-
 
         if (!$entityClass instanceof Story || in_array("active", $include)) {
             $json["active"] = $this->active;

@@ -5,6 +5,7 @@ namespace ApiBundle\Controller;
 
 
 use ApiBundle\Entity\Contact;
+use ApiBundle\Entity\File;
 use ApiBundle\Entity\Like;
 use ApiBundle\Entity\Post;
 use ApiBundle\Entity\View;
@@ -28,7 +29,12 @@ class PostController extends Controller
 
         $file_type = null;
 
+        $fileOriginalName = '';
+
+        $fileSize = 0;
+
         if ($currentUser !== null) {
+
 
             if (!empty($request->files->get('postFile'))) {
 
@@ -41,6 +47,10 @@ class PostController extends Controller
                 $dataType = $data['dataType'];
 
                 $fileName = $this->get('ionicapi.fileUploaderManager')->upload($file, $uploadDir, $dataType);
+
+                $fileOriginalName = $file->getClientOriginalName();
+
+                $fileSize = $file->getClientSize();
 
                 $data = $data['objectData'];
                 $file_type = 'image';
@@ -70,16 +80,32 @@ class PostController extends Controller
             }
 
             if ($fileName !== '') {
-                $post->setFilePath('post/' . $fileName);
+
+                $fileEntityManager = $this->getDoctrine()->getManager();
+
+                $file = new File();
+                $file->setUser($currentUser);
+                $file->setFilePath('post/' . $fileName);
+
+                if ($file_type !== null) {
+                    $file->setFileType($file_type);
+                } else {
+                    $file->setFileType('');
+                }
+
+                $file->setFileSize($fileSize);
+                $file->setThumbnail('');
+                $file->setFileName($fileOriginalName);
+
+                $fileEntityManager->persist($file);
+                $fileEntityManager->flush();
+
+
+                $post->setFile($file);
             } else {
-                $post->setFilePath('');
+                $post->setFilePath(null);
             }
 
-            if ($file_type !== null) {
-                $post->setFileType($file_type);
-            } else {
-                $post->setFileType('');
-            }
 
             if (array_key_exists('link', $data)) {
                 $link = $data['link'];

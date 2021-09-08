@@ -4,6 +4,7 @@
 namespace ApiBundle\Controller;
 
 
+use ApiBundle\Entity\File;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -152,9 +153,14 @@ class AuthenticationController extends Controller
 
     public function addPhotoAction(Request $request){
 
+
         if (!empty($request->files->get('profilePhoto'))) {
 
             $response = array();
+
+            $fileOriginalName = '';
+
+            $fileSize = 0;
 
             $file = $request->files->get('profilePhoto');
 
@@ -166,15 +172,34 @@ class AuthenticationController extends Controller
 
             $fileName = $this->get('ionicapi.fileUploader')->upload($file, $uploadDir, $dataType);
 
+            $fileOriginalName = $file->getClientOriginalName();
+
+            $fileSize = $file->getClientSize();
+
             $data = $data['objectData'];
             $relatedId = $data['relatedId'];
 
             if($fileName !== ''){
+
+
                 $currentUser = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
 
                 if($currentUser !== null){
 
-                    $currentUser->setImage('profile/'.$fileName);
+                    $fileEntityManager = $this->getDoctrine()->getManager();
+
+                    $file = new File();
+                    $file->setUser($currentUser);
+                    $file->setFilePath('profile/' . $fileName);
+                    $file->setFileType('image');
+                    $file->setFileSize($fileSize);
+                    $file->setThumbnail('');
+                    $file->setFileName($fileOriginalName);
+
+                    $fileEntityManager->persist($file);
+                    $fileEntityManager->flush();
+
+                    $currentUser->setPhoto($file);
                     $entityManager = $this->getDoctrine()->getManager();
                     $entityManager->persist($currentUser);
                     $entityManager->flush();
