@@ -127,13 +127,15 @@ class AuthenticationController extends Controller
         $uploadDir = $this->getParameter('upload_dir');
         $filepath = '';
 
-        if($fileType == 'profile'){
+        // if the asked file is profile photo
+        if($fileType == 'VPA4iST9YEAk0CiawXEKbcArkfDSBKg5Re9gfywvmK'){
 
             $filepath = $uploadDir.'/profile_photos/'.$fileName;
 
         }
 
-        if($fileType == 'post'){
+        //if the asked file is a profile photo
+        if($fileType == 'fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1'){
 
             $filepath = $uploadDir.'/post_photos/'.$fileName;
 
@@ -190,7 +192,7 @@ class AuthenticationController extends Controller
 
                     $file = new File();
                     $file->setUser($currentUser);
-                    $file->setFilePath('profile/' . $fileName);
+                    $file->setFilePath('VPA4iST9YEAk0CiawXEKbcArkfDSBKg5Re9gfywvmK/' . $fileName);
                     $file->setFileType('image');
                     $file->setFileSize($fileSize);
                     $file->setThumbnail('');

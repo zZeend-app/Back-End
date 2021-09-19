@@ -85,7 +85,7 @@ class PostController extends Controller
 
                 $file = new File();
                 $file->setUser($currentUser);
-                $file->setFilePath('post/' . $fileName);
+                $file->setFilePath('fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1/' . $fileName);
 
                 if ($file_type !== null) {
                     $file->setFileType($file_type);

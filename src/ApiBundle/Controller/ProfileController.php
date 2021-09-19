@@ -202,7 +202,7 @@ class ProfileController extends Controller
 
             $file = new File();
             $file->setUser($currentUser);
-            $file->setFilePath('profile/' . $fileName);
+            $file->setFilePath('VPA4iST9YEAk0CiawXEKbcArkfDSBKg5Re9gfywvmK/' . $fileName);
             $file->setFileType('image');
             $file->setFileSize($fileSize);
             $file->setThumbnail('');
