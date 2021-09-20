@@ -42,8 +42,7 @@ class ChatController extends Controller
             $chat->setDiscussion(nl2br($chatFromClient));
             $chat->setContact($contact);
             $chat->setCreatedAtAutomatically();
-            $chat->setFilePath(null);
-            $chat->setFileType(null);
+            $chat->setFile(null);
             $chat->setViewed(false);
             $currentUser = $this->getUser();
             $chat->setUser($currentUser);
