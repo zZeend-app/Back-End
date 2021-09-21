@@ -87,6 +87,12 @@ class Post implements JsonSerializable
      */
     private $createdAt;
 
+     /**
+     * @ORM\OneToMany(targetEntity="ApiBundle\Entity\Comment", mappedBy="user")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $comments;
+
     /**
      * Get iid.
      *

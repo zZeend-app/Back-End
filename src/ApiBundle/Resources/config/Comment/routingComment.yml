@@ -1,0 +1,14 @@
+new-comment:
+    path:     /new
+    defaults: { _controller: ApiBundle:Comment:newComment }
+    methods: [POST]
+
+new-comment-response:
+    path:     /response/new
+    defaults: { _controller: ApiBundle:Comment:newCommentReponse }
+    methods: [POST]
+
+get-comment:
+    path:     /get
+    defaults: { _controller: ApiBundle:Comment:getComments }
+    methods: [POST]

@@ -99,6 +99,13 @@ class User extends BaseUser implements JsonSerializable
     private $services;
 
     /**
+     * @ORM\OneToMany(targetEntity="ApiBundle\Entity\Comment", mappedBy="user")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $comments;
+    
+
+    /**
      * @var string
      *
      * @ORM\Column(name="zZeend_score", type="string", length=255, unique=false, nullable=false)

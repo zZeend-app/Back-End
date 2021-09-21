@@ -89,3 +89,7 @@ push-notification:
 media:
     resource: "@ApiBundle/Resources/config/Media/routingMedia.yml"
     prefix:   /media
+
+comment:
+    resource: "@ApiBundle/Resources/config/Comment/routingComment.yml"
+    prefix:   /comment
