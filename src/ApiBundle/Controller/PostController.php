@@ -104,7 +104,21 @@ class PostController extends Controller
 
                 $post->setFile($file);
             } else {
-                $post->setFilePath(null);
+
+                if(array_key_exists('fileId', $data)){
+
+                    $fileId = $data['fileId'];
+                    $file = $this->getDoctrine()->getRepository(File::class)->find($fileId);
+
+                    if($file !== null){
+                        $post->setFile($file);
+                    }else{
+                        $post->setFile(null);
+                    }
+                }else{
+                    $post->setFile(null);
+                }
+
             }
 
 

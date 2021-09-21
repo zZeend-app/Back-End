@@ -6,6 +6,7 @@ namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
+use ApiBundle\Entity\File;
 use ApiBundle\Entity\Like;
 use ApiBundle\Entity\Post;
 use ApiBundle\Entity\Share;
@@ -58,7 +59,7 @@ class ShareController extends Controller
                         $share->setRelatedId($relatedId);
                     }
                 } else {
-                    return new JsonResponse(array("code" => "action_not_Allowed"));
+                    return new JsonResponse(array("code" => "action_not_allowed"));
                 }
             } else if ($shareType->getId() == 2) {
                 //if the share is a profile
@@ -67,7 +68,7 @@ class ShareController extends Controller
                     $share->setRelatedId($relatedId);
 
                 } else {
-                    return new JsonResponse(array("code" => "action_not_Allowed"));
+                    return new JsonResponse(array("code" => "action_not_allowed"));
                 }
             } else if ($shareType->getId() == 3) {
                 //if the share is a chat
@@ -89,8 +90,20 @@ class ShareController extends Controller
 
                     }
                 } else {
-                    return new JsonResponse(array("code" => "action_not_Allowed"));
+                    return new JsonResponse(array("code" => "action_not_allowed"));
                 }
+            }else if ($shareType->getId() == 4) {
+
+                //if the share is a file Image or Video
+
+                $file = $this->getDoctrine()->getRepository(File::class)->find($relatedId);
+                if ($file !== null) {
+                    $share->setRelatedId($relatedId);
+                } else {
+                    return new JsonResponse(array("code" => "action_not_allowed"));
+                }
+
+
             }
 
 
@@ -128,7 +141,26 @@ class ShareController extends Controller
                     $chat = new Chat();
                     $chat->setContact($contact);
                     $chat->setUser($currentUser);
-                    $chat->setShare($share);
+
+                    if(!array_key_exists('source', $data)){
+
+                        $chat->setShare($share);
+                        $chat->setFile(null);
+
+                    }else if(array_key_exists('source', $data)){
+                        //if sharing a file
+
+                        $source = $data['source'];
+
+                        if($source == 'gallery'){
+
+                            $chat->setShare(null);
+
+                            $file = $this->getDoctrine()->getRepository(File::class)->find($relatedId);
+                            $chat->setFile($file);
+
+                        }
+                    }
                     $chat->setViewed(false);
                     $chat->setCreatedAtAutomatically();
                     $entityManager->persist($chat);
@@ -160,10 +192,6 @@ class ShareController extends Controller
                     $data = array("type" => 10,
                         "chat" => $chat);
                     $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname().' sent a chat ', $subject , $data);
-
-
-                    return  new JsonResponse($completeChatObject);
-
 
                 }else{
                     return new JsonResponse(array("code" => "action_not_allowed"));

@@ -19,7 +19,8 @@ class LoadShareType implements FixtureInterface
         $shareTypes = array(
             'Post',
             'Profile',
-            'Chat'
+            'Chat',
+            'File'
         );
 
         foreach ($shareTypes as $shareType) {
