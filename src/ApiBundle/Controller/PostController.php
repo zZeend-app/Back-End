@@ -236,7 +236,8 @@ class PostController extends Controller
                 "postLikeState" => $postLikeState,
                 "likes" => intval($nbLikes),
                 "views" => intval($nbViews),
-                "sharedContent" => $sharedContent
+                "sharedContent" => $sharedContent,
+                "commentObject" => array("comments" => array(), "responses" => array())
             );
 
 
@@ -292,7 +293,8 @@ class PostController extends Controller
                 "postLikeState" => $postLikeState,
                 "likes" => intval($nbLikes),
                 "views" => intval($nbViews),
-                "sharedContent" => $sharedContent
+                "sharedContent" => $sharedContent,
+                "commentObject" => array("comments" => array(), "responses" => array())
             );
 
 
@@ -370,7 +372,8 @@ class PostController extends Controller
                 "post" => $post,
                 "likes" => intval($nbLikes),
                 "views" => intval($nbLViews),
-                "sharedContent" => $sharedContent
+                "sharedContent" => $sharedContent,
+                "commentObject" => array("comments" => array(), "responses" => array())
             );
 
 
@@ -399,7 +402,8 @@ class PostController extends Controller
         $response = array(
             "post" => $post,
             "likes" => intval($nbLikes),
-            "views" => intval($nbLViews)
+            "views" => intval($nbLViews),
+            "commentObject" => array("comments" => array(), "responses" => array())
         );
 
         return new JsonResponse($response);

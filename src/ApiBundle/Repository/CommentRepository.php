@@ -34,5 +34,11 @@ class CommentRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder;
     }
 
+    public function GetCount(QueryBuilder $queryBuilder)
+    {
+        return $queryBuilder
+            ->select('count(cm.id)');
+    }
+
 
 }

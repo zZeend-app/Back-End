@@ -103,6 +103,18 @@ class User extends BaseUser implements JsonSerializable
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $comments;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ApiBundle\Entity\SearchKeyword", mappedBy="user")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $keywords;
+
+      /**
+     * @ORM\OneToMany(targetEntity="ApiBundle\Entity\CommentResponse", mappedBy="user")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $commentResponses;
     
 
     /**

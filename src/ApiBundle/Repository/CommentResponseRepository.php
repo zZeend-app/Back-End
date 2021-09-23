@@ -16,14 +16,25 @@ class CommentResponseRepository extends \Doctrine\ORM\EntityRepository
     }
 
 
-    public function WhereUser(QueryBuilder $queryBuilder, $user)
+    public function WhereComment(QueryBuilder $queryBuilder, $comment)
     {
-        // return $queryBuilder
-        //     ->orWhere('ch.mainUser = :mainUser')
-        //     ->setParameter('mainUser', $user)
-        //     ->orWhere('ch.secondUser = :secondUser')
-        //     ->setParameter('secondUser', $user);
+        return $queryBuilder
+            ->where('comment = :comment')
+            ->setParameter('comment', $comment);
     }
+
+    public function OrderByJson(QueryBuilder $queryBuilder, $data)
+    {
+        foreach ($data as $order) {
+            foreach ($order as $key => $value) {
+                $queryBuilder = $queryBuilder->addOrderBy("cmrsp." . $key, $value);
+            }
+        }
+
+        return $queryBuilder;
+    }
+
+
 
 
 }

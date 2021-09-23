@@ -80,7 +80,7 @@ class CommentController extends Controller
             $entityManager->persist($comment);
             $entityManager->flush();
 
-            $response = $comment;
+            $response = $commentReponse;
 
         }else{
 
@@ -129,9 +129,15 @@ class CommentController extends Controller
 
         }
 
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->GetCount($qb);
+        $qb = $em->WherePost($qb, $post);
+        $nbComments = $qb->getQuery()->getSingleScalarResult();
+
         $response = array(
             "comments" => $comments,
-            "responses" => $postResponses
+            "responses" => $postResponses,
+            "nbComments" => intval($nbComments)
         );
 
 

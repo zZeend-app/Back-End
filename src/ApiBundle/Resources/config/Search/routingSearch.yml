@@ -2,3 +2,13 @@ service:
     path:     /service
     defaults: { _controller: ApiBundle:Search:serviceSearch }
     methods: [POST]
+
+add-keyword:
+    path:     /add-keyword
+    defaults: { _controller: ApiBundle:SearchKeyword:addKeyword }
+    methods: [POST]
+
+get-keywords:
+    path:     /get-keywords
+    defaults: { _controller: ApiBundle:SearchKeyword:getKeywords }
+    methods: [POST]
