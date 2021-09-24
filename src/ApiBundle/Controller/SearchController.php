@@ -37,6 +37,10 @@ class SearchController extends Controller
             $qb = $em->WhereKeywordLike($qb, $keyword);
         }
 
+        if (!isset($filter)) {
+            $qb = $em->OrderByZzeendScore($qb, 0);
+        }
+
         if (isset($filter)) {
             if (array_key_exists('country', $filter) and $filter['country'] !== '') {
                 $qb = $em->WhereCountryLike($qb, $filter['country']);

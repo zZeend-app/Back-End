@@ -118,9 +118,9 @@ class User extends BaseUser implements JsonSerializable
     
 
     /**
-     * @var string
+     * @var int
      *
-     * @ORM\Column(name="zZeend_score", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="zZeend_score", type="integer", length=255, unique=false, nullable=false)
      */
     private $zZeendScore;
 
@@ -525,11 +525,10 @@ class User extends BaseUser implements JsonSerializable
     }
 
     /**
-     * Set address.
+     * Set zZeendScore.
      *
-     * @param string $zZeendScore
+     * @param integer $zZeendScore
      *
-     * @return string
      */
     public function setZzeendScore($zZeendScore)
     {
@@ -540,7 +539,7 @@ class User extends BaseUser implements JsonSerializable
     /**
      * Get zZeendScore.
      *
-     * @return string
+     * @return int
      */
     public function getZzeendScore()
     {
