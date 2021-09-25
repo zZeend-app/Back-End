@@ -1,0 +1,4 @@
+create-new-room:
+    path:     /new-room
+    defaults: { _controller: LiveBundle:Room:newRoom }
+    methods: [POST]
