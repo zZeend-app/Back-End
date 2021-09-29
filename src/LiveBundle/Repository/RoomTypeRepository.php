@@ -1,6 +1,6 @@
 <?php
 
-namespace ApiBundle\Repository;
+namespace LiveBundle\Repository;
 
 use Doctrine\ORM\QueryBuilder;
 

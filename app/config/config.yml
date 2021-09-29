@@ -19,6 +19,8 @@ parameters:
 
     api_keys:
         app_source_key: 'rLxO#JGPCvY1*oH&F9D1qSiOdG50MvO&X7O*Va&vmQqhVeNVMfaeD0OxWObUemDw2GwQn@FfY*CsF3rKTf39zT7SmH9uoQp00@e'
+        vonage_api_key: '47346321'
+        vonage_secret_key: 'd89f84512185dfb315acc6e0ec4a7636d0074ab4'
 
     upload_dir: '../web/assets/uploads'
 

@@ -11,13 +11,13 @@ use JsonSerializable;
 use UserBundle\Entity\User;
 
 /**
- * RoomType
+ * RoomTargetType
  * @ORM\Entity
- * @ORM\Table(name="`room_type`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
- * @ORM\Entity(repositoryClass="LiveBundle\Repository\RoomTypeRepository")
+ * @ORM\Table(name="`Room_target_type`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
+ * @ORM\Entity(repositoryClass="LiveBundle\Repository\RoomTargetTypeRepository")
  */
 
-class RoomType implements JsonSerializable
+class RoomTargetType implements JsonSerializable
 {
     /**
      * @var int
@@ -65,7 +65,7 @@ class RoomType implements JsonSerializable
             "id" => $this->id,
         ];
 
-        if(!$entityClass instanceof RoomType || in_array("title",$include)){
+        if(!$entityClass instanceof RoomTargetType || in_array("title",$include)){
             $json["title"] = $this->title;
         }
 

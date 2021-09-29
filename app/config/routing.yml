@@ -1,6 +1,6 @@
 live:
     resource: "@LiveBundle/Resources/config/routing.yml"
-    prefix:   /
+    prefix:   /live
 
 api_login_check:
     path: /api/auth/login_check

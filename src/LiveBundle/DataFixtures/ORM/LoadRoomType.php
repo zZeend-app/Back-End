@@ -1,37 +1,37 @@
 <?php
 
 
-namespace ApiBundle\DataFixtures\ORM;
+namespace LiveBundle\DataFixtures\ORM;
 
 
-use ApiBundle\Entity\PaymentType;
-use ApiBundle\Entity\Plan;
-use ApiBundle\Entity\ZzeendStatus;
+use LiveBundle\Entity\RoomType;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class LoadPlan implements FixtureInterface
+class LoadRoomType implements FixtureInterface
 {
     public function load(ObjectManager $manager)
     {
 
-        $plans = array(
-            "24.99" => "1 month",
-            "23.00" => "6 months",
-            "21.99" => "9 months"
+        $titles = array(
+            "Presentation",
+            "Meeting",
+            "Video call",
+            "Single live"
         );
 
-        foreach ($plans as $price => $duration) {
+        foreach ($titles as $title) {
 
-            $plan = new Plan();
-            $plan->setPrice($price);
-            $plan->setDuration($duration);
+            $roomTypeEntity = new RoomType();
+            $roomTypeEntity->setTitle($viewTitle);
 
-            $manager->persist($plan);
+            $manager->persist($roomTypeEntity);
         }
 
         $manager->flush();
 
 
     }
+
+      
 }
