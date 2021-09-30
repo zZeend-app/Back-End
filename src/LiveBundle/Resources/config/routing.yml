@@ -1,3 +1,7 @@
 Room:
     resource: "@LiveBundle/Resources/config/Room/routingRoom.yml"
     prefix:   /room
+
+GUEST:
+    resource: "@LiveBundle/Resources/config/Guest/routingGuest.yml"
+    prefix:   /guest

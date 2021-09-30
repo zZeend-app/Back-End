@@ -18,7 +18,7 @@ use LiveBundle\Entity\RoomDestinationType;
  * Room
  * @ORM\Entity
  * @ORM\Table(name="`room`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
- * @ORM\Entity(repositoryClass="ApiBundle\Repository\RoomRepository")
+ * @ORM\Entity(repositoryClass="LiveBundle\Repository\RoomRepository")
  */
 
 class Room implements JsonSerializable
@@ -46,9 +46,23 @@ class Room implements JsonSerializable
     private $moderatorToken;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="sessionId", type="integer", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="name", type="string", length=255, unique=false, nullable=true)
+     */
+    private $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255, unique=false, nullable=true)
+     */
+    private $description;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="session_id", type="string", length=255, unique=false, nullable=false)
      */
     private $sessionId;
 
@@ -60,7 +74,7 @@ class Room implements JsonSerializable
 
     /**
      * @ORM\ManyToOne(targetEntity="LiveBundle\Entity\RoomTargetType", inversedBy="rooms")
-     * @ORM\JoinColumn(name="room_type_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="room_target_id", referencedColumnName="id")
      */
     private $roomTargetType;
 
@@ -79,11 +93,24 @@ class Room implements JsonSerializable
     private $archived;
 
     /**
+     * @ORM\OneToMany(targetEntity="LiveBundle\Entity\RoomGuest", mappedBy="user")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private $room_guests;
+
+    /**
      * @var string
      *
-     * @ORM\Column(name="extra_data", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="extra_data", type="string", length=255, unique=false, nullable=true)
      */
     private $extraData;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="nb_participant", type="integer", length=255, unique=false, nullable=true)
+     */
+    private $nbParticipant;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -106,7 +133,7 @@ class Room implements JsonSerializable
      * @param User $moderator
      *
      */
-    public function setModerator(string $moderator)
+    public function setModerator($moderator)
     {
         $this->moderator = $moderator;
 
@@ -166,14 +193,58 @@ class Room implements JsonSerializable
         return $this->moderatorToken;
     }
 
+    /**
+     * Set name.
+     *
+     * @param string $name
+     *
+     */
+    public function setName(string $name)
+    {
+        $this->name = $name;
+
+    }
+
+    /**
+     * Get name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set description.
+     *
+     * @param string $description
+     *
+     */
+    public function setDescription(string $description)
+    {
+        $this->description = $description;
+
+    }
+
+    /**
+     * Get description.
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
 
     /**
      * Set roomType.
      *
-     * @param string $roomType
+     * @param RoomType $roomType
      *
      */
-    public function setRoomType(string $roomType)
+    public function setRoomType($roomType)
     {
         $this->roomType = $roomType;
 
@@ -272,9 +343,31 @@ class Room implements JsonSerializable
      * @return string
      *
      */
-    public function GetExtraData()
+    public function getExtraData()
     {
         return $this->extraData;
+    }
+
+    /**
+     * Set nbParticipant.
+     *
+     * @param integer $nbParticipant
+     *
+     */
+    public function setNbParticipant($nbParticipant)
+    {
+        $this->nbParticipant = $nbParticipant;
+    }
+
+    /**
+     * Get nbParticipant.
+     *
+     * @return integer
+     *
+     */
+    public function getNbParticipant()
+    {
+        return $this->nbParticipant;
     }
 
     public function setCreatedAt(?DateTimeInterface $timestamp): self
@@ -311,6 +404,14 @@ class Room implements JsonSerializable
 
         if(!$entityClass instanceof Room || in_array("moderatorToken",$include)){
             $json["moderatorToken"] = $this->moderatorToken;
+        }
+
+        if(!$entityClass instanceof Room || in_array("name",$include)){
+            $json["name"] = $this->name;
+        }
+
+        if(!$entityClass instanceof Room || in_array("description",$include)){
+            $json["description"] = $this->description;
         }
 
         if(!$entityClass instanceof Room || in_array("sessionId",$include)){

@@ -13,13 +13,13 @@ use JsonSerializable;
 use UserBundle\Entity\User;
 
 /**
- * Guest
+ * RoomGuest
  * @ORM\Entity
- * @ORM\Table(name="`guest`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
- * @ORM\Entity(repositoryClass="ApiBundle\Repository\GuestRepository")
+ * @ORM\Table(name="`room_guest`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
+ * @ORM\Entity(repositoryClass="LiveBundle\Repository\RoomGuestRepository")
  */
 
-class Guest implements JsonSerializable
+class RoomGuest implements JsonSerializable
 {
     /**
      * @var int
@@ -31,7 +31,7 @@ class Guest implements JsonSerializable
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="guests")
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="room_guests")
      * @ORM\JoinColumn(name="guest_id", referencedColumnName="id")
      */
     private $guest;
@@ -39,12 +39,19 @@ class Guest implements JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="guest_token", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="guest_token", type="string", length=255, unique=false, nullable=true)
      */
     private $guestToken;
 
     /**
-     * @ORM\ManyToOne(targetEntity="LiveBundle\Entity\Room", inversedBy="guests")
+     * @var string
+     *
+     * @ORM\Column(name="connection_id", type="string", length=255, unique=false, nullable=true)
+     */
+    private $connectionId;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="LiveBundle\Entity\Room", inversedBy="room_guests")
      * @ORM\JoinColumn(name="room_id", referencedColumnName="id")
      */
     private $room;
@@ -112,6 +119,29 @@ class Guest implements JsonSerializable
     public function getGuestTokenToken()
     {
         return $this->guestToken;
+    }
+
+
+    /**
+     * Set connectionId.
+     *
+     * @param string $connectionId
+     *
+     */
+    public function setConnectionId(string $connectionId)
+    {
+        $this->connectionId = $connectionId;
+
+    }
+
+    /**
+     * Get connectionId.
+     *
+     * @return string
+     */
+    public function getConnectionId()
+    {
+        return $this->connectionId;
     }
 
     /**
@@ -185,23 +215,27 @@ class Guest implements JsonSerializable
             "id" => $this->id,
         ];
 
-        if(!$entityClass instanceof Guest || in_array("room",$include)){
+        if(!$entityClass instanceof RoomGuest || in_array("room",$include)){
             $json["room"] = $this->room;
         }
 
-        if(!$entityClass instanceof Guest || in_array("guest",$include)){
+        if(!$entityClass instanceof RoomGuest || in_array("guest",$include)){
             $json["guest"] = $this->guest;
         }
 
-        if(!$entityClass instanceof Guest || in_array("guestToken",$include)){
+        if(!$entityClass instanceof RoomGuest || in_array("guestToken",$include)){
             $json["guestToken"] = $this->guestToken;
         }
 
-        if(!$entityClass instanceof Guest || in_array("invited",$include)){
+        if(!$entityClass instanceof RoomGuest || in_array("connectionId",$include)){
+            $json["connectionId"] = $this->connectionId;
+        }
+
+        if(!$entityClass instanceof RoomGuest || in_array("invited",$include)){
             $json["invited"] = $this->invited;
         }
 
-        if(!$entityClass instanceof Guest || in_array("joined",$include)){
+        if(!$entityClass instanceof RoomGuest || in_array("joined",$include)){
             $json["joined"] = $this->joined;
         }
 

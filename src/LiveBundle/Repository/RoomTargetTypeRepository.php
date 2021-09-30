@@ -4,7 +4,7 @@ namespace LiveBundle\Repository;
 
 use Doctrine\ORM\QueryBuilder;
 
-class RoomTypeRepository extends \Doctrine\ORM\EntityRepository
+class RoomTargetTypeRepository extends \Doctrine\ORM\EntityRepository
 {
 //    public function GetQueryBuilder()
 //    {

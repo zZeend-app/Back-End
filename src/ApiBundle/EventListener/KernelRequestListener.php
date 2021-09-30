@@ -40,10 +40,10 @@ class KernelRequestListener
             $response = array("code" => "auth/unknown_source");
             $headers = $event->getRequest()->headers;
 
-            if ($headers->has('SourceKey')) {
+            if ($headers->has('Source-Key')) {
 
-                $sourceKey = $headers->get('SourceKey');
-                $app_source_key = $this->api_keys['app_source_key'];
+                $sourceKey = $headers->get('Source-Key');
+                $app_source_key = $this->api_keys['app-source-key'];
 
                 if ($sourceKey === $app_source_key) {
                     return $event;
