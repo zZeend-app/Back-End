@@ -1,4 +1,4 @@
-create-new-room:
+create-new-token:
     path:     /new-token
     defaults: { _controller: LiveBundle:Guest:createGuestToken }
     methods: [POST]

@@ -206,7 +206,7 @@ class RoomController extends Controller
                             }
 
 
-                            $response = array($room);
+                            $response = $room;
 
                         }
 
@@ -227,7 +227,7 @@ class RoomController extends Controller
             return new JsonResponse(array("code" => "invalid_api_key"));
         }
 
-        return new JsonResponse(array("code" => $response));
+        return new JsonResponse($response);
     }
 
     public function sendSignalAction(Request $request)
