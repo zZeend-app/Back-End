@@ -110,7 +110,7 @@ class ZzeendController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 1,
                 "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend (n° '.$zZeend->getId().')', $subject, $data);
+            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend (n° '.$zZeend->getId().')', $subject, $data, $currenetUser->getPhoto() !== null ? $currenetUser->getPhoto()->getFilePath() : null);
 
             $response = array("code" => $zZeend->getId());
 
@@ -224,7 +224,7 @@ class ZzeendController extends Controller
                 $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                 $data = array("type" => 5,
                     "zZeend" => $zZeend);
-                $pushNotificationManager->sendNotification($serviceOwner, 'zZeend paid (n° '.$zZeend->getId().')', $subject , $data);
+                $pushNotificationManager->sendNotification($serviceOwner, 'zZeend paid (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
 
@@ -312,7 +312,7 @@ class ZzeendController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 6,
                 "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($serviceOwner, 'zZeend finalized (n° '.$zZeend->getId().')', $subject , $data);
+            $pushNotificationManager->sendNotification($serviceOwner, 'zZeend finalized (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             $response = array("code" => "zZeend_done");
@@ -358,7 +358,7 @@ class ZzeendController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 7,
                 "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend canceled (n° '.$zZeend->getId().')', $subject , $data);
+            $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend canceled (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
 
@@ -453,7 +453,7 @@ class ZzeendController extends Controller
                 $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                 $data = array("type" => 8,
                     "zZeend" => $zZeend);
-                $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend update (n° '.$zZeend->getId().')', $subject , $data);
+                $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend update (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             }

@@ -42,7 +42,7 @@ class RequestController extends Controller
         $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
         $data = array("type" => 2,
             "request" => $zZeendRequest);
-        $pushNotificationManager->sendNotification($receiver, 'New request', $subject , $data);
+        $pushNotificationManager->sendNotification($receiver, 'New request', $subject , $data, $sender->getPhoto() !== null ? $sender->getPhoto()->getFilePath() : null);
 
         return new JsonResponse($response);
     }
@@ -128,7 +128,7 @@ class RequestController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => $pushNotificationType,
                 "request" => $zZeendRequest);
-            $pushNotificationManager->sendNotification($sender, 'New request', $subject , $data);
+            $pushNotificationManager->sendNotification($sender, 'New request', $subject , $data, $receiver->getPhoto() !== null ? $receiver->getPhoto()->getFilePath() : null);
 
 
 

@@ -69,7 +69,7 @@ class ChatController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 9,
                 "chat" => $chat);
-            $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname() . ' sent a chat ', $subject, $data);
+            $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname() . ' sent a chat ', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             $response = array("chat" => $chat);

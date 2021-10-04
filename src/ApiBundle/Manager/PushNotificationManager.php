@@ -29,7 +29,7 @@ class PushNotificationManager
         ];
     }
 
-    public function sendNotification(User $user, $titre, $description, $data = null){
+    public function sendNotification(User $user, $titre, $description, $data = null, $actionUserPhotoFilePath = null){
 
         //Si aucun device, on retourne
         if(count($user->getDevices()) <= 0)
@@ -45,6 +45,8 @@ class PushNotificationManager
                 "notification" => [
                     "title" => $titre,
                     "body" => $description,
+                    "image" => "http://192.168.2.208/zZeend/Back-End/web/app_dev.php/api/auth/media/file/".$actionUserPhotoFilePath,
+                    "tag" => $titre
                 ]
             ];
 

@@ -191,7 +191,7 @@ class ShareController extends Controller
                     $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                     $data = array("type" => 10,
                         "chat" => $chat);
-                    $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname().' sent a chat ', $subject , $data);
+                    $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname().' sent a chat ', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
                 }else{
                     return new JsonResponse(array("code" => "action_not_allowed"));

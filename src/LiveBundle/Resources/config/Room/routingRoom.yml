@@ -2,3 +2,23 @@ create-new-room:
     path:     /new-room
     defaults: { _controller: LiveBundle:Room:newRoom }
     methods: [POST]
+
+reject-call:
+    path:     /reject-call
+    defaults: { _controller: LiveBundle:Room:callRejected }
+    methods: [POST]
+
+pick-call:
+    path:     /pick-call
+    defaults: { _controller: LiveBundle:Room:callPicked }
+    methods: [POST]
+
+call-back:
+    path:     /call-back
+    defaults: { _controller: LiveBundle:Room:callBack }
+    methods: [POST]
+
+video-call-state-change:
+    path:     /video-call-state-change
+    defaults: { _controller: LiveBundle:Room:videoCallStateChange }
+    methods: [POST]

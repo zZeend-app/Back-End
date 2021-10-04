@@ -41,9 +41,9 @@ class RoomController extends Controller
             $roomTypeIndex = $data['roomTypeIndex'];
             $roomTargetIndex = $data['roomTargetIndex'];
 
-            $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+            $moderator = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
-            if($user !== null){
+            if($moderator !== null){
 
                 $roomTypeId = 0;
 
@@ -138,7 +138,7 @@ class RoomController extends Controller
                                 $room->setArchived(false);
                             }
 
-                            $room->setModerator($user);
+                            $room->setModerator($moderator);
                             $room->setModeratorToken($moderatorToken);
 
                             if(array_key_exists('nbParticipant', $data)){
@@ -195,6 +195,27 @@ class RoomController extends Controller
 
                                             $entityManager->persist($guest);
                                             $entityManager->flush();
+
+
+
+                                                $subject = $moderator->getFullname().' is calling you...';
+
+
+
+                                            //send notification
+                                            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+
+                                            $incomingCall = array(
+                                                "room" => $room,
+                                                "callee" => $userGuest
+                                            );
+
+                                            $data = array("type" => 13,
+                                                "incomingCall" => $incomingCall);
+
+
+                                            //replace moderator by $userGuest in real use
+                                            $pushNotificationManager->sendNotification($userGuest, 'zZeend video call', $subject , $data, $moderator->getPhoto() !== null ? $moderator->getPhoto()->getFilePath() : null);
 
 
                                         }
@@ -384,6 +405,273 @@ class RoomController extends Controller
         }else{
             return new JsonResponse(array("code" => "invalid_api_key"));
         }
+    }
+
+    public function callRejectedAction(Request  $request)
+    {
+
+        $response = array();
+
+        $headers = $request->headers->all();
+        $live_api_key = $this->getParameter('api_keys')['live-api-key'];
+
+        if (array_key_exists('live-api-key', $headers) and $headers['live-api-key'][0] == $live_api_key) {
+
+            $vonage_apiKey = $this->getParameter('api_keys')['vonage-api-key'];
+            $vonage_secret_key = $this->getParameter('api_keys')['vonage-secret-key'];
+
+            $data = $request->getContent();
+            $data = json_decode($data, true);
+
+            $userId = $data['userId'];
+            $roomId = $data['roomId'];
+
+            $userGuest = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+            if($userGuest !== null){
+
+                $room = $this->getDoctrine()->getRepository(Room::class)->find($roomId);
+
+                if($room !== null){
+
+                    $moderator = $room->getModerator();
+
+                    //send notification to moderator that the call has been rejected
+                    $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+
+                    $subject = $userGuest->getFullname().' reject your call.';
+
+                    $incomingCall = array(
+                        "room" => $room,
+                        "callee" => $userGuest
+                    );
+
+                    $data = array("type" => 15,
+                        "incomingCall" => $incomingCall);
+
+                    $pushNotificationManager->sendNotification($moderator, 'Call rejected', $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
+
+                         $response = array("code" => "notification_sent");
+
+                }else{
+                    return new JsonResponse(array("code" => "action_not_allowed"));
+                }
+
+            }else{
+                return new JsonResponse(array("code" => "action_not_allowed"));
+            }
+
+
+        }else{
+            return new JsonResponse(array("code" => "action_not_allowed"));
+        }
+
+        return new JsonResponse($response);
+
+    }
+
+
+    public function callPickedAction(Request  $request)
+    {
+
+        $response = array();
+
+        $headers = $request->headers->all();
+        $live_api_key = $this->getParameter('api_keys')['live-api-key'];
+
+        if (array_key_exists('live-api-key', $headers) and $headers['live-api-key'][0] == $live_api_key) {
+
+            $vonage_apiKey = $this->getParameter('api_keys')['vonage-api-key'];
+            $vonage_secret_key = $this->getParameter('api_keys')['vonage-secret-key'];
+
+            $data = $request->getContent();
+            $data = json_decode($data, true);
+
+            $userId = $data['userId'];
+            $roomId = $data['roomId'];
+
+            $userGuest = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+            if($userGuest !== null){
+
+                $room = $this->getDoctrine()->getRepository(Room::class)->find($roomId);
+
+                if($room !== null){
+
+                    $moderator = $room->getModerator();
+
+                    //send notification to moderator that the call has been rejected
+                    $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+
+                    $subject = $userGuest->getFullname().' is in video session now.';
+
+                    $incomingCall = array(
+                        "room" => $room,
+                        "callee" => $userGuest
+                    );
+
+                    $data = array("type" => 14,
+                        "incomingCall" => $incomingCall);
+
+                    $pushNotificationManager->sendNotification($moderator, 'Call picked', $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
+
+                    $response = array("code" => "notification_sent");
+
+                }else{
+                    return new JsonResponse(array("code" => "action_not_allowed"));
+                }
+
+            }else{
+                return new JsonResponse(array("code" => "action_not_allowed"));
+            }
+
+
+        }else{
+            return new JsonResponse(array("code" => "action_not_allowed"));
+        }
+
+        return new JsonResponse($response);
+
+    }
+
+
+    public function callBackAction(Request  $request)
+    {
+
+        $response = array();
+
+        $headers = $request->headers->all();
+        $live_api_key = $this->getParameter('api_keys')['live-api-key'];
+
+        if (array_key_exists('live-api-key', $headers) and $headers['live-api-key'][0] == $live_api_key) {
+
+            $vonage_apiKey = $this->getParameter('api_keys')['vonage-api-key'];
+            $vonage_secret_key = $this->getParameter('api_keys')['vonage-secret-key'];
+
+            $data = $request->getContent();
+            $data = json_decode($data, true);
+
+            $userId = $data['userId'];
+            $roomId = $data['roomId'];
+
+            $userGuest = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+            if($userGuest !== null){
+
+                $room = $this->getDoctrine()->getRepository(Room::class)->find($roomId);
+
+                if($room !== null){
+
+                    $moderator = $room->getModerator();
+
+                    //send notification to moderator that the call has been rejected
+                    $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+
+                    $subject = $userGuest->getFullname().' said he/she will call you back.';
+
+                    $incomingCall = array(
+                        "room" => $room,
+                        "callee" => $userGuest
+                    );
+
+                    $data = array("type" => 16,
+                        "incomingCall" => $incomingCall);
+
+                    $pushNotificationManager->sendNotification($moderator, 'Call picked', $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
+
+                    $response = array("code" => "notification_sent");
+
+                }else{
+                    return new JsonResponse(array("code" => "action_not_allowed"));
+                }
+
+            }else{
+                return new JsonResponse(array("code" => "action_not_allowed"));
+            }
+
+
+        }else{
+            return new JsonResponse(array("code" => "action_not_allowed"));
+        }
+
+        return new JsonResponse($response);
+
+    }
+
+
+
+    public function videoCallStateChange(Request  $request)
+    {
+
+        $response = array();
+
+        $headers = $request->headers->all();
+        $live_api_key = $this->getParameter('api_keys')['live-api-key'];
+
+        if (array_key_exists('live-api-key', $headers) and $headers['live-api-key'][0] == $live_api_key) {
+
+            $vonage_apiKey = $this->getParameter('api_keys')['vonage-api-key'];
+            $vonage_secret_key = $this->getParameter('api_keys')['vonage-secret-key'];
+
+            $data = $request->getContent();
+            $data = json_decode($data, true);
+
+            $userId = $data['userId'];
+            $roomId = $data['roomId'];
+            $userRole = $data['userRole'];
+
+            $userGuest = $this->getDoctrine()->getRepository(User::class)->find($userId);
+
+            if($userGuest !== null){
+
+                $room = $this->getDoctrine()->getRepository(Room::class)->find($roomId);
+
+                if($room !== null){
+
+                    $moderator = $room->getModerator();
+
+                    //send notification to moderator that the call has been rejected
+                    $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+
+                    $subject = $userRole == 'GUEST' ? $userGuest->getFullname().' ends video session.' : $moderator->getFullname().' ends video session.';
+
+                    $incomingCall = array(
+                        "room" => $room,
+                        "callee" => $userGuest
+                    );
+
+                    $data = array("type" => 17,
+                        "incomingCall" => $incomingCall);
+
+
+                    //replace moderator by $userGuest in real use
+                    if($userRole == 'GUEST'){
+
+                        //if the guest cut off the call, send notification to moderator that he cut off the call
+                        $pushNotificationManager->sendNotification($moderator, 'Call picked', $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
+                    }else if($userRole == 'MODERATOR'){
+
+                        //the same thing in reverse
+                        $pushNotificationManager->sendNotification($userGuest, 'Call picked', $subject , $data, $moderator->getPhoto() !== null ? $moderator->getPhoto()->getFilePath() : null);
+                    }
+
+                    $response = array("code" => "notification_sent");
+
+                }else{
+                    return new JsonResponse(array("code" => "action_not_allowed"));
+                }
+
+            }else{
+                return new JsonResponse(array("code" => "action_not_allowed"));
+            }
+
+
+        }else{
+            return new JsonResponse(array("code" => "action_not_allowed"));
+        }
+
+        return new JsonResponse($response);
+
     }
 
 

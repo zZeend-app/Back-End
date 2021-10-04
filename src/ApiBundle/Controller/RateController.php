@@ -54,7 +54,7 @@ class RateController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 11,
                 "rating" => $rate);
-            $pushNotificationManager->sendNotification($ratedUser, 'zZeend rates', $subject, $data);
+            $pushNotificationManager->sendNotification($ratedUser, 'zZeend rates', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             $response = array("code" => "rate_added");

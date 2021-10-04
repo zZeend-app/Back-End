@@ -159,6 +159,11 @@ lexik_jwt_authentication:
 #    9: chat received
 #    10: shared content in chat received
 #    11: rate publish
+#    13: video calling
+#    14: video call received
+#    15: video call rejected
+#    16: video call back notification message (Michel said he will call you back)
+#    17: video session end
 
 
 
