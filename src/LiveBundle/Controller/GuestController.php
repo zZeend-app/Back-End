@@ -50,7 +50,7 @@ class GuestController extends Controller
                         $opentok = new OpenTok($vonage_apiKey, $vonage_secret_key);
 
                         $options = array(
-                            'role'       => Role::SUBSCRIBER,
+                            'role'       => Role::PUBLISHER,
                             'expireTime' => time()+(2 * 24 * 60 * 60), // in 2 days
                             'data'       => 'name=Johnny',
                             'initialLayoutClassList' => array('focus')

@@ -600,7 +600,7 @@ class RoomController extends Controller
 
 
 
-    public function videoCallStateChange(Request  $request)
+    public function videoCallStateChangeAction(Request  $request)
     {
 
         $response = array();
