@@ -41,13 +41,6 @@ class Story implements JsonSerializable
     private $file;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(name="active", type="boolean", length=255, unique=false, nullable=false)
-     */
-    private $active;
-
-    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
@@ -109,28 +102,6 @@ class Story implements JsonSerializable
         return $this->file;
     }
 
-
-    /**
-     * Get active
-     * @return string
-     */
-    public function getActive()
-    {
-        return $this->active;
-    }
-
-    /**
-     * Set active.
-     *
-     * @param boolean $active
-     *
-     */
-    public function setActive(bool $active)
-    {
-        $this->active = $active;
-
-    }
-
     public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
@@ -165,10 +136,6 @@ class Story implements JsonSerializable
 
         if (!$entityClass instanceof Story || in_array("file", $include)) {
             $json["file"] = $this->file;
-        }
-
-        if (!$entityClass instanceof Story || in_array("active", $include)) {
-            $json["active"] = $this->active;
         }
 
 

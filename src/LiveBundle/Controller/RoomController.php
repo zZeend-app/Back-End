@@ -111,7 +111,7 @@ class RoomController extends Controller
                         $options = array(
                             'role'       => Role::MODERATOR,
                             'expireTime' => time()+(2 * 24 * 60 * 60), // in 2 days
-                            'data'       => 'name=Johnny',
+                            'data'       => 'name='.$moderator->getFullname(),
                             'initialLayoutClassList' => array('focus')
                         );
 

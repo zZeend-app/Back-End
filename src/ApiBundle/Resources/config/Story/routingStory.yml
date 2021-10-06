@@ -2,3 +2,8 @@ str-get-all:
     path:     /
     defaults: { _controller: ApiBundle:Story:getStories }
     methods: [POST]
+
+add-story:
+    path:     /add
+    defaults: { _controller: ApiBundle:Story:addStory }
+    methods: [POST]

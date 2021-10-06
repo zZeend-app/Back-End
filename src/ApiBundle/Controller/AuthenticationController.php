@@ -141,6 +141,14 @@ class AuthenticationController extends Controller
 
         }
 
+        //if the asked file is a profile photo
+        if($fileType == 'fBfqcChzEM9arevi3hQvX0GC80stybabT1uU6LXtSYqpn10934'){
+
+            $filepath = $uploadDir.'/story_photos/'.$fileName;
+//           return new JsonResponse($filepath);
+
+        }
+
         //expose image file to the web
 
         $response = new Response();

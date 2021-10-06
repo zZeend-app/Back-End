@@ -6,6 +6,7 @@ namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
+use ApiBundle\Entity\File;
 use ApiBundle\Entity\Story;
 use ApiBundle\Entity\View;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -44,14 +45,14 @@ class StoryController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story INNER JOIN contact WHERE (contact.main_user_id = :main_user_id AND contact.second_user_id = story.user_id) OR (contact.main_user_id = story.user_id AND contact.second_user_id = :main_user_id) GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
+        $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story INNER JOIN contact WHERE (contact.main_user_id = :main_user_id AND contact.second_user_id = story.user_id AND story.created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)) OR (contact.main_user_id = story.user_id AND contact.second_user_id = :main_user_id AND story.created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)) GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 
         $dataGroupedByContact = $this->contactStories($currentUser, $RAW_QUERY);
 
-        if(count($dataGroupedByContact) == 0){
+        if (count($dataGroupedByContact) == 0) {
             $contactNotFound = true;
 
-            $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
+            $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story WHERE story.created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR) GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 
             $dataGroupedByContact = $this->contactStories($currentUser, $RAW_QUERY);
 
@@ -63,15 +64,15 @@ class StoryController extends Controller
 
         $nb_myContactsStoriesUser = count($myContactsStoriesUsers);
 
-        if($contactNotFound == false){
+        if ($contactNotFound == false) {
 
-            if($nb_myContactsStoriesUser < $count){
+            if ($nb_myContactsStoriesUser < $count) {
 
                 $count = $count - count($myContactsStoriesUsers);
 
                 $limit = $limit + count($myContactsStoriesUsers);
 
-                $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
+                $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story WHERE story.created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR) GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 
                 $statement = $em->getConnection()->prepare($RAW_QUERY);
                 $statement->bindValue('main_user_id', $currentUser->getId());
@@ -80,15 +81,15 @@ class StoryController extends Controller
                 $results = $statement->fetchAll();
                 $rt = $results;
 
-                for($q = 0; $q < count($myContactsStoriesUsers); $q++){
+                for ($q = 0; $q < count($myContactsStoriesUsers); $q++) {
 
                     $story = $myContactsStoriesUsers[$q];
 
-                    for($l = 0 ; $l < count($results); $l++){
+                    for ($l = 0; $l < count($results); $l++) {
 
                         $result = $rt[$l];
 
-                        if($story['user_id'] == $result['user_id']){
+                        if ($story['user_id'] == $result['user_id']) {
                             unset($results[$l]);
                         }
 
@@ -105,51 +106,51 @@ class StoryController extends Controller
         }
 
 
-            for ($i = 0; $i < count($myContactsStoriesUsers); $i++) {
-                $userId = intval($myContactsStoriesUsers[$i]["user_id"]);
+        for ($i = 0; $i < count($myContactsStoriesUsers); $i++) {
+            $userId = intval($myContactsStoriesUsers[$i]["user_id"]);
 
-                if($userId == $currentUser->getId()){
-                    $currentUserStoryExists = true;
-                }else{
+            if ($userId == $currentUser->getId()) {
+                $currentUserStoryExists = true;
+            } else {
 
-                    $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
+                $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
-                    $stories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
+                $stories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
 
-                    $storyViewsState = array();
-                    $allViewsExceptCurrentUser = array();
-                    for($k = 0; $k < count($stories); $k++){
+                $storyViewsState = array();
+                $allViewsExceptCurrentUser = array();
+                for ($k = 0; $k < count($stories); $k++) {
 
-                        $story = $stories[$k];
+                    $story = $stories[$k];
 
-                        $em = $this->getDoctrine()->getRepository(View::class);
-                        $qb = $em->GetQueryBuilder();
-                        $qb = $em->WhereUserViewsStory($qb, $currentUser, $story->getId(), 3);
-                        $_qb = $em->WhereAllViewsStory($qb, $story->getId(), 3);
-                        $storyViewsState[] = $qb->getQuery()->getResult();
-                        $allViewsExceptCurrentUser[] = $_qb->getQuery()->getResult();
+                    $em = $this->getDoctrine()->getRepository(View::class);
+                    $qb = $em->GetQueryBuilder();
+                    $qb = $em->WhereUserViewsStory($qb, $currentUser, $story->getId(), 3);
+                    $_qb = $em->WhereAllViewsStory($qb, $story->getId(), 3);
+                    $storyViewsState[] = $qb->getQuery()->getResult();
+                    $allViewsExceptCurrentUser[] = $_qb->getQuery()->getResult();
 
-                    }
+                }
 
-                    if(count($allViewsExceptCurrentUser) > 0){
+                if (count($allViewsExceptCurrentUser) > 0) {
 
-                        $response[] = array( "user" => $user, "stories" => $stories, 'storyViewsState' => $storyViewsState, 'views' => [$allViewsExceptCurrentUser][0]);
-
-
-                    }else{
-
-                        $response[] = array( "user" => $user, "stories" => $stories, 'storyViewsState' => $storyViewsState, 'views' => []);
+                    $response[] = array("user" => $user, "stories" => $stories, 'storyViewsState' => $storyViewsState, 'views' => [$allViewsExceptCurrentUser][0]);
 
 
-                    }
+                } else {
+
+                    $response[] = array("user" => $user, "stories" => $stories, 'storyViewsState' => $storyViewsState, 'views' => []);
 
 
                 }
 
+
             }
 
+        }
 
-        if($currentUserStoryExists){
+
+        if ($currentUserStoryExists) {
 
 
             $user = $this->getDoctrine()->getRepository(User::class)->find($currentUser->getId());
@@ -158,7 +159,7 @@ class StoryController extends Controller
 
             $allViewsExceptCurrentUser = array();
 
-            for($j = 0; $j < count($currentUserStories); $j++){
+            for ($j = 0; $j < count($currentUserStories); $j++) {
 
                 $story = $currentUserStories[$j];
 
@@ -170,32 +171,32 @@ class StoryController extends Controller
             }
 
 
-            if($allViewsExceptCurrentUser > 0){
+            if ($allViewsExceptCurrentUser > 0) {
 
-                $tempArray = array( "user" => $user, "stories" => $currentUserStories, 'storyViewsState' => [], 'views' => $allViewsExceptCurrentUser[0]);
+                $tempArray = array("user" => $user, "stories" => $currentUserStories, 'storyViewsState' => [], 'views' => $allViewsExceptCurrentUser[0]);
 
 
-            }else{
+            } else {
 
-                $tempArray = array( "user" => $user, "stories" => $currentUserStories, 'storyViewsState' => [], 'views' =>[]);
+                $tempArray = array("user" => $user, "stories" => $currentUserStories, 'storyViewsState' => [], 'views' => []);
 
 
             }
 
 
-           $response = array_merge([$tempArray], $response);
+            $response = array_merge([$tempArray], $response);
 
-        }else{
-            $tempArray = array( "user" => $currentUser, "stories" => [], 'storyViewsState' => []);
+        } else {
+            $tempArray = array("user" => $currentUser, "stories" => [], 'storyViewsState' => []);
             $response = array_merge([$tempArray], $response);
         }
-
 
 
         return new JsonResponse($response);
     }
 
-    public function contactStories($currentUser, $RAW_QUERY){
+    public function contactStories($currentUser, $RAW_QUERY)
+    {
         $em = $this->getDoctrine()->getManager();
         $statement = $em->getConnection()->prepare($RAW_QUERY);
         $statement->bindValue('main_user_id', $currentUser->getId());
@@ -220,6 +221,95 @@ class StoryController extends Controller
             $response = $qb->getQuery()->getOneOrNullResult();
 
         } else {
+            $response = array("code" => "action_not_allowed");
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function addStoryAction(Request $request)
+    {
+
+        $response = array();
+        $currentUser = $this->getUser();
+
+        $updated = array();
+        $fileName = '';
+        $data = array();
+
+        $file_type = null;
+
+        $fileOriginalName = '';
+
+        $fileSize = 0;
+
+        if ($currentUser !== null) {
+
+
+            if (!empty($request->files->get('storyFile'))) {
+
+                $file = $request->files->get('storyFile');
+
+                $uploadDir = $this->getParameter('upload_dir');
+
+                $data = json_decode($_POST['data'], true);
+
+                $dataType = $data['dataType'];
+
+                $fileName = $this->get('ionicapi.fileUploaderManager')->upload($file, $uploadDir, $dataType);
+
+                $fileOriginalName = $file->getClientOriginalName();
+
+                $fileSize = $file->getClientSize();
+
+                $data = $data['objectData'];
+                $file_type = 'image';
+
+            }
+
+            if ($fileName !== '') {
+
+                $entityManager = $this->getDoctrine()->getManager();
+
+                $story = new Story();
+                $story->setUser($currentUser);
+                $story->setCreatedAtAutomatically();
+
+                $fileEntityManager = $this->getDoctrine()->getManager();
+
+                $file = new File();
+                $file->setUser($currentUser);
+                $file->setFilePath('fBfqcChzEM9arevi3hQvX0GC80stybabT1uU6LXtSYqpn10934/' . $fileName);
+
+                if ($file_type !== null) {
+                    $file->setFileType($file_type);
+                } else {
+                    $file->setFileType('');
+                }
+
+                $file->setFileSize($fileSize);
+                $file->setThumbnail('');
+                $file->setFileName($fileOriginalName);
+                $file->setCreatedAtAutomatically();
+
+                $fileEntityManager->persist($file);
+                $fileEntityManager->flush();
+
+
+                $story->setFile($file);
+
+
+                $entityManager->persist($story);
+                $entityManager->flush();
+
+                $response = $story;
+
+            }else{
+                $response = array("code" => "action_not_allowed");
+            }
+
+
+        }else{
             $response = array("code" => "action_not_allowed");
         }
 

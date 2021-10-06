@@ -52,7 +52,7 @@ class GuestController extends Controller
                         $options = array(
                             'role'       => Role::PUBLISHER,
                             'expireTime' => time()+(2 * 24 * 60 * 60), // in 2 days
-                            'data'       => 'name=Johnny',
+                            'data'       => 'name='.$user->getFullname(),
                             'initialLayoutClassList' => array('focus')
                         );
 
