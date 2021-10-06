@@ -21,15 +21,19 @@ class PaymentMethodController extends Controller
         $data = $request->getContent();
         $data = json_decode($data, true);
 
-        $card = $data['card'];
+        $brand = $data['brand'];
         $last_four_digit = $data['last_four_digit'];
-        $expiration_date = $data['expiration_date'];
+        $exp_month = $data['exp_month'];
+        $exp_year = $data['exp_year'];
+        $funding = $data['funding'];
         $csv = $data['csv'];
+        $token = $data['token'];
 
         $paymentMethod = $this->getDoctrine()->getRepository(PaymentMethod::class)->findOneBy([
-            "card" => $card,
+            "brand" => $brand,
             "lastFourDigit" => $last_four_digit,
-            "expirationDate" => $expiration_date,
+            "expMonth" => $exp_month,
+            "expYear" => $exp_year,
             "csv" => $csv
         ]);
 
@@ -55,10 +59,13 @@ class PaymentMethodController extends Controller
 
             $paymentMethod = new PaymentMethod();
             $paymentMethod->setUser($currentUser);
-            $paymentMethod->setCard($card);
+            $paymentMethod->setBrand($brand);
+            $paymentMethod->setToken($token);
             $paymentMethod->setLastFourDigit($last_four_digit);
-            $paymentMethod->setExpirationDate($expiration_date);
+            $paymentMethod->setExpMonth($exp_month);
+            $paymentMethod->setExpYear($exp_year);
             $paymentMethod->setCsv($csv);
+            $paymentMethod->setFunding($funding);
             $paymentMethod->setMain($main);
             $paymentMethod->setCreatedAtAutomatically();
             $paymentMethod->setUpdatedAtAutomatically();
@@ -87,18 +94,26 @@ class PaymentMethodController extends Controller
 
         $data = json_decode($data, true);
 
-        $payment_method_id = $data['payment_method_id'];
-        $card = $data['card'];
+        $brand = $data['brand'];
         $last_four_digit = $data['last_four_digit'];
-        $expiration_date = $data['expiration_date'];
+        $exp_month = $data['exp_month'];
+        $exp_year = $data['exp_year'];
+        $funding = $data['funding'];
         $csv = $data['csv'];
+        $token = $data['token'];
+        $payment_method_id = $data['payment_method_id'];
 
         $paymentMethod = $this->getDoctrine()->getRepository(PaymentMethod::class)->findOneBy(["user" => $currentUser, "id" => $payment_method_id]);
 
         if ($paymentMethod) {
-            if ($card !== '' and $card !== $paymentMethod->getCard()) {
-                $paymentMethod->setCard($card);
+            if ($brand !== '' and $brand !== $paymentMethod->getBrand()) {
+                $paymentMethod->setCard($brand);
                 $updated[] = "card";
+            }
+
+            if ($token !== '' and $token !== $paymentMethod->getToken()) {
+                $paymentMethod->setToken($token);
+                $updated[] = "token";
             }
 
             if ($last_four_digit !== '' and $last_four_digit !== $paymentMethod->getLastFourDigit()) {
@@ -106,14 +121,24 @@ class PaymentMethodController extends Controller
                 $updated[] = "last_four_digit";
             }
 
-            if ($expiration_date !== '' and $expiration_date !== $paymentMethod->getExpirationDate()) {
-                $paymentMethod->setExpirationDate($expiration_date);
-                $updated[] = "expiration_date";
+            if ($exp_month !== '' and $exp_month !== $paymentMethod->getExpMonth()) {
+                $paymentMethod->setExpirationDate($exp_month);
+                $updated[] = "expiration_month";
+            }
+
+            if ($exp_year !== '' and $exp_year !== $paymentMethod->getExpYear()) {
+                $paymentMethod->setExpirationDate($exp_month);
+                $updated[] = "expiration_year";
             }
 
             if ($csv !== '' and $csv !== $paymentMethod->getCsv()) {
                 $paymentMethod->setCsv($csv);
                 $updated[] = "csv";
+            }
+
+            if ($funding !== '' and $funding !== $paymentMethod->getFunding()) {
+                $paymentMethod->setFunding($csv);
+                $updated[] = "funding";
             }
 
             $entityManager = $this->getDoctrine()->getManager();

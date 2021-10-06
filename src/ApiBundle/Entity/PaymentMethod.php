@@ -33,9 +33,16 @@ class PaymentMethod implements JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="card", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="brand", type="string", length=255, unique=false, nullable=false)
      */
-    private $card;
+    private $brand;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=255, unique=false, nullable=false)
+     */
+    private $token;
 
     /**
      * @var string
@@ -47,9 +54,23 @@ class PaymentMethod implements JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="expiration_date", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="exp_month", type="string", length=255, unique=false, nullable=false)
      */
-    private $expirationDate;
+    private $expMonth;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="exp_year", type="string", length=255, unique=false, nullable=false)
+     */
+    private $expYear;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="funding", type="string", length=255, unique=false, nullable=false)
+     */
+    private $funding;
 
     /**
      * @var string
@@ -83,26 +104,49 @@ class PaymentMethod implements JsonSerializable
     private $updatedAt;
 
     /**
-     * Set card.
+     * Set brand.
      *
-     * @param string $card
+     * @param string $brand
      *
      */
-    public function setCard($card)
+    public function setBrand($brand)
     {
-        $this->card = $card;
+        $this->brand = $brand;
     }
 
 
 
     /**
-     * Get card.
+     * Get brand.
      *
      * @return string
      */
-    public function getCard()
+    public function getBrand()
     {
-        return $this->card;
+        return $this->brand;
+    }
+
+    /**
+     * Set token.
+     *
+     * @param string $token
+     *
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+
+
+    /**
+     * Get token.
+     *
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
     }
 
 
@@ -130,26 +174,73 @@ class PaymentMethod implements JsonSerializable
     }
 
     /**
-     * Set expirationDate.
+     * Set expMonth.
      *
-     * @param string $expirationDate
+     * @param string $exp_month
      *
      */
-    public function setExpirationDate($expirationDate)
+    public function setExpMonth($expMonth)
     {
-        $this->expirationDate = $expirationDate;
+        $this->expMonth = $expMonth;
     }
 
 
 
     /**
-     * Get expirationDate.
+     * Get expMonth.
      *
      * @return string
      */
-    public function getExpirationDate()
+    public function getExpMonth()
     {
-        return $this->expirationDate;
+        return $this->expMonth;
+    }
+
+
+    /**
+     * Set expYear.
+     *
+     * @param string $expYear
+     *
+     */
+    public function setExpYear($expYear)
+    {
+        $this->expYear = $expYear;
+    }
+
+
+
+    /**
+     * Get expYear.
+     *
+     * @return string
+     */
+    public function getExpYear()
+    {
+        return $this->expYear;
+    }
+
+    /**
+     * Set funding.
+     *
+     * @param string $funding
+     *
+     */
+    public function setFunding($funding)
+    {
+        $this->funding = $funding;
+    }
+
+
+
+    /**
+     * Get funding.
+     *
+     * @return string
+     */
+    public function getFunding()
+    {
+        return $this->funding;
     }
 
     /**
@@ -268,19 +359,32 @@ class PaymentMethod implements JsonSerializable
             "id" => $this->id,
         ];
 
-        if(!$entityClass instanceof PaymentMethod || in_array("card",$include)){
-            $json["card"] = $this->card;
+        if(!$entityClass instanceof PaymentMethod || in_array("brand",$include)){
+            $json["brand"] = $this->brand;
+        }
+
+        if(!$entityClass instanceof PaymentMethod || in_array("token",$include)){
+            $json["token"] = $this->token;
         }
 
         if(!$entityClass instanceof PaymentMethod || in_array("lastFourDigit",$include)){
             $json["lastFourDigit"] = $this->lastFourDigit;
         }
 
-        if(!$entityClass instanceof PaymentMethod || in_array("expirationDate",$include)){
-            $json["expirationDate"] = $this->expirationDate;
+        if(!$entityClass instanceof PaymentMethod || in_array("expMonth",$include)){
+            $json["expMonth"] = $this->expMonth;
         }
+
+        if(!$entityClass instanceof PaymentMethod || in_array("expYear",$include)){
+            $json["expYear"] = $this->expYear;
+        }
+
         if(!$entityClass instanceof PaymentMethod || in_array("csv",$include)){
             $json["csv"] = $this->csv;
+        }
+
+        if(!$entityClass instanceof PaymentMethod || in_array("funding",$include)){
+            $json["funding"] = $this->funding;
         }
 
         if(!$entityClass instanceof PaymentMethod || in_array("main",$include)){
