@@ -28,3 +28,6 @@ services:
     ionicapi.chatManager:
       class: ApiBundle\Manager\ChatManager
       arguments: [ "@doctrine.orm.entity_manager" ]
+
+    ionicapi.zzeendPointGeneratorManager:
+      class: ApiBundle\Manager\ZzeendPointGeneratorManager

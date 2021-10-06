@@ -10,6 +10,7 @@ use ApiBundle\Entity\FinancialStatus;
 use ApiBundle\Entity\PaymentType;
 use ApiBundle\Entity\Transaction;
 use ApiBundle\Entity\Zzeend;
+use ApiBundle\Entity\ZzeendPoint;
 use ApiBundle\Entity\ZzeendStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -288,6 +289,21 @@ class ZzeendController extends Controller
 
             $entityManager->persist($zZeend);
             $entityManager->flush();
+
+            //create a zZeend point each time a zZeend is finalize
+            $zZeendPoint = new ZzeendPoint();
+
+
+            $zzeendPointGeneratorManager = $this->get('ionicapi.zzeendPointGeneratorManager');
+            $zZeendPoint->setZzeendPoint($zzeendPointGeneratorManager->createZzeendPoint());
+            $zZeendPoint->setUser($mainZzeendUser);
+            $zZeendPoint->setZzeend($zZeend);
+            $zZeendPoint->setCreatedAtAutomatically();
+
+            $entityManager->persist($zZeendPoint);
+            $entityManager->flush();
+
+
 
             $event = $this->getDoctrine()->getRepository(Event::class)->findOneBy(['zZeend' => $zZeend]);
 
