@@ -5,6 +5,7 @@ namespace ApiBundle\Controller;
 
 
 use ApiBundle\Entity\PaymentMethod;
+use ApiBundle\Entity\StripeConnectedAccount;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,12 +17,16 @@ class PaymentMethodController extends Controller
     {
         $response = array();
 
+
+        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
         $currentUser = $this->getUser();
 
         $data = $request->getContent();
         $data = json_decode($data, true);
 
         $brand = $data['brand'];
+        $card_number = $data['card_number'];
         $last_four_digit = $data['last_four_digit'];
         $exp_month = $data['exp_month'];
         $exp_year = $data['exp_year'];
@@ -55,28 +60,96 @@ class PaymentMethodController extends Controller
                 return new JsonResponse($response);
             }
 
-            $entityManager = $this->getDoctrine()->getManager();
 
-            $paymentMethod = new PaymentMethod();
-            $paymentMethod->setUser($currentUser);
-            $paymentMethod->setBrand($brand);
-            $paymentMethod->setToken($token);
-            $paymentMethod->setLastFourDigit($last_four_digit);
-            $paymentMethod->setExpMonth($exp_month);
-            $paymentMethod->setExpYear($exp_year);
-            $paymentMethod->setCsv($csv);
-            $paymentMethod->setFunding($funding);
-            $paymentMethod->setMain($main);
-            $paymentMethod->setCreatedAtAutomatically();
-            $paymentMethod->setUpdatedAtAutomatically();
+            \Stripe\Stripe::setApiKey($stripeSecretKey);
 
-            $entityManager->persist($paymentMethod);
-            $entityManager->flush();
+                //add payment method to stripe
+
+            try{
+
+                $paymentMethod = \Stripe\PaymentMethod::create([
+                    'type' => 'card',
+                    'card' => [
+                        'number' => $card_number,
+                        'exp_month' => $exp_month,
+                        'exp_year' => $exp_year,
+                        'cvc' => $csv
+                    ]
+                ]);
 
 
-            $response = array("code" => "payment_method_added");
+                if($paymentMethod !== null){
+                    $stripePaymentMethodId = $paymentMethod->id;
+
+                    //create a customer
+                    $customer = \Stripe\Customer::create([
+                        'source' => $token,
+                        'email' => $currentUser->getEmail()
+                    ]);
+
+                    if($customer !== null){
+
+                        //attache a payment method to a customer
+                        $stripe = new \Stripe\StripeClient($stripeSecretKey);
+
+                        $stripe->paymentMethods->attach(
+                            $stripePaymentMethodId,
+                            ['customer' => $customer->id]
+                        );
+
+                        $entityManager = $this->getDoctrine()->getManager();
+
+                        $paymentMethod = new PaymentMethod();
+                        $paymentMethod->setUser($currentUser);
+                        $paymentMethod->setBrand($brand);
+                        $paymentMethod->setToken($token);
+                        $paymentMethod->setLastFourDigit($last_four_digit);
+                        $paymentMethod->setExpMonth($exp_month);
+                        $paymentMethod->setExpYear($exp_year);
+                        $paymentMethod->setCsv($csv);
+                        $paymentMethod->setActive(true);
+                        $paymentMethod->setStripePaymentMethodId($stripePaymentMethodId);
+                        $paymentMethod->setFunding($funding);
+                        $paymentMethod->setMain($main);
+                        $paymentMethod->setCustomerId($customer->id);
+                        $paymentMethod->setCreatedAtAutomatically();
+                        $paymentMethod->setUpdatedAtAutomatically();
+
+                        $entityManager->persist($paymentMethod);
+                        $entityManager->flush();
+
+                        $response = array("code" => "payment_method_added");
+
+                    }else{
+                        $response = array("code" => "error_occurred");
+                    }
+
+                }else{
+                    $response = array("code" => "error_occurred");
+                }
+
+            }catch(\Stripe\Exception\CardException $e){
+                return new JsonResponse(array("code" => $e->getError()->code));
+            }
+
         } else {
-            $response = array("code" => "already_added");
+            //if this payment method is active and the user still want to add it again
+            if($paymentMethod->getActive()){
+                $response = array("code" => "already_added");
+            }else{
+
+                //if this payment method is not active, then active it
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $paymentMethod->setActive(true);
+
+                $entityManager->persist($paymentMethod);
+                $entityManager->flush();
+
+                $response = array("code" => "payment_method_added");
+
+            }
+
         }
 
         return new JsonResponse($response);
@@ -170,8 +243,17 @@ class PaymentMethodController extends Controller
 
         if ($paymentMethod) {
             $main = $paymentMethod->getMain();
-            $entityManager->remove($paymentMethod);
+
+            //disable this payment method
+            $paymentMethod->setActive(false);
+
+            $entityManager->persist($paymentMethod);
             $entityManager->flush();
+
+            //detach payment method from customer
+
+            $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
 
             if($main){
                 $em = $this->getDoctrine()->getRepository(PaymentMethod::class);
@@ -206,6 +288,7 @@ class PaymentMethodController extends Controller
         $em = $this->getDoctrine()->getRepository(PaymentMethod::class);
         $qb =  $em->GetQueryBuilder();
         $qb = $em->WhereUser($qb, $currentUser);
+        $qb = $em->WhereActive($qb, true);
         $qb = $em->OrderByMain($qb);
 
 
@@ -250,5 +333,352 @@ class PaymentMethodController extends Controller
 
         return new JsonResponse($response);
     }
+
+    public function createStripeUserConnectedAccountAction(){
+
+        $response = array();
+        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
+        $currentUser = $this->getUser();
+
+        $countryCode = $currentUser->getCountryCode();
+
+        \Stripe\Stripe::setApiKey($stripeSecretKey);
+
+        $account = \Stripe\Account::create([
+            'country' => $countryCode,
+             'email' => $currentUser->getEmail(),
+            'type' => 'express',
+        ]);
+
+
+        if($account !== null AND  count($account) > 0){
+
+            $stripeConnectedAccountId = $account['id'];
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $stripeConnectedAccount = new StripeConnectedAccount();
+            $stripeConnectedAccount->setUser($currentUser);
+            $stripeConnectedAccount->setStripeAccountId($stripeConnectedAccountId);
+
+            $entityManager->persist($stripeConnectedAccount);
+            $entityManager->flush();
+
+            $response = $stripeConnectedAccount;
+
+
+        }else{
+
+            $response = array("code" => "action_not_allowed");
+
+        }
+
+        return new JsonResponse($response);
+
+
+    }
+
+    public function getUserStripeConnectedAccountAction(){
+
+        $response = array();
+        $currentUser = $this->getUser();
+
+        $stripeConnectedAccount = $this->getDoctrine()->getRepository(StripeConnectedAccount::class)->findBy(["user" => $currentUser]);
+
+        if($stripeConnectedAccount !== null){
+
+            $response = $stripeConnectedAccount;
+
+        }else{
+
+            $response = array("code" => "account_not_found");
+
+        }
+
+        return new JsonResponse($response);
+
+    }
+
+    public function createAccountLinkAction(Request $request){
+
+        $response = array();
+
+        $currentUser = $this->getUser();
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $stripeAccountId = $data['stripe_account_id'];
+
+        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
+        $currentUser = $this->getUser();
+
+        \Stripe\Stripe::setApiKey($stripeSecretKey);
+
+        $account_links = \Stripe\AccountLink::create([
+            'account' => $stripeAccountId,
+            'refresh_url' => 'https://zzeend.com/stripe/refresh-url',
+            'return_url' => 'https://zzeend.com/stripe/return-url',
+            'type' => 'account_onboarding',
+        ]);
+
+        if($account_links !== null){
+            $response = $account_links;
+        }else{
+            $response = array("code" => "error_occurred");
+        }
+
+
+
+        return new JsonResponse($response);
+
+    }
+
+    function getCountryCurrency($countryCode) {
+        $country_currency = array(
+            'AF' => 'AFN',
+            'AL' => 'ALL',
+            'DZ' => 'DZD',
+            'AS' => 'USD',
+            'AD' => 'EUR',
+            'AO' => 'AOA',
+            'AI' => 'XCD',
+            'AQ' => 'XCD',
+            'AG' => 'XCD',
+            'AR' => 'ARS',
+            'AM' => 'AMD',
+            'AW' => 'AWG',
+            'AU' => 'AUD',
+            'AT' => 'EUR',
+            'AZ' => 'AZN',
+            'BS' => 'BSD',
+            'BH' => 'BHD',
+            'BD' => 'BDT',
+            'BB' => 'BBD',
+            'BY' => 'BYR',
+            'BE' => 'EUR',
+            'BZ' => 'BZD',
+            'BJ' => 'XOF',
+            'BM' => 'BMD',
+            'BT' => 'BTN',
+            'BO' => 'BOB',
+            'BA' => 'BAM',
+            'BW' => 'BWP',
+            'BV' => 'NOK',
+            'BR' => 'BRL',
+            'IO' => 'USD',
+            'BN' => 'BND',
+            'BG' => 'BGN',
+            'BF' => 'XOF',
+            'BI' => 'BIF',
+            'KH' => 'KHR',
+            'CM' => 'XAF',
+            'CA' => 'CAD',
+            'CV' => 'CVE',
+            'KY' => 'KYD',
+            'CF' => 'XAF',
+            'TD' => 'XAF',
+            'CL' => 'CLP',
+            'CN' => 'CNY',
+            'HK' => 'HKD',
+            'CX' => 'AUD',
+            'CC' => 'AUD',
+            'CO' => 'COP',
+            'KM' => 'KMF',
+            'CG' => 'XAF',
+            'CD' => 'CDF',
+            'CK' => 'NZD',
+            'CR' => 'CRC',
+            'HR' => 'HRK',
+            'CU' => 'CUP',
+            'CY' => 'EUR',
+            'CZ' => 'CZK',
+            'DK' => 'DKK',
+            'DJ' => 'DJF',
+            'DM' => 'XCD',
+            'DO' => 'DOP',
+            'EC' => 'ECS',
+            'EG' => 'EGP',
+            'SV' => 'SVC',
+            'GQ' => 'XAF',
+            'ER' => 'ERN',
+            'EE' => 'EUR',
+            'ET' => 'ETB',
+            'FK' => 'FKP',
+            'FO' => 'DKK',
+            'FJ' => 'FJD',
+            'FI' => 'EUR',
+            'FR' => 'EUR',
+            'GF' => 'EUR',
+            'TF' => 'EUR',
+            'GA' => 'XAF',
+            'GM' => 'GMD',
+            'GE' => 'GEL',
+            'DE' => 'EUR',
+            'GH' => 'GHS',
+            'GI' => 'GIP',
+            'GR' => 'EUR',
+            'GL' => 'DKK',
+            'GD' => 'XCD',
+            'GP' => 'EUR',
+            'GU' => 'USD',
+            'GT' => 'QTQ',
+            'GG' => 'GGP',
+            'GN' => 'GNF',
+            'GW' => 'GWP',
+            'GY' => 'GYD',
+            'HT' => 'HTG',
+            'HM' => 'AUD',
+            'HN' => 'HNL',
+            'HU' => 'HUF',
+            'IS' => 'ISK',
+            'IN' => 'INR',
+            'ID' => 'IDR',
+            'IR' => 'IRR',
+            'IQ' => 'IQD',
+            'IE' => 'EUR',
+            'IM' => 'GBP',
+            'IL' => 'ILS',
+            'IT' => 'EUR',
+            'JM' => 'JMD',
+            'JP' => 'JPY',
+            'JE' => 'GBP',
+            'JO' => 'JOD',
+            'KZ' => 'KZT',
+            'KE' => 'KES',
+            'KI' => 'AUD',
+            'KP' => 'KPW',
+            'KR' => 'KRW',
+            'KW' => 'KWD',
+            'KG' => 'KGS',
+            'LA' => 'LAK',
+            'LV' => 'EUR',
+            'LB' => 'LBP',
+            'LS' => 'LSL',
+            'LR' => 'LRD',
+            'LY' => 'LYD',
+            'LI' => 'CHF',
+            'LT' => 'EUR',
+            'LU' => 'EUR',
+            'MK' => 'MKD',
+            'MG' => 'MGF',
+            'MW' => 'MWK',
+            'MY' => 'MYR',
+            'MV' => 'MVR',
+            'ML' => 'XOF',
+            'MT' => 'EUR',
+            'MH' => 'USD',
+            'MQ' => 'EUR',
+            'MR' => 'MRO',
+            'MU' => 'MUR',
+            'YT' => 'EUR',
+            'MX' => 'MXN',
+            'FM' => 'USD',
+            'MD' => 'MDL',
+            'MC' => 'EUR',
+            'MN' => 'MNT',
+            'ME' => 'EUR',
+            'MS' => 'XCD',
+            'MA' => 'MAD',
+            'MZ' => 'MZN',
+            'MM' => 'MMK',
+            'NA' => 'NAD',
+            'NR' => 'AUD',
+            'NP' => 'NPR',
+            'NL' => 'EUR',
+            'AN' => 'ANG',
+            'NC' => 'XPF',
+            'NZ' => 'NZD',
+            'NI' => 'NIO',
+            'NE' => 'XOF',
+            'NG' => 'NGN',
+            'NU' => 'NZD',
+            'NF' => 'AUD',
+            'MP' => 'USD',
+            'NO' => 'NOK',
+            'OM' => 'OMR',
+            'PK' => 'PKR',
+            'PW' => 'USD',
+            'PA' => 'PAB',
+            'PG' => 'PGK',
+            'PY' => 'PYG',
+            'PE' => 'PEN',
+            'PH' => 'PHP',
+            'PN' => 'NZD',
+            'PL' => 'PLN',
+            'PT' => 'EUR',
+            'PR' => 'USD',
+            'QA' => 'QAR',
+            'RE' => 'EUR',
+            'RO' => 'RON',
+            'RU' => 'RUB',
+            'RW' => 'RWF',
+            'SH' => 'SHP',
+            'KN' => 'XCD',
+            'LC' => 'XCD',
+            'PM' => 'EUR',
+            'VC' => 'XCD',
+            'WS' => 'WST',
+            'SM' => 'EUR',
+            'ST' => 'STD',
+            'SA' => 'SAR',
+            'SN' => 'XOF',
+            'RS' => 'RSD',
+            'SC' => 'SCR',
+            'SL' => 'SLL',
+            'SG' => 'SGD',
+            'SK' => 'EUR',
+            'SI' => 'EUR',
+            'SB' => 'SBD',
+            'SO' => 'SOS',
+            'ZA' => 'ZAR',
+            'GS' => 'GBP',
+            'SS' => 'SSP',
+            'ES' => 'EUR',
+            'LK' => 'LKR',
+            'SD' => 'SDG',
+            'SR' => 'SRD',
+            'SJ' => 'NOK',
+            'SZ' => 'SZL',
+            'SE' => 'SEK',
+            'CH' => 'CHF',
+            'SY' => 'SYP',
+            'TW' => 'TWD',
+            'TJ' => 'TJS',
+            'TZ' => 'TZS',
+            'TH' => 'THB',
+            'TG' => 'XOF',
+            'TK' => 'NZD',
+            'TO' => 'TOP',
+            'TT' => 'TTD',
+            'TN' => 'TND',
+            'TR' => 'TRY',
+            'TM' => 'TMT',
+            'TC' => 'USD',
+            'TV' => 'AUD',
+            'UG' => 'UGX',
+            'UA' => 'UAH',
+            'AE' => 'AED',
+            'GB' => 'GBP',
+            'US' => 'USD',
+            'UM' => 'USD',
+            'UY' => 'UYU',
+            'UZ' => 'UZS',
+            'VU' => 'VUV',
+            'VE' => 'VEF',
+            'VN' => 'VND',
+            'VI' => 'USD',
+            'WF' => 'XPF',
+            'EH' => 'MAD',
+            'YE' => 'YER',
+            'ZM' => 'ZMW',
+            'ZW' => 'ZWD',
+        );
+
+        return $country_currency[$countryCode];
+    }
+
+
 
 }

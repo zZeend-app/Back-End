@@ -7,6 +7,7 @@ namespace ApiBundle\Controller;
 use ApiBundle\Entity\Event;
 use ApiBundle\Entity\Finance;
 use ApiBundle\Entity\FinancialStatus;
+use ApiBundle\Entity\PaymentMethod;
 use ApiBundle\Entity\PaymentType;
 use ApiBundle\Entity\Transaction;
 use ApiBundle\Entity\Zzeend;
@@ -177,15 +178,14 @@ class ZzeendController extends Controller
     {
         $response = array();
 
+        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+        \Stripe\Stripe::setApiKey($stripeSecretKey);
+
         $data = $request->getContent();
         $data = json_decode($data, true);
 
         $payment_type = $data['payment_type'];
-        $bank_transaction_id = $data['bank_transaction_id'];
-        $card = $data['card'];
-        $last_four_digit = $data['last_four_digit'];
-        $expiration_date = $data['expiration_date'];
-        $csv = $data['csv'];
+        $payment_methode_id = $data['payment_methode_id'];
         $zZeend_id = $data['zZeend_id'];
 
         $currentUser = $this->getUser();
@@ -194,43 +194,81 @@ class ZzeendController extends Controller
 
         if ($paymentType) {
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $transaction = new Transaction();
-            $transaction->setUser($currentUser);
-            $transaction->setPaymentType($paymentType);
-            $transaction->setBankTransactionId($bank_transaction_id);
-            $transaction->setCard($card);
-            $transaction->setLastFourDigit($last_four_digit);
-            $transaction->setExpirationDate($expiration_date);
-            $transaction->setCsv($csv);
-            $transaction->setCreatedAtAutomatically();
+            $paymentmethod = $this->getDoctrine()->getRepository(PaymentMethod::class)->find($payment_methode_id);
 
-            $entityManager->persist($transaction);
+            if($paymentmethod){
 
-            $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($zZeend_id);
-            if ($zZeend) {
-                $zZeend->setTransaction($transaction);
-                $zZeend->setUpdatedAtAutomatically();
+                $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($zZeend_id);
 
-                $entityManager->persist($zZeend);
-                $entityManager->flush();
+                if ($zZeend) {
 
-                $createNotificationManager = $this->get("ionicapi.NotificationManager");
-                $createNotificationManager->newNotification(2, $zZeend->getId());
+                    $zZeendCost = $zZeend->getCost();
 
-                $serviceOwner = $zZeend->getUser();
+                    $stripe = new \Stripe\StripeClient($stripeSecretKey);
 
-                $subject = $currentUser->getFullname().' just made a payment.';
-                //send notification
-                $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
-                $data = array("type" => 5,
-                    "zZeend" => $zZeend);
-                $pushNotificationManager->sendNotification($serviceOwner, 'zZeend paid (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+                    //charge user card and share money between stripe and zZeend account nd keep the rest to the custommer
+
+                    try{
+
+                        $payment_intent = \Stripe\PaymentIntent::create([
+                            'payment_method_types' => ['card'],
+                            'amount' => ($zZeendCost * 100),
+                            'currency' => 'cad',
+                            'payment_method' => $paymentmethod->getStripePaymentMethodId(),
+                            'customer' => $paymentmethod->getCustomerId(),
+                            'setup_future_usage' => 'off_session',
+                        ]);
+
+                        if($payment_intent !== null){
+
+                            $stripe->paymentIntents->confirm(
+                                $payment_intent->id
+                            );
+
+                            $entityManager = $this->getDoctrine()->getManager();
+                            $transaction = new Transaction();
+                            $transaction->setUser($currentUser);
+                            $transaction->setPaymentType($paymentType);
+                            $transaction->setPaymentMethod($paymentmethod);
+                            $transaction->setChargeId('ch');
+                            $transaction->setCreatedAtAutomatically();
+
+                            $entityManager->persist($transaction);
+
+                            $zZeend->setTransaction($transaction);
+                            $zZeend->setUpdatedAtAutomatically();
+
+                            $entityManager->persist($zZeend);
+                            $entityManager->flush();
+
+                            $createNotificationManager = $this->get("ionicapi.NotificationManager");
+                            $createNotificationManager->newNotification(2, $zZeend->getId());
+
+                            $serviceOwner = $zZeend->getUser();
+
+                            $subject = $currentUser->getFullname().' just made a payment.';
+                            //send notification
+                            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+                            $data = array("type" => 5,
+                                "zZeend" => $zZeend);
+                            $pushNotificationManager->sendNotification($serviceOwner, 'zZeend paid (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+
+                            $response = array("code" => "payment_success");
+
+                        } else {
+                            $response = array("code" => "action_not_allowed");
+                        }
+
+                    }catch(\Stripe\Exception\CardException $e){
+                        return new JsonResponse(array("code" => $e->getError()->code, "payment_intent_id" => $e->getError()->payment_intent->id));
+                    }
+
+                }else{
+                    $response = array("code" => "action_not_allowed");
+                }
 
 
-
-                $response = array("code" => "payment_success");
-            } else {
+            }else{
                 $response = array("code" => "action_not_allowed");
             }
 
@@ -244,7 +282,9 @@ class ZzeendController extends Controller
     public function doneAction(Request $request)
     {
 
-        $zZeendCommission = 5;
+        $payment_intent = null;
+        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
         $response = array();
 
         $currentUser = $this->getUser();
@@ -253,6 +293,7 @@ class ZzeendController extends Controller
         $data = json_decode($data, true);
 
         $zZeend_id = $data['zZeend_id'];
+        $serviceOwnerStripeAccountId = $data['service_owner_stripe_account_id'];
 
 
         $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($zZeend_id);
@@ -270,79 +311,99 @@ class ZzeendController extends Controller
             $finance = new Finance();
             $finance->setUser($mainZzeendUser);
 
-            $zZeendCost = $zZeendCost - $zZeendCommission;
-            //todo trsansfer the 5$ to zZeend account (stripe)
-
-            $financialStatus = $this->getDoctrine()->getRepository(FinancialStatus::class)->find(1);
-            $finance->setFinancialStatus($financialStatus);
-            $finance->setCash($zZeendCost);
-            $finance->setActivityDescription('zZeend cash Drop off - PaymentMethod');
-            $finance->setCreatedAtAutomatically();
-            $finance->setUpdatedAtAutomatically();
-
-            $entityManager->persist($finance);
-
-            $zZeendStatus = $this->getDoctrine()->getRepository(ZzeendStatus::class)->find(3);
-            $zZeend->setStatus($zZeendStatus);
-            $zZeend->setDone(true);
-            $zZeend->setUpdatedAtAutomatically();
-
-            $entityManager->persist($zZeend);
-            $entityManager->flush();
-
-            //create a zZeend point each time a zZeend is finalize
-            $zZeendPoint = new ZzeendPoint();
-
-
-            $zzeendPointGeneratorManager = $this->get('ionicapi.zzeendPointGeneratorManager');
-            $zZeendPoint->setZzeendPoint($zzeendPointGeneratorManager->createZzeendPoint());
-            $zZeendPoint->setUser($mainZzeendUser);
-            $zZeendPoint->setZzeend($zZeend);
-            $zZeendPoint->setCreatedAtAutomatically();
-
-            $entityManager->persist($zZeendPoint);
-            $entityManager->flush();
-
-
-
-            $event = $this->getDoctrine()->getRepository(Event::class)->findOneBy(['zZeend' => $zZeend]);
-
-            if ($event !== null) {
-
-                $event->setActive(false);
-
-                $entityManager = $this->getDoctrine()->getManager();
-
-                $entityManager->persist($event);
-                $entityManager->flush();
-
-                $createNotificationManager = $this->get("ionicapi.NotificationManager");
-                $createNotificationManager->newNotification(3, $zZeend->getId());
-
+            $application_fee_amount = 300;
+            if($zZeendCost <= 30 && $zZeendCost > 5){
+                $application_fee_amount = 300; // $5
+            }else if($zZeendCost > 30){
+                $application_fee_amount = 500; // $5
             }
 
-            $serviceOwner = $zZeend->getUser();
+            $stripe = new \Stripe\StripeClient($stripeSecretKey);
 
-            $subject = $currentUser->getFullname().' has finalized this zZeend.';
-            //send notification
-            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
-            $data = array("type" => 6,
-                "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($serviceOwner, 'zZeend finalized (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+            $transfer = $stripe->transfers->create([
+                'amount' => ($zZeendCost * 100) - $application_fee_amount,
+                'currency' => 'cad',
+                'destination' => $serviceOwnerStripeAccountId
+            ]);
+
+            if($transfer !== null){
+
+                //todo trsansfer the 5$ to zZeend account (stripe)
+
+                $financialStatus = $this->getDoctrine()->getRepository(FinancialStatus::class)->find(1);
+                $finance->setFinancialStatus($financialStatus);
+                $finance->setCash($zZeendCost);
+                $finance->setActivityDescription('zZeend cash Drop off - PaymentMethod');
+                $finance->setCreatedAtAutomatically();
+                $finance->setUpdatedAtAutomatically();
+
+                $entityManager->persist($finance);
+
+                $zZeendStatus = $this->getDoctrine()->getRepository(ZzeendStatus::class)->find(3);
+                $zZeend->setStatus($zZeendStatus);
+                $zZeend->setDone(true);
+                $zZeend->setUpdatedAtAutomatically();
+
+                $entityManager->persist($zZeend);
+                $entityManager->flush();
+
+                //create a zZeend point each time a zZeend is finalize
+                $zZeendPoint = new ZzeendPoint();
 
 
-            $response = array("code" => "zZeend_done");
+                $zzeendPointGeneratorManager = $this->get('ionicapi.zzeendPointGeneratorManager');
+                $zZeendPoint->setZzeendPoint($zzeendPointGeneratorManager->createZzeendPoint());
+                $zZeendPoint->setUser($mainZzeendUser);
+                $zZeendPoint->setZzeend($zZeend);
+                $zZeendPoint->setCreatedAtAutomatically();
+
+                $entityManager->persist($zZeendPoint);
+                $entityManager->flush();
+
+
+
+                $event = $this->getDoctrine()->getRepository(Event::class)->findOneBy(['zZeend' => $zZeend]);
+
+                if ($event !== null) {
+
+                    $event->setActive(false);
+
+                    $entityManager = $this->getDoctrine()->getManager();
+
+                    $entityManager->persist($event);
+                    $entityManager->flush();
+
+                    $createNotificationManager = $this->get("ionicapi.NotificationManager");
+                    $createNotificationManager->newNotification(3, $zZeend->getId());
+
+                }
+
+                $serviceOwner = $zZeend->getUser();
+
+                $subject = $currentUser->getFullname().' has finalized this zZeend.';
+                //send notification
+                $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+                $data = array("type" => 6,
+                    "zZeend" => $zZeend);
+                $pushNotificationManager->sendNotification($serviceOwner, 'zZeend finalized (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+
+
+                $response = array("code" => "zZeend_done");
+
+            }
 
         } else {
             $response = array("code" => "action_not_allowed");
         }
 
-        return new JsonResponse($response);
+        return new JsonResponse($payment_intent);
     }
 
     public function cancelAction(Request $request)
     {
         $response = array();
+
+        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
 
         $data = $request->getContent();
         $data = json_decode($data, true);
@@ -359,10 +420,25 @@ class ZzeendController extends Controller
 
             $zZeend->setCanceled(true);
 
+            $zZeendCost = $zZeend->getCost();
+
             $entityManager->persist($zZeend);
             $entityManager->flush();
 
-            //todo not forgot to send back client money
+            $application_fee_amount = 300;
+            if($zZeendCost <= 30 && $zZeendCost > 5){
+                $application_fee_amount = 300; // $5
+            }else if($zZeendCost > 30){
+                $application_fee_amount = 500; // $5
+            }
+
+            $stripe = new \Stripe\StripeClient($stripeSecretKey);
+
+            $stripe->refunds->create([
+                'amount' => ($zZeendCost * 100) - $application_fee_amount,
+                'charge' => 'ch_3JhoEaE0TKAqiv580Cr5Ypun',
+            ]);
+
 
             $createNotificationManager = $this->get("ionicapi.NotificationManager");
             $createNotificationManager->newNotification(4, $zZeend->getId());

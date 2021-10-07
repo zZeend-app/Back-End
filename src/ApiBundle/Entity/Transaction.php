@@ -30,46 +30,10 @@ class Transaction implements JsonSerializable
     protected $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="bank_transaction_id", type="string", length=255, unique=false, nullable=false)
-     */
-    private $bankTransactionId;
-
-
-    /**
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", inversedBy="services")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     private $user;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="card", type="string", length=255, unique=false, nullable=false)
-     */
-    private $card;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="last_four_digit", type="string", length=255, unique=false, nullable=false)
-     */
-    private $lastFourDigit;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="expiration_date", type="string", length=255, unique=false, nullable=false)
-     */
-    private $expirationDate;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="csv", type="string", length=255, unique=false, nullable=false)
-     */
-    private $csv;
 
     /**
      * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\PaymentType", inversedBy="payment_types")
@@ -78,35 +42,25 @@ class Transaction implements JsonSerializable
     private $paymentType;
 
     /**
+     * @ORM\ManyToOne(targetEntity="ApiBundle\Entity\PaymentMethod", inversedBy="payment_types")
+     * @ORM\JoinColumn(name="payment_method", referencedColumnName="id")
+     */
+    private $paymentMethod;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="charge_id", type="string", length=255, unique=false, nullable=false)
+     */
+    private $chargeId;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private $createdAt;
 
     /**
-     * Set bankTransactionId.
-     *
-     * @param String
-     *
-     * @return void
-     */
-    public function setBankTransactionId($bankTransactionId)
-    {
-        $this->bankTransactionId = $bankTransactionId;
-    }
-
-
-    /**
-     * Get bankTransactionId.
-     *
-     * @return string
-     */
-    public function getBankTransactionId()
-    {
-        return $this->bankTransactionId;
-    }
-
-    /**
-     * Set bankTransactionId.
+     * Set PaymentType.
      *
      * @param PaymentType
      *
@@ -126,6 +80,29 @@ class Transaction implements JsonSerializable
     public function getPaymentType()
     {
         return $this->paymentType;
+    }
+
+    /**
+     * Set PaymentMethod.
+     *
+     * @param PaymentMethod
+     *
+     * @return void
+     */
+    public function setPaymentMethod($paymentMethod)
+    {
+        $this->paymentMethod = $paymentMethod;
+    }
+
+
+    /**
+     * Get paymentMethod.
+     *
+     * @return PaymentMethod
+     */
+    public function getPaymentMethod()
+    {
+        return $this->paymentMethod;
     }
 
     /**
@@ -151,95 +128,24 @@ class Transaction implements JsonSerializable
     }
 
     /**
-     * Set lastFourDigit.
-     *
-     * @param String
+     * Set chargeId.
      *
      * @return void
      */
-    public function setLastFourDigit($lastFourDigit)
+    public function setChargeId($chargeId)
     {
-        $this->lastFourDigit = $lastFourDigit;
+        $this->chargeId = $chargeId;
     }
 
 
     /**
-     * Get lastFourDigit.
+     * Get chargeId.
      *
      * @return string
      */
-    public function getLastFourDigit()
+    public function getChargeId()
     {
-        return $this->lastFourDigit;
-    }
-
-    /**
-     * Set expirationDate.
-     *
-     * @param String
-     *
-     * @return void
-     */
-    public function setExpirationDate($expirationDate)
-    {
-        $this->expirationDate = $expirationDate;
-    }
-
-
-    /**
-     * Get expirationDate.
-     *
-     * @return string
-     */
-    public function getExpirationDate()
-    {
-        return $this->expirationDate;
-    }
-
-    /**
-     * Set csv.
-     *
-     * @param String
-     *
-     * @return void
-     */
-    public function setCsv($csv)
-    {
-        $this->csv = $csv;
-    }
-
-
-    /**
-     * Get csv.
-     *
-     * @return string
-     */
-    public function getCsv()
-    {
-        return $this->csv;
-    }
-
-    /**
-     * Set card.
-     *
-     * @param String
-     *
-     * @return void
-     */
-    public function setCard($card)
-    {
-        $this->card = $card;
-    }
-
-
-    /**
-     * Get card.
-     *
-     * @return string
-     */
-    public function getCard()
-    {
-        return $this->card;
+        return $this->chargeId;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -270,28 +176,18 @@ class Transaction implements JsonSerializable
             "id" => $this->id,
         ];
 
-        if(!$entityClass instanceof Transaction || in_array("bankTransactionId",$include)){
-            $json["bankTransactionId"] = $this->bankTransactionId;
-        }
 
         if(!$entityClass instanceof Transaction || in_array("user",$include)){
             $json["user"] = $this->user;
         }
 
-        if(!$entityClass instanceof Transaction || in_array("lastFourDigit",$include)){
-            $json["lastFourDigit"] = $this->lastFourDigit;
+
+        if(!$entityClass instanceof Transaction || in_array("chargeId",$include)){
+            $json["csv"] = $this->chargeId;
         }
 
-        if(!$entityClass instanceof Transaction || in_array("expirationDate",$include)){
-            $json["expirationDate"] = $this->expirationDate;
-        }
-
-        if(!$entityClass instanceof Transaction || in_array("csv",$include)){
-            $json["csv"] = $this->csv;
-        }
-
-        if(!$entityClass instanceof Transaction || in_array("card",$include)){
-            $json["card"] = $this->card;
+        if(!$entityClass instanceof Transaction || in_array("paymentMethod",$include)){
+            $json["paymentMethod"] = $this->paymentMethod;
         }
 
         if(!$entityClass instanceof Transaction || in_array("paymentType",$include)){

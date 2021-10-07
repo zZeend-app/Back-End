@@ -22,6 +22,7 @@ parameters:
         vonage-api-key: '47346321'
         vonage-secret-key: 'd89f84512185dfb315acc6e0ec4a7636d0074ab4'
         live-api-key: 'e875aa64-05d3-48ba-b8e0-4bfd00e28281'
+        stripe-secret-key: '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'
 
     upload_dir: '../web/assets/uploads'
 

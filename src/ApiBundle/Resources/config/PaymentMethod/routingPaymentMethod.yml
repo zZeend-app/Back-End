@@ -18,7 +18,22 @@ pmth-get-all:
     defaults: { _controller: ApiBundle:PaymentMethod:getAllPaymentMethods }
     methods: [POST]
 
-pmth-state:
+apply-state:
     path:     /apply-state
     defaults: { _controller: ApiBundle:PaymentMethod:applyState }
+    methods: [POST]
+
+create-stripe-connected-account:
+    path:     /create-stripe-connected-account
+    defaults: { _controller: ApiBundle:PaymentMethod:createStripeUserConnectedAccount }
+    methods: [POST]
+
+get_user-stripe-connected-account:
+    path:     /get-stripe-connected-account
+    defaults: { _controller: ApiBundle:PaymentMethod:getUserStripeConnectedAccount }
+    methods: [POST]
+
+create_user-stripe-account-like:
+    path:     /create-stripe-account-link
+    defaults: { _controller: ApiBundle:PaymentMethod:createAccountLink }
     methods: [POST]

@@ -18,6 +18,12 @@ class PaymentMethodRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('user', $user);
     }
 
+    public function WhereActive(QueryBuilder $queryBuilder, $flag){
+        return $queryBuilder
+            ->andWhere('pm.active = :active')
+            ->setParameter('active', $flag);
+    }
+
     public function OrderByMain(QueryBuilder $queryBuilder){
         return $queryBuilder
             ->addOrderBy('pm.main', 'DESC');

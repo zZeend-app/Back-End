@@ -73,11 +73,32 @@ class PaymentMethod implements JsonSerializable
     private $funding;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="active", type="boolean", length=255, unique=false, nullable=false)
+     */
+    private $active;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="csv", type="string", length=255, unique=false, nullable=false)
      */
     private $csv;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="stripe_payment_pethod_id", type="string", length=255, unique=false, nullable=false)
+     */
+    private $stripePaymentMethodId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="customer_id", type="string", length=255, unique=false, nullable=false)
+     */
+    private $customerId;
 
     /**
      * @var boolean
@@ -244,6 +265,29 @@ class PaymentMethod implements JsonSerializable
     }
 
     /**
+     * Set active.
+     *
+     * @param boolean $active
+     *
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
+    }
+
+
+
+    /**
+     * Get active.
+     *
+     * @return boolean
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+    /**
      * Set csv.
      *
      * @param string $csv
@@ -264,6 +308,52 @@ class PaymentMethod implements JsonSerializable
     public function getCsv()
     {
         return $this->csv;
+    }
+
+    /**
+     * Set stripePaymentMethodId.
+     *
+     * @param string $stripePaymentMethodId
+     *
+     */
+    public function setStripePaymentMethodId($stripePaymentMethodId)
+    {
+        $this->stripePaymentMethodId = $stripePaymentMethodId;
+    }
+
+
+
+    /**
+     * Get stripePaymentMethodId.
+     *
+     * @return string
+     */
+    public function getStripePaymentMethodId()
+    {
+        return $this->stripePaymentMethodId;
+    }
+
+    /**
+     * Set customerId.
+     *
+     * @param string $customerId
+     *
+     */
+    public function setCustomerId($customerId)
+    {
+        $this->customerId = $customerId;
+    }
+
+
+
+    /**
+     * Get customerId.
+     *
+     * @return string
+     */
+    public function getCustomerId()
+    {
+        return $this->customerId;
     }
 
     /**
@@ -383,8 +473,20 @@ class PaymentMethod implements JsonSerializable
             $json["csv"] = $this->csv;
         }
 
+        if(!$entityClass instanceof PaymentMethod || in_array("stripePaymentMethodId",$include)){
+            $json["stripePaymentMethodId"] = $this->stripePaymentMethodId;
+        }
+
+        if(!$entityClass instanceof PaymentMethod || in_array("customerId",$include)){
+            $json["customerId"] = $this->customerId;
+        }
+
         if(!$entityClass instanceof PaymentMethod || in_array("funding",$include)){
             $json["funding"] = $this->funding;
+        }
+
+        if(!$entityClass instanceof PaymentMethod || in_array("active",$include)){
+            $json["active"] = $this->active;
         }
 
         if(!$entityClass instanceof PaymentMethod || in_array("main",$include)){
