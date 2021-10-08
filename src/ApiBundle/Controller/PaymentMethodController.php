@@ -4,8 +4,9 @@
 namespace ApiBundle\Controller;
 
 
+use ApiBundle\Entity\AccountLink;
 use ApiBundle\Entity\PaymentMethod;
-use ApiBundle\Entity\StripeConnectedAccount;
+use ApiBundle\Entity\StripeConnectAccount;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -357,7 +358,7 @@ class PaymentMethodController extends Controller
             $stripeConnectedAccountId = $account['id'];
 
             $entityManager = $this->getDoctrine()->getManager();
-            $stripeConnectedAccount = new StripeConnectedAccount();
+            $stripeConnectedAccount = new StripeConnectAccount();
             $stripeConnectedAccount->setUser($currentUser);
             $stripeConnectedAccount->setStripeAccountId($stripeConnectedAccountId);
 
@@ -383,7 +384,7 @@ class PaymentMethodController extends Controller
         $response = array();
         $currentUser = $this->getUser();
 
-        $stripeConnectedAccount = $this->getDoctrine()->getRepository(StripeConnectedAccount::class)->findBy(["user" => $currentUser]);
+        $stripeConnectedAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findBy(["user" => $currentUser]);
 
         if($stripeConnectedAccount !== null){
 
@@ -405,28 +406,53 @@ class PaymentMethodController extends Controller
 
         $currentUser = $this->getUser();
 
-        $data = $request->getContent();
-        $data = json_decode($data, true);
+        $stripeAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findOneBy(['user' => $currentUser]);
 
-        $stripeAccountId = $data['stripe_account_id'];
+        if($stripeAccount !== null){
 
-        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+            $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
 
-        $currentUser = $this->getUser();
+            \Stripe\Stripe::setApiKey($stripeSecretKey);
 
-        \Stripe\Stripe::setApiKey($stripeSecretKey);
+            //generate a codeGen for email verification
+            $refreshToken = $this->get('ionicapi.tokenGeneratorManager')->createToken();
+            $returnToken = $this->get('ionicapi.tokenGeneratorManager')->createToken();
 
-        $account_links = \Stripe\AccountLink::create([
-            'account' => $stripeAccountId,
-            'refresh_url' => 'https://zzeend.com/stripe/refresh-url',
-            'return_url' => 'https://zzeend.com/stripe/return-url',
-            'type' => 'account_onboarding',
-        ]);
+            $baseUrl = $this->getParameter('baseUrl');
 
-        if($account_links !== null){
-            $response = $account_links;
+            $refreshUrl = $baseUrl.'/auth/refresh-link/'.$refreshToken;
+            $returnUrl = $baseUrl.'/auth/return-link/'.$returnToken;
+
+            $account_links = \Stripe\AccountLink::create([
+                'account' => $stripeAccount->getStripeAccountId(),
+                'refresh_url' => $refreshUrl,
+                'return_url' => $returnUrl,
+                'type' => 'account_onboarding',
+            ]);
+
+            if($account_links !== null){
+
+                $accountLink = new AccountLink();
+
+                $entityManager = $this->getDoctrine()->getManager();
+
+                $accountLink->setUser($currentUser);
+                $accountLink->setRefreshToken($refreshToken);
+                $accountLink->setReturnToken($returnToken);
+                $accountLink->setCreatedAtAutomatically();
+
+                $entityManager->persist($accountLink);
+                $entityManager->flush();
+
+                $response = $account_links;
+
+
+            }else{
+                $response = array("code" => "error_occurred");
+            }
+
         }else{
-            $response = array("code" => "error_occurred");
+            $response = array("code" => "action_not_allowed");
         }
 
 
@@ -677,6 +703,27 @@ class PaymentMethodController extends Controller
         );
 
         return $country_currency[$countryCode];
+    }
+
+    public function createLoginLinkAction(Request $request){
+
+        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
+        $currentUser = $this->getUser();
+
+        $data = $request->getContent();
+        $data = json_decode($data, true);
+
+        $stripe_account_id = $data['stripe_account_id'];
+
+        $stripe = new \Stripe\StripeClient($stripeSecretKey);
+        $loginLinkObject = $stripe->accounts->createLoginLink(
+            $stripe_account_id,
+            []
+        );
+
+        return new JsonResponse($loginLinkObject);
+
     }
 
 

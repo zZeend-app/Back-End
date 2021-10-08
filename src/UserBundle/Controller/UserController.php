@@ -2,6 +2,7 @@
 
 namespace UserBundle\Controller;
 
+use ApiBundle\Entity\StripeConnectAccount;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use UserBundle\Entity\AccountVerification;
@@ -65,6 +66,13 @@ class UserController extends Controller
         $user->setUpdatedAtAutomatically();
 
         $userManager->updateUser($user);
+
+
+        //create a strip connect account if user is service owner
+
+        if($accountType == 1){
+            $this->createStripeUserConnectedAccount();
+        }
 
 
         //generate a codeGen for email verification
@@ -218,6 +226,45 @@ class UserController extends Controller
 
 
         return $response;
+    }
+
+    public function createStripeUserConnectedAccount(){
+
+        $response = array();
+        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
+        $currentUser = $this->getUser();
+
+        $countryCode = $currentUser->getCountryCode();
+
+        \Stripe\Stripe::setApiKey($stripeSecretKey);
+
+        $account = \Stripe\Account::create([
+            'country' => $countryCode,
+            'email' => $currentUser->getEmail(),
+            'type' => 'express',
+        ]);
+
+
+        if($account !== null AND  count($account) > 0){
+
+            $stripeConnectedAccountId = $account['id'];
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $stripeConnectedAccount = new StripeConnectAccount();
+            $stripeConnectedAccount->setUser($currentUser);
+            $stripeConnectedAccount->setStripeAccountId($stripeConnectedAccountId);
+
+            $entityManager->persist($stripeConnectedAccount);
+            $entityManager->flush();
+
+        }else{
+
+            return new JsonResponse(array("code" => "action_not_allowed"));
+
+        }
+
+
     }
 
 }

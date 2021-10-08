@@ -4,7 +4,9 @@
 namespace ApiBundle\Controller;
 
 
+use ApiBundle\Entity\AccountLink;
 use ApiBundle\Entity\File;
+use ApiBundle\Entity\StripeConnectAccount;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -227,6 +229,119 @@ class AuthenticationController extends Controller
         }
 
         return new JsonResponse($response);
+
+    }
+
+    public function refreshAccountLinkAction($refreshToken){
+
+        $accountLink = $this->getDoctrine()->getRepository(AccountLink::class)->findOneBy(['refreshToken' => $refreshToken]);
+
+        if($accountLink !== null){
+            $user = $accountLink->getUser();
+
+            $stripeConnectAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findOneBy(['user'=>$user]);
+
+            if($stripeConnectAccount !== null){
+                      $stripeAccountId = $stripeConnectAccount->getStripeAccountId();
+
+                $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
+                \Stripe\Stripe::setApiKey($stripeSecretKey);
+
+                //generate a codeGen for email verification
+                $refreshToken = $this->get('ionicapi.tokenGeneratorManager')->createToken();
+                $returnToken = $this->get('ionicapi.tokenGeneratorManager')->createToken();
+
+                $baseUrl = $this->getParameter('baseUrl');
+
+                $refreshUrl = $baseUrl.'/auth/refresh-link/'.$refreshToken;
+                $returnUrl = $baseUrl.'/auth/return-link/'.$returnToken;
+
+                $account_links = \Stripe\AccountLink::create([
+                    'account' => $stripeAccountId,
+                    'refresh_url' => $refreshUrl,
+                    'return_url' => $returnUrl,
+                    'type' => 'account_onboarding',
+                ]);
+
+                if($account_links !== null){
+
+                    $accountLink = new AccountLink();
+
+                    $entityManager = $this->getDoctrine()->getManager();
+
+                    $accountLink->setUser($user);
+                    $accountLink->setRefreshToken($refreshToken);
+                    $accountLink->setReturnToken($returnToken);
+                    $accountLink->setCreatedAtAutomatically();
+
+                    $entityManager->persist($accountLink);
+                    $entityManager->flush();
+
+                    //redirect user to the new like generated
+                    return $this->redirect($account_links->url);
+
+
+                }else{
+                    $response = array("code" => "error_occurred");
+                }
+
+
+            }else{
+                $response = array("code" => "action_not_allowed");
+            }
+        }else{
+            $response = array("code" => "auth/no_refresh_token_given");
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function returnAccountLinkAction($returnToken){
+
+        $accountLink = $this->getDoctrine()->getRepository(AccountLink::class)->findOneBy(['returnToken' => $returnToken]);
+
+        if($accountLink !== null) {
+            $user = $accountLink->getUser();
+
+            $stripeConnectAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findOneBy(['user' => $user]);
+
+            if ($stripeConnectAccount !== null) {
+                $stripeAccountId = $stripeConnectAccount->getStripeAccountId();
+
+                $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
+                $stripe = new \Stripe\StripeClient($stripeSecretKey);
+                $connectAccount = $stripe->accounts->retrieve(
+                    $stripeAccountId,
+                    []
+                );
+
+                $charges_enabled = $connectAccount->charges_enabled;
+
+                $external_accounts_data = $connectAccount->external_accounts['data'];
+
+                $stripeConnectAccount->setActiveAutomatically();
+
+                $entityManager = $this->getDoctrine()->getManager();
+
+                $entityManager->persist($stripeConnectAccount);
+                $entityManager->flush();
+
+
+                if(count($connectAccount->capabilities) > 0 AND $connectAccount->capabilities['card_payments'] == true AND $connectAccount->capabilities['transfers'] == true AND$charges_enabled == true AND count($external_accounts_data) > 0 ){
+                    return new JsonResponse("You can now close this page and continue using zZeend, Congratulation !!!");
+                }else{
+                    return new JsonResponse("Uncompleted onboarding");
+                }
+
+
+                return new JsonResponse($connectAccount);
+            }
+
+        }else{
+            return new JsonResponse(array("code" => "auth/no_return_token_given"));
+        }
 
     }
 

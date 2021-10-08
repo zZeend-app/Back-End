@@ -50,9 +50,9 @@ class Transaction implements JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="charge_id", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="payment_intent_id", type="string", length=255, unique=false, nullable=false)
      */
-    private $chargeId;
+    private $paymentIntentId;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -128,24 +128,24 @@ class Transaction implements JsonSerializable
     }
 
     /**
-     * Set chargeId.
+     * Set paymentIntentId.
      *
      * @return void
      */
-    public function setChargeId($chargeId)
+    public function setPaymentIntentId($paymentIntentId)
     {
-        $this->chargeId = $chargeId;
+        $this->paymentIntentId = $paymentIntentId;
     }
 
 
     /**
-     * Get chargeId.
+     * Get paymentIntentId.
      *
      * @return string
      */
-    public function getChargeId()
+    public function getPaymentIntentId()
     {
-        return $this->chargeId;
+        return $this->paymentIntentId;
     }
 
     public function getCreatedAt(): ?DateTimeInterface
@@ -182,8 +182,8 @@ class Transaction implements JsonSerializable
         }
 
 
-        if(!$entityClass instanceof Transaction || in_array("chargeId",$include)){
-            $json["csv"] = $this->chargeId;
+        if(!$entityClass instanceof Transaction || in_array("paymentIntentId",$include)){
+            $json["paymentIntentId"] = $this->paymentIntentId;
         }
 
         if(!$entityClass instanceof Transaction || in_array("paymentMethod",$include)){

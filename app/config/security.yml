@@ -59,6 +59,14 @@ security:
             pattern: ^/api/auth/add-profile-photo
             anonymous: true
 
+        refresh-link:
+            pattern: ^/api/auth/refresh-link
+            anonymous: true
+
+        return-link:
+            pattern: ^/api/auth/return-link
+            anonymous: true
+
         api:
             pattern:   ^/api
             stateless: true
@@ -94,4 +102,6 @@ security:
         - { path: ^/api/auth/reset-password, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/auth/media/file, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/auth/add-profile-photo, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/refresh-link, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/return-link, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

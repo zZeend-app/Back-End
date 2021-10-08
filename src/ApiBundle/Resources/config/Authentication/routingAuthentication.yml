@@ -43,3 +43,12 @@ add-profile-photo:
     defaults: { _controller: ApiBundle:Authentication:addPhoto }
     methods: [POST]
 
+refresh-link:
+    path:     /refresh-link/{refreshToken}
+    defaults: { _controller: ApiBundle:Authentication:refreshAccountLink }
+    methods: [GET]
+
+return-link:
+    path:     /return-link/{returnToken}
+    defaults: { _controller: ApiBundle:Authentication:returnAccountLink }
+    methods: [GET]

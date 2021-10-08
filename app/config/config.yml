@@ -13,8 +13,8 @@ imports:
 parameters:
     locale: fr
     site_name: "Nom de l'application" #TODO Change
-    site_url: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php" #TODO Change
-    baseUrl: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php/api"
+    site_url: "http://192.168.2.208/zZeend/Back-End/web/app_dev.php" #TODO Change
+    baseUrl: "http://192.168.2.208/zZeend/Back-End/web/app_dev.php/api"
 
 
     api_keys:

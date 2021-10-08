@@ -31,7 +31,10 @@ class KernelRequestListener
     public function onKernelRequest(GetResponseEvent $event)
     {
 
-        if(strpos($event->getRequest()->getUri(), 'media/file')){
+        if(strpos($event->getRequest()->getUri(), 'media/file') ||
+            strpos($event->getRequest()->getUri(), 'refresh-link') ||
+            strpos($event->getRequest()->getUri(), 'return-link') ||
+            strpos($event->getRequest()->getUri(), 'password-recovery')){
 
             return $event;
 

@@ -10,6 +10,7 @@ use ApiBundle\Entity\Rate;
 use ApiBundle\Entity\Service;
 use ApiBundle\Entity\SocialNetwork;
 use ApiBundle\Entity\SocialNetworkType;
+use ApiBundle\Entity\StripeConnectAccount;
 use ApiBundle\Entity\View;
 use ApiBundle\Entity\ViewType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -375,11 +376,15 @@ class ProfileController extends Controller
         $response = array();
         $entityManager = $this->getDoctrine()->getManager();
 
+        $this->createStripeUserConnectedAccount();
+
         $currentUser->setRoles(['ROLE_OWNER']);
 
         $entityManager->persist($currentUser);
 
         $entityManager->flush();
+
+
 
         $response = array("code" => "user/account_upgraded");
 
@@ -440,6 +445,46 @@ class ProfileController extends Controller
         }
 
         return new JsonResponse($response);
+
+    }
+
+    public function createStripeUserConnectedAccount(){
+
+        $response = array();
+        $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
+        $currentUser = $this->getUser();
+
+        $countryCode = $currentUser->getCountryCode();
+
+        \Stripe\Stripe::setApiKey($stripeSecretKey);
+
+        $account = \Stripe\Account::create([
+            'country' => $countryCode,
+            'email' => $currentUser->getEmail(),
+            'type' => 'express',
+        ]);
+
+
+        if($account !== null AND  count($account) > 0){
+
+            $stripeConnectedAccountId = $account['id'];
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $stripeConnectedAccount = new StripeConnectAccount();
+            $stripeConnectedAccount->setUser($currentUser);
+            $stripeConnectedAccount->setStripeAccountId($stripeConnectedAccountId);
+
+
+            $entityManager->persist($stripeConnectedAccount);
+            $entityManager->flush();
+
+        }else{
+
+            return new JsonResponse(array("code" => "action_not_allowed"));
+
+        }
+
 
     }
 
