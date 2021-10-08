@@ -34,7 +34,8 @@ class KernelRequestListener
         if(strpos($event->getRequest()->getUri(), 'media/file') ||
             strpos($event->getRequest()->getUri(), 'refresh-link') ||
             strpos($event->getRequest()->getUri(), 'return-link') ||
-            strpos($event->getRequest()->getUri(), 'password-recovery')){
+            strpos($event->getRequest()->getUri(), 'password-recovery') ||
+            strpos($event->getRequest()->getUri(), 'payout')){
 
             return $event;
 

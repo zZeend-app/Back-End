@@ -7,6 +7,7 @@ namespace ApiBundle\Controller;
 use ApiBundle\Entity\AccountLink;
 use ApiBundle\Entity\File;
 use ApiBundle\Entity\StripeConnectAccount;
+use ApiBundle\Entity\Zzeend;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -321,15 +322,15 @@ class AuthenticationController extends Controller
 
                 $external_accounts_data = $connectAccount->external_accounts['data'];
 
-                $stripeConnectAccount->setActiveAutomatically();
-
-                $entityManager = $this->getDoctrine()->getManager();
-
-                $entityManager->persist($stripeConnectAccount);
-                $entityManager->flush();
-
-
                 if(count($connectAccount->capabilities) > 0 AND $connectAccount->capabilities['card_payments'] == true AND $connectAccount->capabilities['transfers'] == true AND$charges_enabled == true AND count($external_accounts_data) > 0 ){
+
+                    $stripeConnectAccount->setActiveAutomatically();
+
+                    $entityManager = $this->getDoctrine()->getManager();
+
+                    $entityManager->persist($stripeConnectAccount);
+                    $entityManager->flush();
+
                     return new JsonResponse("You can now close this page and continue using zZeend, Congratulation !!!");
                 }else{
                     return new JsonResponse("Uncompleted onboarding");
@@ -343,6 +344,35 @@ class AuthenticationController extends Controller
             return new JsonResponse(array("code" => "auth/no_return_token_given"));
         }
 
+    }
+
+    public function payoutAction($zZeendId){
+
+        $response = array();
+
+        $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($zZeendId);
+        if ($zZeend) {
+
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $zZeend->setPayoutAutomatically();
+
+            $entityManager->persist($zZeend);
+            $entityManager->flush();
+
+            $mainZzeendUser = $zZeend->getUser();
+            $subject = 'You have been payout into your bank account.';
+            //send notification
+            $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+            $data = array("type" => 18,
+                "zZeend" => $zZeend);
+            $pushNotificationManager->sendNotification($mainZzeendUser, 'zZeend payout (n° '.$zZeend->getId().')', $subject, $data, null);
+
+            $response = array("code" => "zZeend_payout_success");
+
+        }
+
+        return new JsonResponse($response);
     }
 
 }

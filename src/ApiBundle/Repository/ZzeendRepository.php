@@ -54,6 +54,39 @@ class ZzeendRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('status', $status);
     }
 
+    public function WhereUser(QueryBuilder $queryBuilder, $user){
+        return $queryBuilder
+            ->select('SUM(z.cost) as cost')
+            ->andWhere('z.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('z.canceled = :canceled')
+            ->setParameter('canceled', false)
+            ->andWhere('z.payout is NULL')
+            ->andWhere('z.transaction is NOT NULL');
+    }
+
+    public function GetTotalZzeendCreated(QueryBuilder $queryBuilder, $user)
+    {
+        return $queryBuilder
+            ->select('count(z.id)')
+            ->andWhere('z.user = :user')
+            ->setParameter('user', $user);
+    }
+
+
+    public function GetTotalBalancePaid(QueryBuilder $queryBuilder, $user)
+    {
+        return $queryBuilder
+            ->select('SUM(z.cost) as cost')
+            ->andWhere('z.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('z.canceled = :canceledFlag')
+            ->setParameter('canceledFlag', false)
+            ->andWhere('z.done = :done')
+            ->setParameter('done', true)
+            ->andWhere('z.transaction is NOT NULL')
+            ->andWhere('z.payout is NOT NULL');
+    }
 
 
 }

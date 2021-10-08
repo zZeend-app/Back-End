@@ -31,3 +31,6 @@ services:
 
     ionicapi.zzeendPointGeneratorManager:
       class: ApiBundle\Manager\ZzeendPointGeneratorManager
+
+    ionicapi.countryCurrencyManager:
+      class: ApiBundle\Manager\CountryCurrencyManager

@@ -52,3 +52,8 @@ return-link:
     path:     /return-link/{returnToken}
     defaults: { _controller: ApiBundle:Authentication:returnAccountLink }
     methods: [GET]
+
+payout-paid-webhook:
+    path:     /payout/{zZeendId}
+    defaults: { _controller: ApiBundle:Authentication:payout }
+    methods: [GET]

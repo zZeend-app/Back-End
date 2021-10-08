@@ -32,3 +32,8 @@ znd-edit:
     path:     /edit
     defaults: { _controller: ApiBundle:Zzeend:edit }
     methods: [POST]
+
+statistics:
+    path:     /statistics
+    defaults: { _controller: ApiBundle:Zzeend:statistics }
+    methods: [POST]

@@ -13,6 +13,7 @@ use ApiBundle\Entity\SocialNetworkType;
 use ApiBundle\Entity\StripeConnectAccount;
 use ApiBundle\Entity\View;
 use ApiBundle\Entity\ViewType;
+use ApiBundle\Entity\Zzeend;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,6 +67,17 @@ class ProfileController extends Controller
         $qb = $em->AndWhereViewType($qb, $viewType);
         $nbViews = $qb->getQuery()->getSingleScalarResult();
 
+        $em = $this->getDoctrine()->getRepository(Zzeend::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereUser($qb, $currentUser);
+        $balanceArray = $qb->getQuery()->getResult();
+
+        $balance = 0;
+        if(count($balanceArray) > 0){
+            $balance =  $balanceArray[0]['cost'];
+        }
+
+
 
         $response['user'] = $user;
         $response['services'] = $services;
@@ -73,6 +85,8 @@ class ProfileController extends Controller
         $response['nbContacts'] = intval($nbContacts);
         $response['avg'] = intval($avg);
         $response['nbViews'] = intval($nbViews);
+        $response['balance'] = floatval($balance);
+
         $requestSenderObject = '';
 
         if ($connectedUserId !== $userId) {

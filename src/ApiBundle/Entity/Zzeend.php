@@ -109,6 +109,11 @@ class Zzeend implements JsonSerializable
     private $updatedAt;
 
     /**
+     * @ORM\Column(name="payout", type="datetime", nullable=true)
+     */
+    private $payout;
+
+    /**
      * Get id.
      *
      * @return string
@@ -412,6 +417,29 @@ class Zzeend implements JsonSerializable
     public function setUpdatedAtAutomatically()
     {
         $this->setUpdatedAt(new DateTime());
+    }
+
+
+    public function setPayout(?DateTimeInterface $timestamp): self
+    {
+        $this->payout = $timestamp;
+        return $this;
+    }
+
+
+    public function getPayout(): ?DateTimeInterface
+    {
+        return $this->payout;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setPayoutAutomatically()
+    {
+        if ($this->getPayout() === null) {
+            $this->setPayout(new \DateTime());
+        }
     }
 
 

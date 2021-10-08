@@ -11,6 +11,7 @@ use ApiBundle\Entity\PaymentMethod;
 use ApiBundle\Entity\PaymentType;
 use ApiBundle\Entity\StripeConnectAccount;
 use ApiBundle\Entity\Transaction;
+use ApiBundle\Entity\ViewType;
 use ApiBundle\Entity\Zzeend;
 use ApiBundle\Entity\ZzeendPoint;
 use ApiBundle\Entity\ZzeendStatus;
@@ -227,7 +228,7 @@ class ZzeendController extends Controller
                             $payment_intent = \Stripe\PaymentIntent::create([
                                 'payment_method_types' => ['card'],
                                 'amount' => ($zZeendCost * 100),
-                                'currency' => 'cad',
+                                'currency' => strtolower($this->get('ionicapi.zzeendPointGeneratorManager')->getCountryCurrency($mainZzeendUser->getCountryCode())),
                                 'payment_method' => $paymentmethod->getStripePaymentMethodId(),
                                 'customer' => $paymentmethod->getCustomerId(),
                                 'application_fee_amount' => $application_fee_amount,
@@ -351,12 +352,25 @@ class ZzeendController extends Controller
                 $stripe = new \Stripe\StripeClient($stripeSecretKey);
 
                 try {
-//                    ($zZeendCost * 100) - $application_fee_amount
+
+                    //make payout to the user
                     $payout = \Stripe\Payout::create([
                         'amount' => ($zZeendCost * 100) - $application_fee_amount,
-                        'currency' => 'cad',
+                        'currency' => strtolower($this->get('ionicapi.zzeendPointGeneratorManager')->getCountryCurrency($mainZzeendUser->getCountryCode())),
                     ], [
                         'stripe_account' => $serviceOwnerStripeAccountId,
+                    ]);
+
+                    //create a payout webhook event and once the payout is done, the program does some instructions
+
+                    $stripe = new \Stripe\StripeClient($stripeSecretKey);
+
+                    $baseUrl = $this->getParameter('baseUrl');
+                    $stripe->webhookEndpoints->create([
+                        'url' => $baseUrl.'/auth/payout/'.$zZeend_id,
+                        'enabled_events' => [
+                            'payout.paid'
+                        ]
                     ]);
 
                     new JsonResponse($payout);
@@ -608,6 +622,31 @@ class ZzeendController extends Controller
         }
 
         return new JsonResponse($response);
+    }
+
+    public function statisticsAction(){
+
+        $currentUser = $this->getUser();
+
+        $totalZzeendPaid = 0;
+
+
+        $em = $this->getDoctrine()->getRepository(Zzeend::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->GetTotalZzeendCreated($qb, $currentUser);
+        $totalZzeendPaid = $qb->getQuery()->getSingleScalarResult();
+
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->GetTotalBalancePaid($qb, $currentUser);
+        $balanceArray = $qb->getQuery()->getResult();
+
+        $totalBalance = 0;
+        if(count($balanceArray) > 0){
+            $totalBalance =  $balanceArray[0]['cost'];
+        }
+
+        return new JsonResponse(array("nbZzeend" => intval($totalZzeendPaid), "totalBalance" =>floatval($totalBalance)));
+
     }
 
 }

@@ -67,6 +67,10 @@ security:
             pattern: ^/api/auth/return-link
             anonymous: true
 
+        payout:
+            pattern: ^/api/auth/payout
+            anonymous: true
+
         api:
             pattern:   ^/api
             stateless: true
@@ -104,4 +108,5 @@ security:
         - { path: ^/api/auth/add-profile-photo, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/auth/refresh-link, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/auth/return-link, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/auth/payout, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

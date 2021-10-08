@@ -42,3 +42,8 @@ create-stripe-login-link:
     path:     /create-stripe-login-link
     defaults: { _controller: ApiBundle:PaymentMethod:createLoginLink }
     methods: [POST]
+
+update-stripe-connect-account:
+    path:     /update-stripe-connect-account
+    defaults: { _controller: ApiBundle:PaymentMethod:updateStripeConnectAccount }
+    methods: [POST]

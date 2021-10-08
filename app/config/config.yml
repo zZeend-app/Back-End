@@ -165,6 +165,7 @@ lexik_jwt_authentication:
 #    15: video call rejected
 #    16: video call back notification message (Michel said he will call you back)
 #    17: video session end
+#    18: zZeend payout
 
 
 
