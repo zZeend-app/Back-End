@@ -50,6 +50,7 @@ class StoryController extends Controller
 
         $dataGroupedByContact = $this->contactStories($currentUser, $RAW_QUERY);
 
+
         if (count($dataGroupedByContact) == 0) {
             $contactNotFound = true;
 
@@ -71,7 +72,12 @@ class StoryController extends Controller
 
                 $count = $count - count($myContactsStoriesUsers);
 
+                $offset = count($myContactsStoriesUsers);
+
+
                 $limit = $limit + count($myContactsStoriesUsers);
+
+
 
                 $RAW_QUERY = 'SELECT story.user_id, MAX(story.created_at) FROM story WHERE story.created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR) GROUP BY story.user_id ORDER BY MAX(story.created_at) DESC LIMIT ' . $offset . ', ' . $limit . ' ;';
 

@@ -101,7 +101,7 @@ doctrine:
 # Swiftmailer Configuration
 swiftmailer:
     disable_delivery: false
-    delivery_address: ['adjchel@gmail.com']
+    #    delivery_address: ['adjchel@gmail.com'] //to a specifics user, never in production !!!!!!
     transport: '%mailer_transport%'
     host: '%mailer_host%'
     username: '%mailer_user%'
