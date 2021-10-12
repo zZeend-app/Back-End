@@ -6,11 +6,13 @@ namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\Chat;
 use ApiBundle\Entity\Contact;
+use ApiBundle\Entity\File;
 use ApiBundle\Entity\Like;
 use ApiBundle\Entity\Notification;
 use ApiBundle\Entity\Post;
 use ApiBundle\Entity\View;
 use Doctrine\ORM\QueryBuilder;
+use FFMpeg\Coordinate\TimeCode;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,11 +22,79 @@ class ChatController extends Controller
 {
     public function sendChatAction(Request $request)
     {
-        $data = $request->getContent();
-        $data = json_decode($data, true);
+
+        $prefix = '';
+        $response = array();
+        $currentUser = $this->getUser();
+
+        $updated = array();
+        $fileName = '';
+        $data = array();
+
+        $file_type = null;
+
+        $fileOriginalName = '';
+
+        $fileSize = 0;
+
+        $videoThumbnail = '';
+
+        $chatFromClient = '';
+
+
+        if (!empty($request->files->get('chatFile'))) {
+
+            $file = $request->files->get('chatFile');
+
+            $uploadDir = $this->getParameter('upload_dir');
+
+            $data = json_decode($_POST['data'], true);
+
+            $dataType = $data['dataType'];
+
+            $fileName = $this->get('ionicapi.fileUploaderManager')->upload($file, $uploadDir, $dataType);
+
+            $fileOriginalName = $file->getClientOriginalName();
+
+            $fileSize = $file->getClientSize();
+
+            $data = $data['objectData'];
+
+//                $file_type = 'image';
+
+            if($dataType == 'chat_photos'){
+                $file_type = 'image';
+                $prefix = 'cfBfqcChzEM9ai3hQvX0GaC80KibabT1uUdf6LXtSYqpn1h';
+            }if($dataType == 'chat_videos'){
+                $file_type = 'video';
+                $prefix = 'afBfqcChzEM9ai3hdQvX0GC80KibabT1uU6LviXtSYqpn1ZdeoC3653sndkxn22e01996';
+
+                $ffmpeg = \FFMpeg\FFMpeg::create([
+                    'ffmpeg.binaries'  => 'C:/FFmpeg/bin/ffmpeg.exe',
+                    'ffprobe.binaries' => 'C:/FFmpeg/bin/ffprobe.exe'
+                ]);
+                $video = $ffmpeg->open($uploadDir . '/'.$dataType.'/'.$fileName);
+                $frame = $video->frame(TimeCode::fromSeconds(0));
+                $frame->save($uploadDir . '/'.$dataType.'/'.$fileName.'.jpg');
+
+                $videoThumbnail = $uploadDir . '/'.$dataType.'/'.$fileName.'.jpg';
+
+            }
+
+        }
+
+
+        if ($fileName == '') {
+
+            //if no upload has made
+            $data = $request->getContent();
+            $data = json_decode($data, true);
+            $chatFromClient = $data['chat'];
+        }
+
 
         $contactId = $data['contactId'];
-        $chatFromClient = $data['chat'];
+
 
         $currentUser = $this->getUser();
 
@@ -42,7 +112,54 @@ class ChatController extends Controller
             $chat->setDiscussion(nl2br($chatFromClient));
             $chat->setContact($contact);
             $chat->setCreatedAtAutomatically();
-            $chat->setFile(null);
+
+            if ($fileName !== '') {
+
+                $fileEntityManager = $this->getDoctrine()->getManager();
+
+                $file = new File();
+                $file->setUser($currentUser);
+                $file->setFilePath($prefix. '/' . $fileName);
+
+                if ($file_type !== null) {
+                    $file->setFileType($file_type);
+                } else {
+                    $file->setFileType('');
+                }
+
+                $file->setFileSize($fileSize);
+
+                if($videoThumbnail !== ''){
+                    $file->setThumbnail($prefix. '/' . $fileName.'.jpg');
+                }
+                $file->setFileName($fileOriginalName);
+                $file->setCreatedAtAutomatically();
+
+                $fileEntityManager->persist($file);
+                $fileEntityManager->flush();
+
+
+                $chat->setFile($file);
+            } else {
+
+                if(array_key_exists('fileId', $data)){
+
+                    $fileId = $data['fileId'];
+                    $file = $this->getDoctrine()->getRepository(File::class)->find($fileId);
+
+                    if($file !== null){
+                        $chat->setFile($file);
+                    }else{
+                        $chat->setFile(null);
+                    }
+                }else{
+                    $chat->setFile(null);
+                }
+
+            }
+
+
+
             $chat->setViewed(false);
             $currentUser = $this->getUser();
             $chat->setUser($currentUser);

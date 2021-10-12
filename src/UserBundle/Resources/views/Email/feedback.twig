@@ -1,0 +1,17 @@
+{% extends('@Api/Core/emailCore.html.twig') %}
+
+
+{% block Content %}
+
+
+    <h4>Subject: {{ subject }}</h4>
+    <h4>Feedback Id: {{ id }}</h4>
+    <h4>Sender: << Name: {{ fullname }}, &nbsp; Email: {{ email }} >></h4>
+    <br>
+    Message
+    <h4>{{ message }}</h4>
+    <br>
+    <p>{{ date }}</p>
+
+    <h4>zZeend Team</h4>
+{% endblock %}

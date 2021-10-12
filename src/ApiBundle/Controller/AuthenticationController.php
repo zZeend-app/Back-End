@@ -137,17 +137,46 @@ class AuthenticationController extends Controller
 
         }
 
-        //if the asked file is a profile photo
+        //if the asked file is a post photo
         if($fileType == 'fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1'){
 
             $filepath = $uploadDir.'/post_photos/'.$fileName;
 
         }
 
-        //if the asked file is a profile photo
+        //if the asked file is a post video
+        if($fileType == 'fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1ZC3653sndkxn22e0'){
+
+            $filepath = $uploadDir.'/post_videos/'.$fileName;
+
+        }
+
+        //if the asked file is a chat photo
+        if($fileType == 'cfBfqcChzEM9ai3hQvX0GaC80KibabT1uUdf6LXtSYqpn1h'){
+
+            $filepath = $uploadDir.'/chat_photos/'.$fileName;
+
+        }
+
+        //if the asked file is a chat photo
+        if($fileType == 'afBfqcChzEM9ai3hdQvX0GC80KibabT1uU6LviXtSYqpn1ZdeoC3653sndkxn22e01996'){
+
+            $filepath = $uploadDir.'/chat_videos/'.$fileName;
+
+        }
+
+        //if the asked file is a story photo
         if($fileType == 'fBfqcChzEM9arevi3hQvX0GC80stybabT1uU6LXtSYqpn10934'){
 
             $filepath = $uploadDir.'/story_photos/'.$fileName;
+//           return new JsonResponse($filepath);
+
+        }
+
+        //if the asked file is a story video
+        if($fileType == 'tyfBfqcChzEM9ar38sudmlevi3hQvX0GC80stybasbT1uU6LXtSYqpn10934'){
+
+            $filepath = $uploadDir.'/story_videos/'.$fileName;
 //           return new JsonResponse($filepath);
 
         }

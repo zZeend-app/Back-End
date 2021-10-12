@@ -60,7 +60,7 @@ class File implements JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="thumbnail", type="string", length=255, unique=false, nullable=false)
+     * @ORM\Column(name="thumbnail", type="string", length=255, unique=false, nullable=true)
      */
     private $thumbnail;
 

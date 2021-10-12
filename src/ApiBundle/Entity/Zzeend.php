@@ -229,8 +229,6 @@ class Zzeend implements JsonSerializable
     /**
      * Set user.
      *
-     * @param User $user
-     *
      * @return User
      */
     public function getUser()

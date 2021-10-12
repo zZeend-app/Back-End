@@ -10,16 +10,20 @@ use ApiBundle\Entity\Like;
 use ApiBundle\Entity\Post;
 use ApiBundle\Entity\View;
 use Doctrine\ORM\QueryBuilder;
+use FFMpeg\FFMpeg;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use UserBundle\Entity\User;
+use FFMpeg\Coordinate\TimeCode;
 
 class PostController extends Controller
 {
 
     public function newPostAction(Request $request)
     {
+
+        $prefix = '';
         $response = array();
         $currentUser = $this->getUser();
 
@@ -32,6 +36,8 @@ class PostController extends Controller
         $fileOriginalName = '';
 
         $fileSize = 0;
+
+        $videoThumbnail = '';
 
         if ($currentUser !== null) {
 
@@ -53,7 +59,27 @@ class PostController extends Controller
                 $fileSize = $file->getClientSize();
 
                 $data = $data['objectData'];
-                $file_type = 'image';
+
+//                $file_type = 'image';
+
+                if($dataType == 'post_photos'){
+                    $file_type = 'image';
+                    $prefix = 'fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1';
+                }if($dataType == 'post_videos'){
+                    $file_type = 'video';
+                    $prefix = 'fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1ZC3653sndkxn22e0';
+
+                    $ffmpeg = \FFMpeg\FFMpeg::create([
+                        'ffmpeg.binaries'  => 'C:/FFmpeg/bin/ffmpeg.exe',
+                        'ffprobe.binaries' => 'C:/FFmpeg/bin/ffprobe.exe'
+                    ]);
+                    $video = $ffmpeg->open($uploadDir . '/'.$dataType.'/'.$fileName);
+                    $frame = $video->frame(TimeCode::fromSeconds(0));
+                    $frame->save($uploadDir . '/'.$dataType.'/'.$fileName.'.jpg');
+
+                    $videoThumbnail = $uploadDir . '/'.$dataType.'/'.$fileName.'.jpg';
+
+                }
 
             }
 
@@ -72,6 +98,10 @@ class PostController extends Controller
 
             $post->setUser($currentUser);
 
+            if($data == null){
+                $data = [];
+            }
+
             if (array_key_exists('text', $data)) {
                 $text = $data['text'];
                 $post->setText(nl2br($text));
@@ -85,7 +115,7 @@ class PostController extends Controller
 
                 $file = new File();
                 $file->setUser($currentUser);
-                $file->setFilePath('fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1/' . $fileName);
+                $file->setFilePath($prefix. '/' . $fileName);
 
                 if ($file_type !== null) {
                     $file->setFileType($file_type);
@@ -94,7 +124,10 @@ class PostController extends Controller
                 }
 
                 $file->setFileSize($fileSize);
-                $file->setThumbnail('');
+
+                if($videoThumbnail !== ''){
+                    $file->setThumbnail($prefix. '/' . $fileName.'.jpg');
+                }
                 $file->setFileName($fileOriginalName);
                 $file->setCreatedAtAutomatically();
 

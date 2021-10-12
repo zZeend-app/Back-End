@@ -1,0 +1,4 @@
+new:
+    path:     /new
+    defaults: { _controller: ApiBundle:Feedback:newFeedback }
+    methods: [POST]

@@ -9,6 +9,7 @@ use ApiBundle\Entity\Contact;
 use ApiBundle\Entity\File;
 use ApiBundle\Entity\Story;
 use ApiBundle\Entity\View;
+use FFMpeg\Coordinate\TimeCode;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -243,6 +244,10 @@ class StoryController extends Controller
 
         $fileSize = 0;
 
+        $prefix = '';
+
+        $videoThumbnail = '';
+
         if ($currentUser !== null) {
 
 
@@ -263,7 +268,26 @@ class StoryController extends Controller
                 $fileSize = $file->getClientSize();
 
                 $data = $data['objectData'];
-                $file_type = 'image';
+
+                if($dataType == 'story_photos'){
+                    $file_type = 'image';
+                    $prefix = 'fBfqcChzEM9arevi3hQvX0GC80stybabT1uU6LXtSYqpn10934';
+                }if($dataType == 'story_videos'){
+                    $file_type = 'video';
+                    $prefix = 'tyfBfqcChzEM9ar38sudmlevi3hQvX0GC80stybasbT1uU6LXtSYqpn10934';
+
+                    $ffmpeg = \FFMpeg\FFMpeg::create([
+                        'ffmpeg.binaries'  => 'C:/FFmpeg/bin/ffmpeg.exe',
+                        'ffprobe.binaries' => 'C:/FFmpeg/bin/ffprobe.exe'
+                    ]);
+                    $video = $ffmpeg->open($uploadDir . '/'.$dataType.'/'.$fileName);
+                    $frame = $video->frame(TimeCode::fromSeconds(0));
+                    $frame->save($uploadDir . '/'.$dataType.'/'.$fileName.'.jpg');
+
+                    $videoThumbnail = $uploadDir . '/'.$dataType.'/'.$fileName.'.jpg';
+
+                }
+
 
             }
 
@@ -279,7 +303,7 @@ class StoryController extends Controller
 
                 $file = new File();
                 $file->setUser($currentUser);
-                $file->setFilePath('fBfqcChzEM9arevi3hQvX0GC80stybabT1uU6LXtSYqpn10934/' . $fileName);
+                $file->setFilePath($prefix. '/' . $fileName);
 
                 if ($file_type !== null) {
                     $file->setFileType($file_type);
@@ -288,7 +312,11 @@ class StoryController extends Controller
                 }
 
                 $file->setFileSize($fileSize);
-                $file->setThumbnail('');
+
+                if($videoThumbnail !== ''){
+                    $file->setThumbnail($prefix. '/' . $fileName.'.jpg');
+                }
+
                 $file->setFileName($fileOriginalName);
                 $file->setCreatedAtAutomatically();
 

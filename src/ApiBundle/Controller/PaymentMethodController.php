@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+
 class PaymentMethodController extends Controller
 {
 
@@ -168,40 +169,23 @@ class PaymentMethodController extends Controller
 
         $data = json_decode($data, true);
 
-        $brand = $data['brand'];
-        $last_four_digit = $data['last_four_digit'];
+
         $exp_month = $data['exp_month'];
         $exp_year = $data['exp_year'];
-        $funding = $data['funding'];
         $csv = $data['csv'];
-        $token = $data['token'];
         $payment_method_id = $data['payment_method_id'];
 
         $paymentMethod = $this->getDoctrine()->getRepository(PaymentMethod::class)->findOneBy(["user" => $currentUser, "id" => $payment_method_id]);
 
         if ($paymentMethod) {
-            if ($brand !== '' and $brand !== $paymentMethod->getBrand()) {
-                $paymentMethod->setCard($brand);
-                $updated[] = "card";
-            }
-
-            if ($token !== '' and $token !== $paymentMethod->getToken()) {
-                $paymentMethod->setToken($token);
-                $updated[] = "token";
-            }
-
-            if ($last_four_digit !== '' and $last_four_digit !== $paymentMethod->getLastFourDigit()) {
-                $paymentMethod->setLastFourDigit($last_four_digit);
-                $updated[] = "last_four_digit";
-            }
 
             if ($exp_month !== '' and $exp_month !== $paymentMethod->getExpMonth()) {
-                $paymentMethod->setExpirationDate($exp_month);
+                $paymentMethod->setExpMonth($exp_month);
                 $updated[] = "expiration_month";
             }
 
             if ($exp_year !== '' and $exp_year !== $paymentMethod->getExpYear()) {
-                $paymentMethod->setExpirationDate($exp_month);
+                $paymentMethod->setExpYear($exp_month);
                 $updated[] = "expiration_year";
             }
 
@@ -210,14 +194,24 @@ class PaymentMethodController extends Controller
                 $updated[] = "csv";
             }
 
-            if ($funding !== '' and $funding !== $paymentMethod->getFunding()) {
-                $paymentMethod->setFunding($csv);
-                $updated[] = "funding";
-            }
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($paymentMethod);
             $entityManager->flush();
+
+            $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
+            //attache a payment method to a customer
+            $stripe = new \Stripe\StripeClient($stripeSecretKey);
+
+            $stripe->paymentMethods->update(
+                $paymentMethod->getStripePaymentMethodId(),
+                ['card' => [
+                    'exp_month' => $exp_month,
+                    'exp_year' => $exp_year,
+                ]]
+            );
+
 
             $response = array("updated" => $updated);
         } else {
@@ -254,6 +248,15 @@ class PaymentMethodController extends Controller
             //detach payment method from customer
 
             $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
+
+            //attache a payment method to a customer
+            $stripe = new \Stripe\StripeClient($stripeSecretKey);
+
+            $stripe->paymentMethods->detach(
+                $paymentMethod->getStripePaymentMethodId(),
+                []
+            );
+
 
 
             if($main){
