@@ -31,7 +31,7 @@ class AuthenticationController extends Controller
                 $password = $data['password'];
                 $fullname = $data['fullname'];
                 $accountType = $data['accountType'];
-                $image = $data['image'];
+                $image = null;
                 $country = $data['country'];
                 $city = $data['city'];
                 $address = $data['address'];
@@ -212,7 +212,7 @@ class AuthenticationController extends Controller
 
             $dataType = $data['dataType'];
 
-            $fileName = $this->get('ionicapi.fileUploader')->upload($file, $uploadDir, $dataType);
+            $fileName = $this->get('ionicapi.fileUploaderManager')->upload($file, $uploadDir, $dataType);
 
             $fileOriginalName = $file->getClientOriginalName();
 

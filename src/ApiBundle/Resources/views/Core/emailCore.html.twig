@@ -353,6 +353,7 @@
                             $('#submit_button').prop('disabled', true);
                             $.post({
                                 url: "http://127.0.0.1/zZeend/Back-End/web/app_dev.php/api/auth/reset-password",
+                                headers: { "Source-Key": `rLxO#JGPCvY1*oH&F9D1qSiOdG50MvO&X7O*Va&vmQqhVeNVMfaeD0OxWObUemDw2GwQn@FfY*CsF3rKTf39zT7SmH9uoQp00@e` },
                                 data: JSON.stringify(data),
                                 success: function(data){
                                     if(data.code == "auth/codeGen_error"){

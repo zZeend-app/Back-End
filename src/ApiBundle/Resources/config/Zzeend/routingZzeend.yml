@@ -37,3 +37,8 @@ statistics:
     path:     /statistics
     defaults: { _controller: ApiBundle:Zzeend:statistics }
     methods: [POST]
+
+updatezZeendStatus:
+    path:     /update-zzeend-status
+    defaults: { _controller: ApiBundle:Zzeend:updatezZeendStatus }
+    methods: [POST]

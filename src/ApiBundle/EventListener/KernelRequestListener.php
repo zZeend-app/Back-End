@@ -35,7 +35,8 @@ class KernelRequestListener
             strpos($event->getRequest()->getUri(), 'refresh-link') ||
             strpos($event->getRequest()->getUri(), 'return-link') ||
             strpos($event->getRequest()->getUri(), 'password-recovery') ||
-            strpos($event->getRequest()->getUri(), 'payout')){
+            strpos($event->getRequest()->getUri(), 'payout') ||
+            strpos($event->getRequest()->getUri(), 'email-check')){
 
             return $event;
 

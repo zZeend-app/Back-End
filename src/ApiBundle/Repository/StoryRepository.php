@@ -18,6 +18,11 @@ class StoryRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('user', $user);
     }
 
+    public function WhereDateIsGraterThan_24(QueryBuilder $queryBuilder){
+        return $queryBuilder
+            ->andWhere("str.createdAt > DATE_SUB(CURRENT_DATE(), 24, 'hour')");
+    }
+
     public function OrderByJson(QueryBuilder $queryBuilder, $data)
     {
         foreach ($data as $order) {

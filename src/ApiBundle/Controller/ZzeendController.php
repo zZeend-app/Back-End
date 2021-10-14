@@ -93,7 +93,7 @@ class ZzeendController extends Controller
                 'text' => $zZeend->getUser()->getFullname() . ' just created a new zZeend in your name. Check this out!!!',
                 'id' => 'n° ' . $zZeend->getId(),
                 'title' => $zZeend->getTitle(),
-                'cost' => ' $'.$zZeend->getCost(),
+                'cost' => ' $' . $zZeend->getCost(),
                 'from' => $zZeend->getFrom()->format('Y-m-d H:i:s'),
                 'to' => $zZeend->getTo()->format('Y-m-d H:i:s'),
                 'paymentLimitDate' => $zZeend->getPaymentLimitDate()->format('Y-m-d H:i:s'),
@@ -114,7 +114,7 @@ class ZzeendController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 1,
                 "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend (n° '.$zZeend->getId().')', $subject, $data, $currenetUser->getPhoto() !== null ? $currenetUser->getPhoto()->getFilePath() : null);
+            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend (n° ' . $zZeend->getId() . ')', $subject, $data, $currenetUser->getPhoto() !== null ? $currenetUser->getPhoto()->getFilePath() : null);
 
             $response = array("code" => $zZeend->getId());
 
@@ -198,7 +198,7 @@ class ZzeendController extends Controller
 
             $paymentmethod = $this->getDoctrine()->getRepository(PaymentMethod::class)->find($payment_methode_id);
 
-            if($paymentmethod){
+            if ($paymentmethod) {
 
                 $zZeend = $this->getDoctrine()->getRepository(Zzeend::class)->find($zZeend_id);
 
@@ -210,19 +210,19 @@ class ZzeendController extends Controller
 
                     //charge user card and share money between stripe and zZeend account nd keep the rest to the custommer
 
-                    try{
+                    try {
 
                         $application_fee_amount = 250;
-                        if($zZeendCost <= 30 && $zZeendCost > 5){
+                        if ($zZeendCost <= 30 && $zZeendCost > 5) {
                             $application_fee_amount = 250; // $2.5
-                        }else if($zZeendCost > 30){
+                        } else if ($zZeendCost > 30) {
                             $application_fee_amount = 500; // $5
                         }
 
                         $mainZzeendUser = $zZeend->getUser();
                         $stripeConnectedAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findOneBy(['user' => $mainZzeendUser]);
 
-                        if($stripeConnectedAccount !== null) {
+                        if ($stripeConnectedAccount !== null) {
                             $serviceOwnerStripeAccountId = $stripeConnectedAccount->getStripeAccountId();
 
                             $payment_intent = \Stripe\PaymentIntent::create([
@@ -239,7 +239,7 @@ class ZzeendController extends Controller
                             ]);
 
 
-                            if($payment_intent !== null){
+                            if ($payment_intent !== null) {
 
                                 $paymentIntentId = $payment_intent->id;
                                 $stripe->paymentIntents->confirm(
@@ -267,12 +267,12 @@ class ZzeendController extends Controller
 
                                 $serviceOwner = $zZeend->getUser();
 
-                                $subject = $currentUser->getFullname().' just made a payment.';
+                                $subject = $currentUser->getFullname() . ' just made a payment.';
                                 //send notification
                                 $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                                 $data = array("type" => 5,
                                     "zZeend" => $zZeend);
-                                $pushNotificationManager->sendNotification($serviceOwner, 'zZeend paid (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+                                $pushNotificationManager->sendNotification($serviceOwner, 'zZeend paid (n° ' . $zZeend->getId() . ')', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
                                 $response = array("code" => "payment_success");
 
@@ -280,20 +280,20 @@ class ZzeendController extends Controller
                                 $response = array("code" => "action_not_allowed");
                             }
 
-                        }else{
+                        } else {
                             $response = array("code" => "action_not_allowed");
                         }
 
-                    }catch(\Stripe\Exception\CardException $e){
+                    } catch (\Stripe\Exception\CardException $e) {
                         return new JsonResponse(array("code" => $e->getError()->code, "payment_intent_id" => $e->getError()->payment_intent->id));
                     }
 
-                }else{
+                } else {
                     $response = array("code" => "action_not_allowed");
                 }
 
 
-            }else{
+            } else {
                 $response = array("code" => "action_not_allowed");
             }
 
@@ -337,16 +337,16 @@ class ZzeendController extends Controller
             $finance->setUser($mainZzeendUser);
 
             $application_fee_amount = 250;
-            if($zZeendCost <= 30 && $zZeendCost > 5){
+            if ($zZeendCost <= 30 && $zZeendCost > 5) {
                 $application_fee_amount = 250; // $2.5
-            }else if($zZeendCost > 30){
+            } else if ($zZeendCost > 30) {
                 $application_fee_amount = 500; // $5
             }
 
             $stripeConnectedAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findOneBy(['user' => $mainZzeendUser]);
 
 
-            if($stripeConnectedAccount !== null){
+            if ($stripeConnectedAccount !== null) {
                 $serviceOwnerStripeAccountId = $stripeConnectedAccount->getStripeAccountId();
 
                 $stripe = new \Stripe\StripeClient($stripeSecretKey);
@@ -367,7 +367,7 @@ class ZzeendController extends Controller
 
                     $baseUrl = $this->getParameter('baseUrl');
                     $stripe->webhookEndpoints->create([
-                        'url' => $baseUrl.'/auth/payout/'.$zZeend_id,
+                        'url' => $baseUrl . '/auth/payout/' . $zZeend_id,
                         'enabled_events' => [
                             'payout.paid'
                         ]
@@ -375,7 +375,7 @@ class ZzeendController extends Controller
 
                     new JsonResponse($payout);
 
-                    if($payout !== null){
+                    if ($payout !== null) {
 
                         //todo trsansfer the 5$ to zZeend account (stripe)
 
@@ -410,7 +410,6 @@ class ZzeendController extends Controller
                         $entityManager->flush();
 
 
-
                         $event = $this->getDoctrine()->getRepository(Event::class)->findOneBy(['zZeend' => $zZeend]);
 
                         if ($event !== null) {
@@ -429,19 +428,19 @@ class ZzeendController extends Controller
 
                         $serviceOwner = $zZeend->getUser();
 
-                        $subject = $currentUser->getFullname().' has finalized this zZeend.';
+                        $subject = $currentUser->getFullname() . ' has finalized this zZeend.';
                         //send notification
                         $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                         $data = array("type" => 6,
                             "zZeend" => $zZeend);
-                        $pushNotificationManager->sendNotification($serviceOwner, 'zZeend finalized (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+                        $pushNotificationManager->sendNotification($serviceOwner, 'zZeend finalized (n° ' . $zZeend->getId() . ')', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
                         $response = array("code" => "zZeend_done");
 
                     }
 
-                }catch (\Stripe\Exception\CardException $ex){
+                } catch (\Stripe\Exception\CardException $ex) {
                     return new JsonResponse(array("code" => $ex->getError()->code));
                 }
 
@@ -481,19 +480,19 @@ class ZzeendController extends Controller
             $entityManager->flush();
 
             $application_fee_amount = 300;
-            if($zZeendCost <= 30 && $zZeendCost > 5){
+            if ($zZeendCost <= 30 && $zZeendCost > 5) {
                 $application_fee_amount = 300; // $5
-            }else if($zZeendCost > 30){
+            } else if ($zZeendCost > 30) {
                 $application_fee_amount = 500; // $5
             }
 
             $transaction = $zZeend->getTransaction();
 
-            $paymentIntentId =  $transaction->getPaymentIntentId();
+            $paymentIntentId = $transaction->getPaymentIntentId();
 
             \Stripe\Stripe::setApiKey($stripeSecretKey);
 
-               // Make the refund automatically
+            // Make the refund automatically
 
             $re = \Stripe\Refund::create([
                 'amount' => ($zZeendCost * 100) - $application_fee_amount,
@@ -506,13 +505,12 @@ class ZzeendController extends Controller
 
             $serviceSeeker = $zZeend->getUserAssigned();
 
-            $subject = $currentUser->getFullname().' has canceled this zZeend.';
+            $subject = $currentUser->getFullname() . ' has canceled this zZeend.';
             //send notification
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 7,
                 "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend canceled (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
-
+            $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend canceled (n° ' . $zZeend->getId() . ')', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             $response = array("code" => "zZeend_canceled");
@@ -601,12 +599,12 @@ class ZzeendController extends Controller
 
                 $serviceSeeker = $zZeend->getUserAssigned();
 
-                $subject = $currentUser->getFullname().' edited this zZeend.';
+                $subject = $currentUser->getFullname() . ' edited this zZeend.';
                 //send notification
                 $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                 $data = array("type" => 8,
                     "zZeend" => $zZeend);
-                $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend update (n° '.$zZeend->getId().')', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+                $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend update (n° ' . $zZeend->getId() . ')', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             }
@@ -624,7 +622,8 @@ class ZzeendController extends Controller
         return new JsonResponse($response);
     }
 
-    public function statisticsAction(){
+    public function statisticsAction()
+    {
 
         $currentUser = $this->getUser();
 
@@ -641,12 +640,80 @@ class ZzeendController extends Controller
         $balanceArray = $qb->getQuery()->getResult();
 
         $totalBalance = 0;
-        if(count($balanceArray) > 0){
-            $totalBalance =  $balanceArray[0]['cost'];
+        if (count($balanceArray) > 0) {
+            $totalBalance = $balanceArray[0]['cost'];
         }
 
-        return new JsonResponse(array("nbZzeend" => intval($totalZzeendPaid), "totalBalance" =>floatval($totalBalance)));
+        return new JsonResponse(array("nbZzeend" => intval($totalZzeendPaid), "totalBalance" => floatval($totalBalance)));
 
     }
+
+    public function updatezZeendStatusAction()
+    {
+
+        $stateChanged = false;
+        $entityManager = $this->getDoctrine()->getManager();
+        $zZeends = $this->getDoctrine()->getRepository(Zzeend::class)->findAll();
+
+        $allUsers = [];
+
+        $assocArray = [];
+
+        for ($i = 0; $i < count($zZeends); $i++) {
+
+            $zZeend = $zZeends[$i];
+
+            $mainZzeendUser = $zZeend->getUser();
+            $userAssigned = $zZeend->getUserAssigned();
+
+            $status = $zZeend->getStatus();
+
+            $paymentLimitDate = $zZeend->getPaymentLimitDate();
+
+            $canceled = $zZeend->getCanceled();
+
+
+            $done = $zZeend->getDone();
+
+            //if today's date and time is greater that the date the zZeend suppose to be payed and done still false and the zZeend is till active, not canceled,
+            if (new \DateTime() > $paymentLimitDate and !$done and !$canceled and $status->getId() == 1) {
+
+                //turn the zZeend to incomplete
+                $zZeendStatus = $this->getDoctrine()->getRepository(ZzeendStatus::class)->find(2);
+                $zZeend->setStatus($zZeendStatus);
+
+                $entityManager->persist($zZeend);
+                $stateChanged = true;
+
+                $assocArray[$mainZzeendUser->getEMail()] = $mainZzeendUser;
+
+            }
+
+        }
+
+        if ($stateChanged) {
+            $entityManager->flush();
+        }
+
+        foreach($assocArray as $user){
+              array_push($allUsers, $user);
+        }
+
+        //send notifications
+
+        $subject = 'You have some incompleted zZeends. You need to check them out !!!';
+        //send notification
+        $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
+        $data = array("type" => 19,
+            "zZeend" => $zZeend);
+        $pushNotificationManager->sendGroupNotification($allUsers, 'zZeend(s) due to', $subject, null, null);
+
+
+
+
+        return new JsonResponse(array("code" => "done"));
+
+    }
+
 
 }

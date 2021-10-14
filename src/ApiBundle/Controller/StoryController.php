@@ -122,7 +122,12 @@ class StoryController extends Controller
 
                 $user = $this->getDoctrine()->getRepository(User::class)->find($userId);
 
-                $stories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
+                $em = $this->getDoctrine()->getRepository(Story::class);
+                $qb = $em->GetQueryBuilder();
+                $qb = $em->WhereUser($qb, $user);
+                $qb = $em->WhereDateIsGraterThan_24($qb);
+
+                $stories = $qb->getQuery()->getResult();
 
                 $storyViewsState = array();
                 $allViewsExceptCurrentUser = array();
@@ -134,6 +139,7 @@ class StoryController extends Controller
                     $qb = $em->GetQueryBuilder();
                     $qb = $em->WhereUserViewsStory($qb, $currentUser, $story->getId(), 3);
                     $_qb = $em->WhereAllViewsStory($qb, $story->getId(), 3);
+
                     $storyViewsState[] = $qb->getQuery()->getResult();
                     $allViewsExceptCurrentUser[] = $_qb->getQuery()->getResult();
 
@@ -162,7 +168,12 @@ class StoryController extends Controller
 
             $user = $this->getDoctrine()->getRepository(User::class)->find($currentUser->getId());
 
-            $currentUserStories = $this->getDoctrine()->getRepository(Story::class)->findBy(["user" => $user]);
+            $em = $this->getDoctrine()->getRepository(Story::class);
+            $qb = $em->GetQueryBuilder();
+            $qb = $em->WhereUser($qb, $user);
+            $qb = $em->WhereDateIsGraterThan_24($qb);
+
+            $currentUserStories = $qb->getQuery()->getResult();
 
             $allViewsExceptCurrentUser = array();
 

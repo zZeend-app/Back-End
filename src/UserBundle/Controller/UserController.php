@@ -19,7 +19,7 @@ class UserController extends Controller
 
     public function newUserAction($email, $password, $fullname, $accountType, $image, $country, $city, $address, $zipCode, $phoneNumber, $jobTitle, $jobDescription, $spokenLanguages, $subLocality, $latitude, $longitude, $subAdministrativeArea, $administrativeArea, $countryCode){
 
-        $userManager = $this->get('fos_user.user_manager');
+        $userManager = $this->getDoctrine()->getManager();
         $response = array();
 
         $em = $this->getDoctrine()->getRepository(User::class);
@@ -30,7 +30,7 @@ class UserController extends Controller
             return new JsonResponse($response);
         }
 
-        $user = $userManager->createUser();
+        $user = new User();
         $user->setfullname($fullname);
         $user->setUsername($email);
         $user->setEmail($email);
@@ -43,7 +43,7 @@ class UserController extends Controller
         }else if($accountType == 1){
             $user->setRoles(['ROLE_OWNER']);
         }
-        $user->setImage($image);
+        $user->setPhoto($image);
         $user->setCountry($country);
         $user->setCity($city);
         $user->setAddress($address);
@@ -65,13 +65,13 @@ class UserController extends Controller
         $user->setCreatedAtAutomatically();
         $user->setUpdatedAtAutomatically();
 
-        $userManager->updateUser($user);
-
+        $userManager->persist($user);
+        $userManager->flush($user);
 
         //create a strip connect account if user is service owner
 
         if($accountType == 1){
-            $this->createStripeUserConnectedAccount();
+            $this->createStripeUserConnectedAccount($user);
         }
 
 
@@ -208,10 +208,11 @@ class UserController extends Controller
             if($accountVerificationObject !== null){
                 $userId = $accountVerificationObject->getUser()->getId();
 
-                $userManager = $this->get('fos_user.user_manager');
-                $user =  $userManager->findUserBy(array('id'=> $userId));
+                $userManager = $this->getDoctrine()->getManager();
+                $user =  $this->getDoctrine()->getRepository(User::class)->findOneBy(array('id'=> $userId));
                 $user->setEnabled(1);
-                $userManager->updateUser($user);
+                $userManager->persist($user);
+                $userManager->flush();
 
                 $response = $this->render("@Web/account-enebaled.html.twig",
                 ["code" => "auth/account_enabled"]);
@@ -228,20 +229,18 @@ class UserController extends Controller
         return $response;
     }
 
-    public function createStripeUserConnectedAccount(){
+    public function createStripeUserConnectedAccount($user){
 
         $response = array();
         $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
 
-        $currentUser = $this->getUser();
-
-        $countryCode = $currentUser->getCountryCode();
+        $countryCode = $user->getCountryCode();
 
         \Stripe\Stripe::setApiKey($stripeSecretKey);
 
         $account = \Stripe\Account::create([
             'country' => $countryCode,
-            'email' => $currentUser->getEmail(),
+            'email' => $user->getEmail(),
             'type' => 'express',
         ]);
 
@@ -252,7 +251,7 @@ class UserController extends Controller
 
             $entityManager = $this->getDoctrine()->getManager();
             $stripeConnectedAccount = new StripeConnectAccount();
-            $stripeConnectedAccount->setUser($currentUser);
+            $stripeConnectedAccount->setUser($user);
             $stripeConnectedAccount->setStripeAccountId($stripeConnectedAccountId);
 
             $entityManager->persist($stripeConnectedAccount);

@@ -490,7 +490,7 @@ class User extends BaseUser implements JsonSerializable
      *
      * @return User
      */
-    public function setPhoto(File $photo)
+    public function setPhoto($photo)
     {
         $this->photo = $photo;
 
