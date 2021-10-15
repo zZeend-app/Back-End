@@ -43,6 +43,13 @@ class Tag implements JsonSerializable
      */
     private $title;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="active", type="boolean", length=255, unique=false, nullable=false)
+     */
+    private $active;
+
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -83,6 +90,27 @@ class Tag implements JsonSerializable
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * Set active.
+     *
+     * @param boolean $active
+     *
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
+    }
+
+    /**
+     * Get active.
+     *
+     * @return boolean
+     */
+    public function getActive()
+    {
+        return $this->active;
     }
 
     /**
@@ -164,6 +192,10 @@ class Tag implements JsonSerializable
 
         if(!$entityClass instanceof Tag || in_array("title",$include)){
             $json["title"] = $this->title;
+        }
+
+        if(!$entityClass instanceof PaymentMethod || in_array("active",$include)){
+            $json["active"] = $this->active;
         }
 
         if(!$entityClass instanceof Tag || in_array("createdAt",$include)){

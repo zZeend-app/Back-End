@@ -18,4 +18,10 @@ class TagRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('user', $user);
     }
 
+    public function WhereActiveIsTrue(QueryBuilder $queryBuilder, $flag){
+        return $queryBuilder
+            ->andWhere('tg.active = :active')
+            ->setParameter('active', $flag);
+    }
+
 }

@@ -31,6 +31,7 @@ class TagsController extends Controller
                 $tag = new Tag();
                 $tag->setUser($currentUser);
                 $tag->setTitle($title);
+                $tag->setActive(true);
                 $tag->setCreatedAtAutomatically();
                 $tag->setUpdatedAtAutomatically();
 
@@ -57,6 +58,7 @@ class TagsController extends Controller
         $em = $this->getDoctrine()->getRepository(Tag::class);
         $qb = $em->GetQueryBuilder();
         $qb = $em->WhereUser($qb, $currentUser);
+        $qb = $em->WhereActiveIsTrue($qb, true);
 
         $response = $qb->getQUery()->getResult();
 
@@ -121,7 +123,9 @@ class TagsController extends Controller
 
         if ($tag !== null) {
 
-            $entityManager->remove($tag);
+            $tag->setActive(false);
+
+            $entityManager->persist($tag);
             $entityManager->flush();
 
             $response = array("code" => "tag_deleted");

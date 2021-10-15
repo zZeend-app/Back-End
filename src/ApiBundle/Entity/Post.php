@@ -39,7 +39,7 @@ class Post implements JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="text", type="string", length=255, unique=false, nullable=true)
+     * @ORM\Column(name="text", type="text", unique=false, nullable=true)
      */
     private $text;
 
