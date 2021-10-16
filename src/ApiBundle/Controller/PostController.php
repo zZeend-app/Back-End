@@ -225,10 +225,13 @@ class PostController extends Controller
             $qb = $em->OrderByJson($qb, $data["order"]);
         }
 
+//        $qb = $em->OrderByRand($qb);
+
 //        $posts = $qb->getQuery()->getResult();
 
         $posts = $jsonManager->setQueryLimit($qb, $filtersInclude);
 
+        shuffle($posts);
 
         for ($i = 0; $i < count($posts); $i++) {
             $sharedContent = null;

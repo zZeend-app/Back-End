@@ -162,6 +162,7 @@ class StoryController extends Controller
 
         }
 
+        shuffle($response);
 
         if ($currentUserStoryExists) {
 
@@ -205,8 +206,64 @@ class StoryController extends Controller
             $response = array_merge([$tempArray], $response);
 
         } else {
-            $tempArray = array("user" => $currentUser, "stories" => [], 'storyViewsState' => []);
-            $response = array_merge([$tempArray], $response);
+
+
+
+            $user = $this->getDoctrine()->getRepository(User::class)->find($currentUser->getId());
+
+            $em = $this->getDoctrine()->getRepository(Story::class);
+            $qb = $em->GetQueryBuilder();
+            $qb = $em->WhereUser($qb, $user);
+            $qb = $em->WhereDateIsGraterThan_24($qb);
+
+            $currentUserStories = $qb->getQuery()->getResult();
+
+            if(count($currentUserStories) > 0){
+
+                $allViewsExceptCurrentUser = array();
+
+                for ($j = 0; $j < count($currentUserStories); $j++) {
+
+                    $story = $currentUserStories[$j];
+
+                    $em = $this->getDoctrine()->getRepository(View::class);
+                    $qb = $em->GetQueryBuilder();
+                    $_qb = $em->WhereAllViewsStory($qb, $story->getId(), 3);
+                    $allViewsExceptCurrentUser[] = $_qb->getQuery()->getResult();
+
+                }
+
+
+                if ($allViewsExceptCurrentUser > 0) {
+
+                    $tempArray = array("user" => $user, "stories" => $currentUserStories, 'storyViewsState' => [], 'views' => $allViewsExceptCurrentUser[0]);
+
+
+                } else {
+
+                    $tempArray = array("user" => $user, "stories" => $currentUserStories, 'storyViewsState' => [], 'views' => []);
+
+
+                }
+
+                if(count($currentUserStories) > 0){
+
+                    $response = array_merge([$tempArray], $response);
+
+                }else{
+                    $tempArray = array("user" => $currentUser, "stories" => [], 'storyViewsState' => []);
+                    $response = array_merge([$tempArray], $response);
+                }
+
+
+            }else{
+
+                $tempArray = array("user" => $currentUser, "stories" => [], 'storyViewsState' => []);
+                $response = array_merge([$tempArray], $response);
+
+            }
+
+
         }
 
 
