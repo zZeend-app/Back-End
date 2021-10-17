@@ -26,7 +26,7 @@ class AppKernel extends Kernel
             new Nelmio\CorsBundle\NelmioCorsBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new WebBundle\WebBundle(),
-            new LiveBundle\LiveBundle(),
+            new LiveBundle\LiveBundle()
         ];
 
 

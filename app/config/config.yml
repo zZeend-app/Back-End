@@ -120,6 +120,8 @@ swiftmailer:
 sensio_framework_extra:
     router:
         annotations: false
+    psr_message:
+        enabled: false
 
 nelmio_cors:
     defaults:
@@ -144,8 +146,6 @@ lexik_jwt_authentication:
     public_key:       '%kernel.project_dir%/config/jwt/public.pem'  # required for token verification //todo n"a pas ete fait
     pass_phrase:      '%jwt_secret_phrase%' # required for token creation, usage of an environment variable is recommended //todo ne fonctionnera pas
     token_ttl:         7889400
-
-
 
 
 #    Push notification types

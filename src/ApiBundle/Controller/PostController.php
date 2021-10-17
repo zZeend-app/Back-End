@@ -194,7 +194,6 @@ class PostController extends Controller
 
     public function getAllPostAction(Request $request)
     {
-
         $response = array();
 
         $data = $request->getContent();

@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use UserBundle\Entity\User;
+use Sentry;
 
 class KernelRequestListener
 {
@@ -30,6 +31,8 @@ class KernelRequestListener
 
     public function onKernelRequest(GetResponseEvent $event)
     {
+
+        Sentry\init(['dsn' => 'https://542f67a9b0d948e2af1cc0e914e566a5@o1041477.ingest.sentry.io/6010502' ]);
 
         if(strpos($event->getRequest()->getUri(), 'media/file') ||
             strpos($event->getRequest()->getUri(), 'refresh-link') ||
