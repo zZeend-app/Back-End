@@ -14,6 +14,7 @@ use ApiBundle\Entity\StripeConnectAccount;
 use ApiBundle\Entity\View;
 use ApiBundle\Entity\ViewType;
 use ApiBundle\Entity\Zzeend;
+use ApiBundle\Entity\ZzeendPoint;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -86,6 +87,13 @@ class ProfileController extends Controller
         $response['avg'] = intval($avg);
         $response['nbViews'] = intval($nbViews);
         $response['balance'] = floatval($balance);
+
+        $em = $this->getDoctrine()->getRepository(ZzeendPoint::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereUser($qb, $user);
+        $zZeendPoints = $qb->getQuery()->getSingleScalarResult();
+        $response['zZeendPoints'] = intval($zZeendPoints);
+
 
         $requestSenderObject = '';
 

@@ -97,3 +97,7 @@ comment:
 feedback:
     resource: "@ApiBundle/Resources/config/Feedback/routingFeedback.yml"
     prefix:   /feedback
+
+zZeendService:
+    resource: "@ApiBundle/Resources/config/ZzeendServices/routingZzeendService.yml"
+    prefix:   /zzeend-services

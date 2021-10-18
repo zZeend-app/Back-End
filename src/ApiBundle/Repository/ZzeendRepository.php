@@ -70,7 +70,9 @@ class ZzeendRepository extends \Doctrine\ORM\EntityRepository
         return $queryBuilder
             ->select('count(z.id)')
             ->andWhere('z.user = :user')
-            ->setParameter('user', $user);
+            ->setParameter('user', $user)
+            ->andWhere('z.canceled = :canceledFlag')
+            ->setParameter('canceledFlag', false);
     }
 
 

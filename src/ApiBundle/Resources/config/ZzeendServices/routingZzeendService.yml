@@ -1,0 +1,4 @@
+services:
+    path:     /get
+    defaults: { _controller: ApiBundle:ZzeendServices:getServices }
+    methods: [POST]
