@@ -1,0 +1,69 @@
+You were assigned to a new zZeend: You were assigned to a new zZeend
+In progress: In progress
+Uncompleted: Uncompleted
+Completed: Completed
+'%userFullname% just created a new zZeend in your name. Check this out!!!': %userFullname% just created a new zZeend in your name. Check this out!!!
+Yes: Yes
+Not yet: Not yet
+No: No
+Y-m-d H:i:s: Y-m-d H:i:s
+New zZeend (n° %zZeendId%): New zZeend (n° %zZeendId%)
+You have been payout into your bank account.: You have been payout into your bank account.
+zZeend payout (n° %zZeendId%): zZeend payout (n° %zZeendId%)
+'%userFullname% just rated you': %userFullname% just rated you
+zZeend rating: zZeend rating
+'%userFullname% sent a chat': %userFullname% sent a chat
+File content: File content
+zZeend paid (n° %zZeendId%): zZeend paid (n° %zZeendId%)
+'%userFullname% just made a payment.': %userFullname% just made a payment.
+'%userFullname% has finalized this zZeend.': %userFullname% has finalized this zZeend.
+'zZeend finalized (n° %zZeendId%)': zZeend finalized (n° %zZeendId%)
+'%userFullname% has canceled this zZeend.': %userFullname% has canceled this zZeend.
+'zZeend canceled (n° %zZeendId%)': zZeend canceled (n° %zZeendId%)
+'%userFullname% edited this zZeend.': %userFullname% edited this zZeend.
+'zZeend update (n° %zZeendId%)': zZeend update (n° %zZeendId%)
+zZeend(s) due to: zZeend(s) due to
+You have some incompleted zZeends. You need to check them out !!!: You have some incompleted zZeends. You need to check them out !!!
+'%userFullname% sent you a request': %userFullname% sent you a request
+New request: New request
+'%userFullname% accepted your request': %userFullname% accepted your request
+'%userFullname% rejected your request': %userFullname% rejected your request
+Request response: Request response
+'%userFullname% is calling you...': %userFullname% is calling you...
+zZeend video call: zZeend video call
+'%userFullname% reject your call.': %userFullname% reject your call.
+Call rejected: Call rejected
+'%userFullname% is in video session now.': %userFullname% is in video session now.
+Call picked: Call picked
+'%userFullname% said he/she will call you back.': %userFullname% said he/she will call you back.
+'%userFullname% ends video session.': %userFullname% ends video session.
+Id: Id
+From: From
+To: To
+Payment deadline: Payment deadline
+Service owner: Service owner
+Status: Status
+Paid: Paid
+Finalized: Finalized
+Canceled: Canceled
+Created at: Created at
+zZeend Team: zZeend Team
+'Hello %name%': Hello %name%
+Other to recover your password, click on the link bellow: Other to recover your password, click on the link bellow
+Password recovery link: Password recovery link
+Other to verify your account, click on the link bellow: Other to verify your account, click on the link bellow
+Account verification link: Account verification link
+You have reset your password. You can now login using zZeend mobile app.: You have reset your password. You can now login using zZeend mobile app.
+Your account is now verified. You can now login.: Your account is now verified. You can now login.
+Invalid url. Try to login to get a new Url: Invalid url. Try to login to get a new Url
+Your new password (more than 5 characters): Your new password (more than 5 characters)
+Confirm password (more than 5 characters): Confirm password (more than 5 characters)
+All rights reserved: All rights reserved
+You can now close this page and continue using zZeend, Congratulation !!!: You can now close this page and continue using zZeend, Congratulation !!!
+Uncompleted onboarding: Uncompleted onboarding
+Reset password: Reset password
+Invalid Url. Try to make a new password request.: Invalid Url. Try to make a new password request.
+An error occurred during the process. Please try agin..: An error occurred during the process. Please try agin..
+Expired Url: Expired Url
+
+'Hello %name%!': Bonjour %name% !

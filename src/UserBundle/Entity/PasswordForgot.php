@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * PasswordForgot
  * @ORM\Entity
  * @ORM\Table(name="password_forgot", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
+* @ORM\Entity(repositoryClass="UserBundle\Repository\PasswordForgotRepository")
  *
  */
 class PasswordForgot

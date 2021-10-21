@@ -53,7 +53,7 @@ class FeedbackController extends Controller
             'fullname' => $currentUser->getFullname()
         );
 
-        $sendEmailTo = 'michel.k@zzeend.com';
+        $sendEmailTo = $this->getParameter('feedback_mail') ;
 
         $emailManager = $this->get('ionicapi.emailManager');
         $app_mail = $this->getParameter('app_mail');

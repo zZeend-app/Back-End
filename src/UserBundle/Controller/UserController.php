@@ -17,7 +17,7 @@ class UserController extends Controller
         return new JsonResponse($user);
     }
 
-    public function newUserAction($email, $password, $fullname, $accountType, $image, $country, $city, $address, $zipCode, $phoneNumber, $jobTitle, $jobDescription, $spokenLanguages, $subLocality, $latitude, $longitude, $subAdministrativeArea, $administrativeArea, $countryCode){
+    public function newUserAction($email, $password, $fullname, $accountType, $image, $country, $city, $address, $zipCode, $phoneNumber, $jobTitle, $jobDescription, $spokenLanguages, $subLocality, $latitude, $longitude, $subAdministrativeArea, $administrativeArea, $countryCode, $lang){
 
         $userManager = $this->getDoctrine()->getManager();
         $response = array();
@@ -30,12 +30,15 @@ class UserController extends Controller
             return new JsonResponse($response);
         }
 
-        $user = new User();
+        $userManager = $this->container->get('fos_user.user_manager');
+
+        $user = $userManager->createUser();
         $user->setfullname($fullname);
         $user->setUsername($email);
         $user->setEmail($email);
         $user->setEmailCanonical($email);
         $user->setEnabled(0);
+        $user->setLang($lang);
         $user->setPlainPassword($password);
 
         if($accountType == 0){
@@ -65,8 +68,7 @@ class UserController extends Controller
         $user->setCreatedAtAutomatically();
         $user->setUpdatedAtAutomatically();
 
-        $userManager->persist($user);
-        $userManager->flush($user);
+        $userManager->updateUser($user);
 
         //create a strip connect account if user is service owner
 
@@ -87,10 +89,16 @@ class UserController extends Controller
         $entityManager->persist($accountVerification);
         $entityManager->flush();
 
+        $translateTo = 'en';
+        if($user->getLang() !== ''){
+            $translateTo = $user->getLang();
+        }
+
         $data = array(
             'name' => $user->getFullname(),
             'codeGen' => $codeGen,
-            'baseUrl' => $this->getParameter("baseUrl")
+            'baseUrl' => $this->getParameter("baseUrl"),
+            'lang' => $translateTo
         );
 
         $emailManager = $this->get('ionicapi.emailManager');
@@ -124,10 +132,16 @@ class UserController extends Controller
             $entityManager->persist($accountVerification);
             $entityManager->flush();
 
+            $translateTo = 'en';
+            if($user->getLang() !== ''){
+                $translateTo = $user->getLang();
+            }
+
             $data = array(
                           'name' => $user->getFullname(),
                           'codeGen' => $codeGen,
-                          'baseUrl' => $this->getParameter("baseUrl")
+                          'baseUrl' => $this->getParameter("baseUrl"),
+                          'lang' => $translateTo
             );
 
             $emailManager = $this->get('ionicapi.emailManager');
@@ -155,16 +169,21 @@ class UserController extends Controller
             $passwordForgot = new PasswordForgot();
             $passwordForgot->setUser($user);
             $passwordForgot->setCreatedAtAutomatically();
-            $passwordForgot->setUpdatedAtAutomatically();
             $passwordForgot->setCodeGen($codeGen);
 
             $entityManager->persist($passwordForgot);
             $entityManager->flush();
 
+            $translateTo = 'en';
+            if($user->getLang() !== ''){
+                $translateTo = $user->getLang();
+            }
+
             $data = array(
                 'name' => $user->getFullname(),
                 'codeGen' => $codeGen,
-                'baseUrl' => $this->getParameter("baseUrl")
+                'baseUrl' => $this->getParameter("baseUrl"),
+                'lang' => $translateTo
             );
 
             $emailManager = $this->get('ionicapi.emailManager');
@@ -182,6 +201,7 @@ class UserController extends Controller
     public function resetPasswordAction($codeGen, $newPassword){
         $response = array();
 
+        $translator = $this->get('translator');
         $entityManager = $this->getDoctrine()->getRepository(PasswordForgot::class);
         $passwordForgotObject = $entityManager->findOneBy(["codeGen" => $codeGen]);
         if($passwordForgotObject !== null) {
@@ -190,11 +210,14 @@ class UserController extends Controller
             $userManager = $this->get('fos_user.user_manager');
             $user =  $userManager->findUserBy(array('id'=> $userId));
             $user->setPlainPassword($newPassword);
+            $passwordForgotObject->setUpdatedAtAutomatically();
+
             $userManager->updateUser($user);
 
             $response = array('code' => 'auth/password_recovered');
         }else{
-            $response = array('code' => 'auth/codeGen_error');
+            $message = $translator->trans('Invalid Url. Try to make a new password request.');
+            $response = array('code' => 'auth/codeGen_error', 'message' => $message);
         }
 
         return new JsonResponse($response);

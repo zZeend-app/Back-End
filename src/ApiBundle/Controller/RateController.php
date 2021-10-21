@@ -48,13 +48,23 @@ class RateController extends Controller
             $createNotificationManager = $this->get("ionicapi.NotificationManager");
             $createNotificationManager->newNotification(8, $rate->getId());
 
-            $subject = $currentUser->getFullname().' just rated you.';
+            $translator = $this->get('translator');
+
+            $userFullname = $currentUser->getFullname();
+
+            $translateTo = 'en';
+            if($ratedUser->getLang() !== ''){
+                $translateTo = $ratedUser->getLang();
+            }
+
+
+            $subject = $translator->trans('%userFullname% just rated you.', ['userFullname' => $userFullname], null, $translateTo);
 
             //send notification
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 11,
                 "rating" => $rate);
-            $pushNotificationManager->sendNotification($ratedUser, 'zZeend rates', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+            $pushNotificationManager->sendNotification($ratedUser, $translator->trans('zZeend rating', [], null, $translateTo), $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             $response = array("code" => "rate_added");

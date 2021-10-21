@@ -196,9 +196,16 @@ class RoomController extends Controller
                                             $entityManager->persist($guest);
                                             $entityManager->flush();
 
+                                            $translator = $this->get('translator');
 
+                                            $translateTo = 'en';
+                                            if($userGuest->getLang() !== ''){
+                                                $translateTo = $userGuest->getLang();
+                                            }
 
-                                                $subject = $moderator->getFullname().' is calling you...';
+                                            $userFullname = $moderator->getFullname();
+
+                                                $subject = $translator->trans('%userFullname% is calling you...', ['%userFullname%' => $userFullname], null, $translateTo);
 
 
 
@@ -215,7 +222,7 @@ class RoomController extends Controller
 
 
                                             //replace moderator by $userGuest in real use
-                                            $pushNotificationManager->sendNotification($userGuest, 'zZeend video call', $subject , $data, $moderator->getPhoto() !== null ? $moderator->getPhoto()->getFilePath() : null);
+                                            $pushNotificationManager->sendNotification($userGuest, $translator->trans('zZeend video call', [], null, $translateTo), $subject , $data, $moderator->getPhoto() !== null ? $moderator->getPhoto()->getFilePath() : null);
 
 
                                         }
@@ -436,10 +443,18 @@ class RoomController extends Controller
 
                     $moderator = $room->getModerator();
 
+                    $translator = $this->get('translator');
+                    $translateTo = 'en';
+                    if($moderator->getLang() !== ''){
+                        $translateTo = $moderator->getLang();
+                    }
+
                     //send notification to moderator that the call has been rejected
                     $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
 
-                    $subject = $userGuest->getFullname().' reject your call.';
+                    $userFullname = $userGuest->getFullname();
+
+                    $subject = $translator->trans('%userFullname% reject your call.', ['%userFullname%' => $userFullname], null, $translateTo);
 
                     $incomingCall = array(
                         "room" => $room,
@@ -449,7 +464,7 @@ class RoomController extends Controller
                     $data = array("type" => 15,
                         "incomingCall" => $incomingCall);
 
-                    $pushNotificationManager->sendNotification($moderator, 'Call rejected', $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
+                    $pushNotificationManager->sendNotification($moderator, $translator->trans('Call rejected', [], null, $translateTo), $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
 
                          $response = array("code" => "notification_sent");
 
@@ -500,10 +515,19 @@ class RoomController extends Controller
 
                     $moderator = $room->getModerator();
 
+                    $translator = $this->get('translator');
+                    $translateTo = 'en';
+                    if($moderator->getLang() !== ''){
+                        $translateTo = $moderator->getLang();
+                    }
+
+                    $userFullname = $userGuest->getFullname();
+
+
                     //send notification to moderator that the call has been rejected
                     $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
 
-                    $subject = $userGuest->getFullname().' is in video session now.';
+                    $subject = $translator->trans('%userFullname% is in video session now.', ['%userFullname%' => $userFullname], null, $translateTo);
 
                     $incomingCall = array(
                         "room" => $room,
@@ -513,7 +537,7 @@ class RoomController extends Controller
                     $data = array("type" => 14,
                         "incomingCall" => $incomingCall);
 
-                    $pushNotificationManager->sendNotification($moderator, 'Call picked', $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
+                    $pushNotificationManager->sendNotification($moderator, $translator->trans('Call picked', [], null, $translateTo), $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
 
                     $response = array("code" => "notification_sent");
 
@@ -567,7 +591,15 @@ class RoomController extends Controller
                     //send notification to moderator that the call has been rejected
                     $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
 
-                    $subject = $userGuest->getFullname().' said he/she will call you back.';
+                    $translator = $this->get('translator');
+                    $translateTo = 'en';
+                    if($moderator->getLang() !== ''){
+                        $translateTo = $moderator->getLang();
+                    }
+
+                    $userFullname = $userGuest->getFullname();
+
+                    $subject = $translator->trans('%userFullname% said he/she will call you back.', ['%userFullname%' => $userFullname], null, $translateTo);
 
                     $incomingCall = array(
                         "room" => $room,
@@ -577,7 +609,7 @@ class RoomController extends Controller
                     $data = array("type" => 16,
                         "incomingCall" => $incomingCall);
 
-                    $pushNotificationManager->sendNotification($moderator, 'Call picked', $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
+                    $pushNotificationManager->sendNotification($moderator, $translator->trans('zZeend video call', [], null, $translateTo), $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
 
                     $response = array("code" => "notification_sent");
 
@@ -633,7 +665,7 @@ class RoomController extends Controller
                     //send notification to moderator that the call has been rejected
                     $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
 
-                    $subject = $userRole == 'GUEST' ? $userGuest->getFullname().' ends video session.' : $moderator->getFullname().' ends video session.';
+                    $translator = $this->get('translator');
 
                     $incomingCall = array(
                         "room" => $room,
@@ -647,12 +679,34 @@ class RoomController extends Controller
                     //replace moderator by $userGuest in real use
                     if($userRole == 'GUEST'){
 
+                        $translateTo = 'en';
+                        if($moderator->getLang() !== ''){
+                            $translateTo = $moderator->getLang();
+                        }
+
+
+                        $userFullname = $userGuest->getFullname();
+
+                        $subject = $translator->trans('%userFullname% ends video session.', ['%userFullname%' => $userFullname], null, $translateTo);
+
+
                         //if the guest cut off the call, send notification to moderator that he cut off the call
-                        $pushNotificationManager->sendNotification($moderator, 'Call picked', $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
+                        $pushNotificationManager->sendNotification($moderator, $translator->trans('zZeend video call', [], null, $translateTo), $subject , $data, $userGuest->getPhoto() !== null ? $userGuest->getPhoto()->getFilePath() : null);
                     }else if($userRole == 'MODERATOR'){
 
+                        $translateTo = 'en';
+                        if($userGuest->getLang() !== ''){
+                            $translateTo = $userGuest->getLang();
+                        }
+
+
+                        $userFullname = $moderator->getFullname();
+
+                        $subject = $translator->trans('%userFullname% ends video session.', ['%userFullname%' => $userFullname], null, $translateTo);
+
+
                         //the same thing in reverse
-                        $pushNotificationManager->sendNotification($userGuest, 'Call picked', $subject , $data, $moderator->getPhoto() !== null ? $moderator->getPhoto()->getFilePath() : null);
+                        $pushNotificationManager->sendNotification($userGuest, $translator->trans('zZeend video call', [], null, $translateTo), $subject , $data, $moderator->getPhoto() !== null ? $moderator->getPhoto()->getFilePath() : null);
                     }
 
                     $response = array("code" => "notification_sent");

@@ -40,6 +40,8 @@ class ZzeendController extends Controller
 
         $currenetUser = $this->getUser();
 
+        $translator = $this->get('translator');
+
         if ($currenetUser->isGranted('ROLE_OWNER')) {
             $userAssigned = $this->getDoctrine()->getRepository(User::class)->find($user_assigned_id);
 
@@ -67,9 +69,13 @@ class ZzeendController extends Controller
             $createNotificationManager = $this->get("ionicapi.NotificationManager");
             $createNotificationManager->newNotification(1, $zZeend->getId());
 
-            $subject = 'You were assigned to a new zZeend.';
+            $translateTo = 'en';
+            if ($userAssigned->getLang() !== '') {
+                $translateTo = $userAssigned->getLang();
+            }
 
-            //send mail
+            $subject = $translator->trans('You were assigned to a new zZeend', [], null, $translateTo) . '.';
+
 
             $emailManager = $this->get('ionicapi.emailManager');
 
@@ -77,45 +83,50 @@ class ZzeendController extends Controller
             $statusId = $zZeend->getStatus()->getId();
             if ($statusId == 1) {
 
-                $status = 'In progress';
+                $status = $translator->trans('In progress', [], null, $translateTo);
 
             } else if ($statusId == 2) {
 
-                $status = 'Uncompleted';
+                $status = $translator->trans('Uncompleted', [], null, $translateTo);
 
             } else if ($statusId == 3) {
 
-                $status = 'Completed';
+                $status = $translator->trans('Completed', [], null, $translateTo);
 
             }
 
+            $userFullname = $zZeend->getUser()->getFullname();
+
             $data = array(
                 'name' => $zZeend->getUserAssigned()->getFullname(),
-                'text' => $zZeend->getUser()->getFullname() . ' just created a new zZeend in your name. Check this out!!!',
+                'text' => $translator->trans("%userFullname% just created a new zZeend in your name. Check this out!!!", ['%userFullname%' => $userFullname], null, $translateTo),
                 'id' => 'n° ' . $zZeend->getId(),
                 'title' => $zZeend->getTitle(),
                 'cost' => ' $' . $zZeend->getCost(),
-                'from' => $zZeend->getFrom()->format('Y-m-d H:i:s'),
-                'to' => $zZeend->getTo()->format('Y-m-d H:i:s'),
-                'paymentLimitDate' => $zZeend->getPaymentLimitDate()->format('Y-m-d H:i:s'),
+                'from' => $translator->trans($zZeend->getFrom()->format('Y-m-d H:i:s'), [], null, $translateTo),
+                'to' => $translator->trans($zZeend->getTo()->format('Y-m-d H:i:s'), [], null, $translateTo),
+                'paymentLimitDate' => $translator->trans($zZeend->getPaymentLimitDate()->format('Y-m-d H:i:s'), [], null, $translateTo),
                 'serviceOwner' => $zZeend->getUser()->getFullname(),
                 'status' => $status,
-                'payment' => $zZeend->getTransaction() !== null ? 'Yes' : 'Not yet',
-                'finalized' => $zZeend->getDone() == true ? 'Yes' : 'Not yet',
-                'canceled' => $zZeend->getCanceled() == true ? 'Yes' : 'No',
-                'createdAt' => $zZeend->getCreatedAt()->format('Y-m-d H:i:s')
+                'payment' => $zZeend->getTransaction() !== null ? $translator->trans('Yes', [], null, $translateTo) : $translator->trans('Not yet', [], null, $translateTo),
+                'finalized' => $zZeend->getDone() == true ? $translator->trans('Yes', [], null, $translateTo) : $translator->trans('Not yet', [], null, $translateTo),
+                'canceled' => $zZeend->getCanceled() == true ? $translator->trans('Yes', [], null, $translateTo) : $translator->trans('No', [], null, $translateTo),
+                'createdAt' => $translator->trans($zZeend->getCreatedAt()->format('Y-m-d H:i:s'), [], null, $translateTo),
+                'lang' => $translateTo
 
             );
 
             $app_mail = $this->getParameter('app_mail');
             $emailManager->send($app_mail, $userAssigned->getEmailCanonical(), $subject, '@User/Email/zZeend.twig', $data);
 
+            $zZeendId = $zZeend->getId();
+            $title = $translator->trans("New zZeend (n° %zZeendId%)", ['%zZeendId%' => $zZeendId], null, $translateTo);
 
             //send notification
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 1,
                 "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($userAssigned, 'New zZeend (n° ' . $zZeend->getId() . ')', $subject, $data, $currenetUser->getPhoto() !== null ? $currenetUser->getPhoto()->getFilePath() : null);
+            $pushNotificationManager->sendNotification($userAssigned, $title, $subject, $data, $currenetUser->getPhoto() !== null ? $currenetUser->getPhoto()->getFilePath() : null);
 
             $response = array("code" => $zZeend->getId());
 
@@ -220,10 +231,10 @@ class ZzeendController extends Controller
 
                         $zZeendService = $qb->getQuery()->getOneOrNullResult();
 
-                        if($zZeendService !== null){
+                        if ($zZeendService !== null) {
                             $application_fee_amount = $zZeendService->getApplicationFees();
-                        }else{
-                            if($zZeendCost >= 5000){
+                        } else {
+                            if ($zZeendCost >= 5000) {
 
                                 $em = $this->getDoctrine()->getRepository(ZzeendService::class);
                                 $qb = $em->GetQueryBuilder();
@@ -234,7 +245,7 @@ class ZzeendController extends Controller
                             }
                         }
 
-                        if($application_fee_amount > 0){
+                        if ($application_fee_amount > 0) {
 
 
                             $mainZzeendUser = $zZeend->getUser();
@@ -285,12 +296,23 @@ class ZzeendController extends Controller
 
                                     $serviceOwner = $zZeend->getUser();
 
-                                    $subject = $currentUser->getFullname() . ' just made a payment.';
+                                    $translator = $this->get('translator');
+                                    $translateTo = 'en';
+                                    if ($serviceOwner->getLang() !== '') {
+                                        $translateTo = $serviceOwner->getLang();
+                                    }
+
+                                    $zZeendId = $zZeend->getId();
+                                    $title = $translator->trans("zZeend paid (n° %zZeendId%)", ['%zZeendId%' => $zZeendId], null, $translateTo);
+
+                                    $userFullname = $currentUser->getFullname();
+
+                                    $subject = $translator->trans("%userFullname% just made a payment.", ['%userFullname%' => $zZeendId], null, $translateTo);
                                     //send notification
                                     $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                                     $data = array("type" => 5,
                                         "zZeend" => $zZeend);
-                                    $pushNotificationManager->sendNotification($serviceOwner, 'zZeend paid (n° ' . $zZeend->getId() . ')', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+                                    $pushNotificationManager->sendNotification($serviceOwner, $title, $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
                                     $response = array("code" => "payment_success");
 
@@ -302,7 +324,7 @@ class ZzeendController extends Controller
                                 $response = array("code" => "action_not_allowed");
                             }
 
-                        }else{
+                        } else {
                             $response = array("code" => "action_not_allowed");
                         }
 
@@ -367,11 +389,11 @@ class ZzeendController extends Controller
 
             $zZeendService = $qb->getQuery()->getOneOrNullResult();
 
-            if($zZeendService !== null){
+            if ($zZeendService !== null) {
                 $zZeendPoints = $zZeendService->getZzeendPoint();
                 $application_fee_amount = $zZeendService->getApplicationFees();
-            }else{
-                if($zZeendCost >= 5000){
+            } else {
+                if ($zZeendCost >= 5000) {
 
                     $em = $this->getDoctrine()->getRepository(ZzeendService::class);
                     $qb = $em->GetQueryBuilder();
@@ -383,7 +405,7 @@ class ZzeendController extends Controller
                 }
             }
 
-            if($zZeendPoints > 0){
+            if ($zZeendPoints > 0) {
 
                 $stripeConnectedAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findOneBy(['user' => $mainZzeendUser]);
 
@@ -437,7 +459,7 @@ class ZzeendController extends Controller
 
                             //create zZeend points each time a zZeend is finalize
 
-                            for($zp = 0; $zp < $zZeendPoints; $zp++){
+                            for ($zp = 0; $zp < $zZeendPoints; $zp++) {
 
                                 $zZeendPoint = new ZzeendPoint();
                                 $zzeendPointGeneratorManager = $this->get('ionicapi.zzeendPointGeneratorManager');
@@ -471,12 +493,23 @@ class ZzeendController extends Controller
 
                             $serviceOwner = $zZeend->getUser();
 
-                            $subject = $currentUser->getFullname() . ' has finalized this zZeend.';
+                            $translator = $this->get('translator');
+                            $translateTo = 'en';
+                            if ($serviceOwner->getLang() !== '') {
+                                $translateTo = $serviceOwner->getLang();
+                            }
+
+                            $userFullname = $currentUser->getFullname();
+
+                            $zZeendId = $zZeend->getId();
+                            $title = $translator->trans("zZeend finalized (n° %zZeendId%)", ['%zZeendId%' => $zZeendId], null, $translateTo);
+
+                            $subject = $translator->trans('%userFullname% has finalized this zZeend.', ['%userFullname%' => $userFullname], null, $translateTo);
                             //send notification
                             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                             $data = array("type" => 6,
                                 "zZeend" => $zZeend);
-                            $pushNotificationManager->sendNotification($serviceOwner, 'zZeend finalized (n° ' . $zZeend->getId() . ')', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+                            $pushNotificationManager->sendNotification($serviceOwner, $title, $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
                             $response = array("code" => "zZeend_done");
@@ -489,7 +522,7 @@ class ZzeendController extends Controller
 
                 }
 
-            }else{
+            } else {
                 $response = array("code" => "action_not_allowed");
             }
 
@@ -534,10 +567,10 @@ class ZzeendController extends Controller
 
             $zZeendService = $qb->getQuery()->getOneOrNullResult();
 
-            if($zZeendService !== null){
+            if ($zZeendService !== null) {
                 $application_fee_amount = $zZeendService->getApplicationFees();
-            }else{
-                if($zZeendCost >= 5000){
+            } else {
+                if ($zZeendCost >= 5000) {
 
                     $em = $this->getDoctrine()->getRepository(ZzeendService::class);
                     $qb = $em->GetQueryBuilder();
@@ -567,12 +600,26 @@ class ZzeendController extends Controller
 
             $serviceSeeker = $zZeend->getUserAssigned();
 
-            $subject = $currentUser->getFullname() . ' has canceled this zZeend.';
+            $translator = $this->get('translator');
+
+            $translateTo = 'en';
+            if ($serviceSeeker->getLang() !== '') {
+                $translateTo = $serviceSeeker->getLang();
+            }
+
+            $userFullname = $currentUser->getFullname();
+
+            $subject = $translator->trans('%userFullname% has canceled this zZeend.', ['%userFullname%' => $userFullname], null, $translateTo);
+
+
+            $zZeendId = $zZeend->getId();
+            $title = $translator->trans("zZeend canceled (n° %zZeendId%)", ['%zZeendId%' => $zZeendId], null, $translateTo);
+
             //send notification
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 7,
                 "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend canceled (n° ' . $zZeend->getId() . ')', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+            $pushNotificationManager->sendNotification($serviceSeeker, $title, $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             $response = array("code" => "zZeend_canceled");
@@ -661,12 +708,26 @@ class ZzeendController extends Controller
 
                 $serviceSeeker = $zZeend->getUserAssigned();
 
-                $subject = $currentUser->getFullname() . ' edited this zZeend.';
+                $translator = $this->get('translator');
+                $translateTo = 'en';
+
+                if ($serviceSeeker->getLang() !== '') {
+                    $translateTo = $serviceSeeker->getLang();
+                }
+
+                $userFullname = $currentUser->getFullname();
+
+
+                $subject = $translator->trans('%userFullname% edited this zZeend.', ['%userFullname%' => $userFullname], null, $translateTo);
+
+                $zZeendId = $zZeend->getId();
+                $title = $translator->trans("zZeend update (n° %zZeendId%)", ['%zZeendId%' => $zZeendId], null, $translateTo);
+
                 //send notification
                 $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                 $data = array("type" => 8,
                     "zZeend" => $zZeend);
-                $pushNotificationManager->sendNotification($serviceSeeker, 'zZeend update (n° ' . $zZeend->getId() . ')', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+                $pushNotificationManager->sendNotification($serviceSeeker, $title, $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             }
@@ -737,6 +798,9 @@ class ZzeendController extends Controller
 
             $done = $zZeend->getDone();
 
+            $titles = array();
+            $subjects = array();
+
             //if today's date and time is greater that the date the zZeend suppose to be payed and done still false and the zZeend is till active, not canceled,
             if (new \DateTime() > $paymentLimitDate and !$done and !$canceled and $status->getId() == 1) {
 
@@ -757,20 +821,28 @@ class ZzeendController extends Controller
             $entityManager->flush();
         }
 
-        foreach($assocArray as $user){
-              array_push($allUsers, $user);
+        $translator = $this->get('translator');
+
+        foreach ($assocArray as $user) {
+            array_push($allUsers, $user);
+
+            $translateTo = $user->getLang();
+
+            array_push($titles, $translator->trans('zZeend(s) due to', [], null, $translateTo));
+            array_push($subjects, $translator->trans('You have some incompleted zZeends. You need to check them out !!!', [], null, $translateTo));
         }
+
+        $title = $translator->trans('zZeend(s) due to', [], null, 'en');
+
+        $subject = $translator->trans('You have some incompleted zZeends. You need to check them out !!!', [], null, 'en');
 
         //send notifications
 
-        $subject = 'You have some incompleted zZeends. You need to check them out !!!';
         //send notification
         $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
         $data = array("type" => 19,
             "zZeend" => $zZeend);
-        $pushNotificationManager->sendGroupNotification($allUsers, 'zZeend(s) due to', $subject, null, null);
-
-
+        $pushNotificationManager->sendGroupNotification($allUsers, $title, $subject, null, null);
 
 
         return new JsonResponse(array("code" => "done"));

@@ -181,12 +181,21 @@ class ChatController extends Controller
                 $receiver = $mainUser;
             }
 
+            $translator = $this->get('translator');
+
+            $translateTo = 'en';
+            if($receiver->getLang() !== ''){
+                $translateTo = $receiver->getLang();
+            }
+
+            $userFullname = $currentUser->getFullname();
+
             $subject = strip_tags($chat->getDiscussion());
             //send notification
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 9,
                 "chat" => $chat);
-            $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname() . ' sent a chat ', $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+            $pushNotificationManager->sendNotification($receiver, $translator->trans('%userFullname% sent a chat', ['%userFullname%' => $userFullname], null, $translateTo), $subject, $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
 
             $response = array("chat" => $chat);

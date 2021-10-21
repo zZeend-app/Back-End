@@ -34,15 +34,25 @@ class RequestController extends Controller
         $entityManager->persist($zZeendRequest);
         $entityManager->flush();
 
+
         $response = array('code' => 'request_sent');
 
-        $subject = $sender->getFullname().' sent you a request';
+        $translator = $this->get('translator');
+        $translateTo = 'en';
+        if($receiver->getLang() !== ''){
+            $translateTo = $receiver->getLang();
+        }
+
+        $userFullname = $sender->getFullname();
+
+        $subject = $translator->trans('%userFullname% sent you a request', ['%userFullname%' => $userFullname], null, $translateTo);
+
 
         //send notification
         $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
         $data = array("type" => 2,
             "request" => $zZeendRequest);
-        $pushNotificationManager->sendNotification($receiver, 'New request', $subject , $data, $sender->getPhoto() !== null ? $sender->getPhoto()->getFilePath() : null);
+        $pushNotificationManager->sendNotification($receiver, $translator->trans('New request', [], null, $translateTo), $subject , $data, $sender->getPhoto() !== null ? $sender->getPhoto()->getFilePath() : null);
 
         return new JsonResponse($response);
     }
@@ -111,14 +121,24 @@ class RequestController extends Controller
 
             $pushNotificationType = 0;
             $subject = '';
+
+            $translator = $this->get('translator');
+
+            $translateTo = 'en';
+            if($sender->getLang() !== ''){
+                $translateTo = $sender->getLang();
+            }
+
+            $userFullname = $sender->getFullname();
+
             if ($requestState == true) {
 
-                $subject = $sender->getFullname().' accepted your request';
+                $subject = $translator->trans('%userFullname% accepted your request', ['%userFullname%' => $userFullname], null, $translateTo);
                 $pushNotificationType = 3;
 
             }else{
 
-                $subject = $sender->getFullname().' rejected your request';
+                $subject = $translator->trans('%userFullname% rejected your request', ['%userFullname%' => $userFullname], null, $translateTo);
                 $pushNotificationType = 4;
 
             }
@@ -128,7 +148,7 @@ class RequestController extends Controller
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => $pushNotificationType,
                 "request" => $zZeendRequest);
-            $pushNotificationManager->sendNotification($sender, 'New request', $subject , $data, $receiver->getPhoto() !== null ? $receiver->getPhoto()->getFilePath() : null);
+            $pushNotificationManager->sendNotification($sender, $translator->trans('Request response', [], null, $translateTo), $subject , $data, $receiver->getPhoto() !== null ? $receiver->getPhoto()->getFilePath() : null);
 
 
 

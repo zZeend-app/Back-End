@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use UserBundle\Entity\PasswordForgot;
 use UserBundle\Entity\User;
 
 class AuthenticationController extends Controller
@@ -24,9 +25,9 @@ class AuthenticationController extends Controller
         $data = $request->getContent();
         $data = json_decode($data, true);
 
-        if(count($data) > 0) {
+        if (count($data) > 0) {
 
-            if(isset($data['email']) AND isset($data['password']) AND isset($data['fullname']) AND isset($data['accountType']) AND isset($data['image']) AND isset($data['country']) AND isset($data['city']) AND isset($data['address']) AND isset($data['zipCode'])AND isset($data['phoneNumber'])AND isset($data['jobTitle'])AND isset($data['jobDescription'])) {
+            if (isset($data['email']) and isset($data['password']) and isset($data['fullname']) and isset($data['accountType']) and isset($data['image']) and isset($data['country']) and isset($data['city']) and isset($data['address']) and isset($data['zipCode']) and isset($data['phoneNumber']) and isset($data['jobTitle']) and isset($data['jobDescription']) and isset($data['lang'])) {
                 $email = $data['email'];
                 $password = $data['password'];
                 $fullname = $data['fullname'];
@@ -46,6 +47,7 @@ class AuthenticationController extends Controller
                 $subAdministrativeArea = $data['subAdministrativeArea'];
                 $administrativeArea = $data['administrativeArea'];
                 $countryCode = $data['countryCode'];
+                $lang = $data['lang'];
 
                 $response = $this->forward("UserBundle:User:newUser", [
                     'email' => $email,
@@ -67,13 +69,14 @@ class AuthenticationController extends Controller
                     'subAdministrativeArea' => $subAdministrativeArea,
                     'administrativeArea' => $administrativeArea,
                     'countryCode' => $countryCode,
+                    'lang' => $lang
                 ]);
-            }else{
+            } else {
                 $response = array('code' => 'auth/imcomplete_data');
                 return new JsonResponse($response);
             }
 
-        }else{
+        } else {
             $response = array('code' => 'auth/empty_data');
             return new JsonResponse($response);
         }
@@ -81,7 +84,8 @@ class AuthenticationController extends Controller
         return $response;
     }
 
-    public function sendVerificationMailAction(Request $request){
+    public function sendVerificationMailAction(Request $request)
+    {
         $data = $request->getContent();
         $data = json_decode($data, true);
 
@@ -91,13 +95,15 @@ class AuthenticationController extends Controller
         ]);
     }
 
-    public function enableAccountAction($codeGen){
+    public function enableAccountAction($codeGen)
+    {
         return $this->forward("UserBundle:User:enableAccount", [
             'codeGen' => $codeGen
         ]);
     }
 
-    public function sendPasswordForgotMailAction(Request $request){
+    public function sendPasswordForgotMailAction(Request $request)
+    {
         $data = $request->getContent();
         $data = json_decode($data, true);
 
@@ -107,76 +113,96 @@ class AuthenticationController extends Controller
         ]);
     }
 
-    public function resetPasswordAction(Request $request){
+    public function resetPasswordAction(Request $request)
+    {
         $data = $request->getContent();
         $data = json_decode($data, true);
 
         $codeGen = $data['codeGen'];
         $newPassword = $data['newPassword'];
+
         return $this->forward("UserBundle:User:resetPassword", [
             'codeGen' => $codeGen,
             'newPassword' => $newPassword
         ]);
     }
 
-    public function resetPasswordRenderAction(){
+    public function resetPasswordRenderAction($codeGen, $lang)
+    {
 
-        return $this->forward("WebBundle:Web:resetPasswordRender", [
-        ]);
+        $translator = $this->get('translator');
+        $em = $this->getDoctrine()->getRepository(PasswordForgot::class);
+        $qb = $em->GetQueryBuilder();
+        $qb = $em->WhereUpateIsNotNull($qb, $codeGen);
+
+        $data = $qb->getQuery()->getOneOrNullResult();
+
+
+        if ($data !== null) {
+            return $this->forward("WebBundle:Web:resetPasswordRender", [
+            ]);
+        } else {
+
+            $translator = $this->get('translator');
+
+            return new JsonResponse($translator->trans('Expired Url', [], null, $lang));
+        }
+
     }
 
-    public function getFileAction($fileType, $fileName){
+    public function getFileAction($fileType, $fileName)
+    {
 
         $uploadDir = $this->getParameter('upload_dir');
         $filepath = '';
 
         // if the asked file is profile photo
-        if($fileType == 'VPA4iST9YEAk0CiawXEKbcArkfDSBKg5Re9gfywvmK'){
+        if ($fileType == 'VPA4iST9YEAk0CiawXEKbcArkfDSBKg5Re9gfywvmK') {
 
-            $filepath = $uploadDir.'/profile_photos/'.$fileName;
+            $filepath = $uploadDir . '/profile_photos/' . $fileName;
 
         }
 
         //if the asked file is a post photo
-        if($fileType == 'fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1'){
+        if ($fileType == 'fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1') {
 
-            $filepath = $uploadDir.'/post_photos/'.$fileName;
+            $filepath = $uploadDir . '/post_photos/' . $fileName;
 
         }
 
         //if the asked file is a post video
-        if($fileType == 'fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1ZC3653sndkxn22e0'){
+        if ($fileType == 'fBfqcChzEM9ai3hQvX0GC80KibabT1uU6LXtSYqpn1ZC3653sndkxn22e0') {
 
-            $filepath = $uploadDir.'/post_videos/'.$fileName;
-
-        }
-
-        //if the asked file is a chat photo
-        if($fileType == 'cfBfqcChzEM9ai3hQvX0GaC80KibabT1uUdf6LXtSYqpn1h'){
-
-            $filepath = $uploadDir.'/chat_photos/'.$fileName;
+            $filepath = $uploadDir . '/post_videos/' . $fileName;
 
         }
 
         //if the asked file is a chat photo
-        if($fileType == 'afBfqcChzEM9ai3hdQvX0GC80KibabT1uU6LviXtSYqpn1ZdeoC3653sndkxn22e01996'){
+        if ($fileType == 'cfBfqcChzEM9ai3hQvX0GaC80KibabT1uUdf6LXtSYqpn1h') {
 
-            $filepath = $uploadDir.'/chat_videos/'.$fileName;
+            $filepath = $uploadDir . '/chat_photos/' . $fileName;
+
+        }
+
+        //if the asked file is a chat photo
+        if ($fileType == 'afBfqcChzEM9ai3hdQvX0GC80KibabT1uU6LviXtSYqpn1ZdeoC3653sndkxn22e01996') {
+
+            $filepath = $uploadDir . '/chat_videos/' . $fileName;
 
         }
 
         //if the asked file is a story photo
-        if($fileType == 'fBfqcChzEM9arevi3hQvX0GC80stybabT1uU6LXtSYqpn10934'){
+        if ($fileType == 'fBfqcChzEM9arevi3hQvX0GC80stybabT1uU6LXtSYqpn10934') {
 
-            $filepath = $uploadDir.'/story_photos/'.$fileName;
+            $filepath = $uploadDir . '/story_photos/' . $fileName;
 //           return new JsonResponse($filepath);
 
         }
 
         //if the asked file is a story video
-        if($fileType == 'tyfBfqcChzEM9ar38sudmlevi3hQvX0GC80stybasbT1uU6LXtSYqpn10934'){
+        if ($fileType == 'tyfBfqcChzEM9ar38sudmlevi3hQvX0GC80stybasbT1uU6LXtSYqpn10934') {
 
-            $filepath = $uploadDir.'/story_videos/'.$fileName;
+            $filepath = $uploadDir . '/story_videos/' . $fileName;
 //           return new JsonResponse($filepath);
 
         }
@@ -193,7 +219,8 @@ class AuthenticationController extends Controller
 
     }
 
-    public function addPhotoAction(Request $request){
+    public function addPhotoAction(Request $request)
+    {
 
 
         if (!empty($request->files->get('profilePhoto'))) {
@@ -221,12 +248,12 @@ class AuthenticationController extends Controller
             $data = $data['objectData'];
             $relatedId = $data['relatedId'];
 
-            if($fileName !== ''){
+            if ($fileName !== '') {
 
 
                 $currentUser = $this->getDoctrine()->getRepository(User::class)->find($relatedId);
 
-                if($currentUser !== null){
+                if ($currentUser !== null) {
 
                     $fileEntityManager = $this->getDoctrine()->getManager();
 
@@ -252,7 +279,7 @@ class AuthenticationController extends Controller
             }
 
 
-        }else{
+        } else {
 
             $response = array("code" => "action_not_allowed");
 
@@ -262,17 +289,18 @@ class AuthenticationController extends Controller
 
     }
 
-    public function refreshAccountLinkAction($refreshToken){
+    public function refreshAccountLinkAction($refreshToken, $lang)
+    {
 
         $accountLink = $this->getDoctrine()->getRepository(AccountLink::class)->findOneBy(['refreshToken' => $refreshToken]);
 
-        if($accountLink !== null){
+        if ($accountLink !== null) {
             $user = $accountLink->getUser();
 
-            $stripeConnectAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findOneBy(['user'=>$user]);
+            $stripeConnectAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findOneBy(['user' => $user]);
 
-            if($stripeConnectAccount !== null){
-                      $stripeAccountId = $stripeConnectAccount->getStripeAccountId();
+            if ($stripeConnectAccount !== null) {
+                $stripeAccountId = $stripeConnectAccount->getStripeAccountId();
 
                 $stripeSecretKey = $this->getParameter('api_keys')['stripe-secret-key'];
 
@@ -284,8 +312,8 @@ class AuthenticationController extends Controller
 
                 $baseUrl = $this->getParameter('baseUrl');
 
-                $refreshUrl = $baseUrl.'/auth/refresh-link/'.$refreshToken;
-                $returnUrl = $baseUrl.'/auth/return-link/'.$returnToken;
+                $refreshUrl = $baseUrl . '/auth/refresh-link/' . $refreshToken . '/' . $user->getLang();
+                $returnUrl = $baseUrl . '/auth/return-link/' . $returnToken . '/' . $user->getLang();
 
                 $account_links = \Stripe\AccountLink::create([
                     'account' => $stripeAccountId,
@@ -294,7 +322,7 @@ class AuthenticationController extends Controller
                     'type' => 'account_onboarding',
                 ]);
 
-                if($account_links !== null){
+                if ($account_links !== null) {
 
                     $accountLink = new AccountLink();
 
@@ -312,26 +340,27 @@ class AuthenticationController extends Controller
                     return $this->redirect($account_links->url);
 
 
-                }else{
+                } else {
                     $response = array("code" => "error_occurred");
                 }
 
 
-            }else{
+            } else {
                 $response = array("code" => "action_not_allowed");
             }
-        }else{
+        } else {
             $response = array("code" => "auth/no_refresh_token_given");
         }
 
         return new JsonResponse($response);
     }
 
-    public function returnAccountLinkAction($returnToken){
+    public function returnAccountLinkAction($returnToken, $lang)
+    {
 
         $accountLink = $this->getDoctrine()->getRepository(AccountLink::class)->findOneBy(['returnToken' => $returnToken]);
 
-        if($accountLink !== null) {
+        if ($accountLink !== null) {
             $user = $accountLink->getUser();
 
             $stripeConnectAccount = $this->getDoctrine()->getRepository(StripeConnectAccount::class)->findOneBy(['user' => $user]);
@@ -351,7 +380,9 @@ class AuthenticationController extends Controller
 
                 $external_accounts_data = $connectAccount->external_accounts['data'];
 
-                if(count($connectAccount->capabilities) > 0 AND $connectAccount->capabilities['card_payments'] == true AND $connectAccount->capabilities['transfers'] == true AND$charges_enabled == true AND count($external_accounts_data) > 0 ){
+                $translator = $this->get('translator');
+
+                if (count($connectAccount->capabilities) > 0 and $connectAccount->capabilities['card_payments'] == true and $connectAccount->capabilities['transfers'] == true and $charges_enabled == true and count($external_accounts_data) > 0) {
 
                     $stripeConnectAccount->setActiveAutomatically();
 
@@ -360,22 +391,24 @@ class AuthenticationController extends Controller
                     $entityManager->persist($stripeConnectAccount);
                     $entityManager->flush();
 
-                    return new JsonResponse("You can now close this page and continue using zZeend, Congratulation !!!");
-                }else{
-                    return new JsonResponse("Uncompleted onboarding");
+
+                    return new JsonResponse($translator->trans('You can now close this page and continue using zZeend, Congratulation !!!', [], null, $lang));
+                } else {
+                    return new JsonResponse($translator->trans('Uncompleted onboarding', [], null, $lang));
                 }
 
 
                 return new JsonResponse($connectAccount);
             }
 
-        }else{
+        } else {
             return new JsonResponse(array("code" => "auth/no_return_token_given"));
         }
 
     }
 
-    public function payoutAction($zZeendId){
+    public function payoutAction($zZeendId)
+    {
 
         $response = array();
 
@@ -390,12 +423,26 @@ class AuthenticationController extends Controller
             $entityManager->flush();
 
             $mainZzeendUser = $zZeend->getUser();
-            $subject = 'You have been payout into your bank account.';
+
+            $userAssigned = $zZeend->getUserAssigned();;
+
+            $translator = $this->get('translator');
+
+            $translateTo = 'en';
+            if ($userAssigned->getLang() !== '') {
+                $translateTo = $userAssigned->getLang();
+            }
+
+            $subject = $translator->trans('You have been payout into your bank account.', [], null, $translateTo);
+
+            $zZeendId = $zZeend->getId();
+            $title = $translator->trans("zZeend payout (n° %zZeendId%)", ['%zZeendId%' => $zZeendId], null, $translateTo);
+
             //send notification
             $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
             $data = array("type" => 18,
                 "zZeend" => $zZeend);
-            $pushNotificationManager->sendNotification($mainZzeendUser, 'zZeend payout (n° '.$zZeend->getId().')', $subject, $data, null);
+            $pushNotificationManager->sendNotification($mainZzeendUser, $title, $subject, $data, null);
 
             $response = array("code" => "zZeend_payout_success");
 

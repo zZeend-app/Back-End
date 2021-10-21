@@ -19,7 +19,7 @@ email-check:
     methods: [GET]
 
 password-recovery:
-    path:     /password-recovery/{codeGen}
+    path:     /password-recovery/{codeGen}/{lang}
     defaults: { _controller: ApiBundle:Authentication:resetPasswordRender }
     methods: [GET]
 
@@ -44,12 +44,12 @@ add-profile-photo:
     methods: [POST]
 
 refresh-link:
-    path:     /refresh-link/{refreshToken}
+    path:     /refresh-link/{refreshToken}/{lang}
     defaults: { _controller: ApiBundle:Authentication:refreshAccountLink }
     methods: [GET]
 
 return-link:
-    path:     /return-link/{returnToken}
+    path:     /return-link/{returnToken}/{lang}
     defaults: { _controller: ApiBundle:Authentication:returnAccountLink }
     methods: [GET]
 

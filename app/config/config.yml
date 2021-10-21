@@ -15,6 +15,7 @@ parameters:
     site_name: "Nom de l'application" #TODO Change
     site_url: "http://192.168.2.208/zZeend/Back-End/web/app_dev.php" #TODO Change
     baseUrl: "http://192.168.2.208/zZeend/Back-End/web/app_dev.php/api"
+    feedback_mail: "michel.k@zzeend.com"
 
 
     api_keys:
@@ -127,7 +128,7 @@ nelmio_cors:
     defaults:
         allow_origin: ['*']
         allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
-        allow_headers: ['Content-Type', 'Authorization', 'Source-Key', 'Live-Api-Key']
+        allow_headers: ['Content-Type', 'Authorization', 'Source-Key', 'Live-Api-Key', 'lang']
         expose_headers: ['Link']
         max_age: 3600
     paths:

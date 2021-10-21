@@ -132,6 +132,13 @@ class User extends BaseUser implements JsonSerializable
     private $zZeendScore;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="lang", type="string", length=255, unique=false, nullable=false)
+     */
+    private $lang;
+
+    /**
      * @var array
      *
      * @ORM\Column(name="spoken_languages", type="array", length=255, unique=false, nullable=false)
@@ -782,6 +789,31 @@ class User extends BaseUser implements JsonSerializable
         return $this->devices;
     }
 
+    /**
+     * Set lang.
+     *
+     * @param string $lang
+     *
+     * @return User
+     */
+    public function setLang($lang)
+    {
+        $this->lang = $lang;
+
+        return $this;
+    }
+
+
+    /**
+     * Get lang.
+     *
+     * @return string
+     */
+    public function getLang()
+    {
+        return $this->lang;
+    }
+
 
 
     public function jsonSerialize($entityClass = null,$include = []){
@@ -852,6 +884,10 @@ class User extends BaseUser implements JsonSerializable
 
         if(!$entityClass instanceof User || in_array("spokenLanguages",$include)){
             $json["spokenLanguages"] = $this->spokenLanguages;
+        }
+
+        if(!$entityClass instanceof User || in_array("lang",$include)){
+            $json["lang"] = $this->lang;
         }
 
         if(!$entityClass instanceof User || in_array("subLocality",$include)){

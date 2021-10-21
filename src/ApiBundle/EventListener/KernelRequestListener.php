@@ -41,6 +41,11 @@ class KernelRequestListener
             strpos($event->getRequest()->getUri(), 'payout') ||
             strpos($event->getRequest()->getUri(), 'email-check')){
 
+            $urlarray = explode("/", $event->getRequest()->getUri());
+            $lang = $urlarray[count($urlarray)-1];
+
+            $event->getRequest()->setLocale($lang);
+
             return $event;
 
         }else{
@@ -54,6 +59,16 @@ class KernelRequestListener
                 $app_source_key = $this->api_keys['app-source-key'];
 
                 if ($sourceKey === $app_source_key) {
+
+                    if ($headers->has('lang')) {
+
+                        $lang = $headers->get('lang');
+
+                        $request = $event->getRequest();
+//                        $request->setLocale($lang);
+
+                    }
+
                     return $event;
                 }
 

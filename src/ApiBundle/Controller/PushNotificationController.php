@@ -25,6 +25,18 @@ class PushNotificationController extends Controller
         $data = $request->getContent();
         $data = json_decode($data, true);
 
+        if (array_key_exists("lang", $data)) {
+
+            $lang = $data['lang'];
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $currentUser->setLang($lang);
+
+            $entityManager->persist($currentUser);
+            $entityManager->flush();
+
+        }
+
         if (!array_key_exists("newToken", $data)) {
 
             return new JsonResponse(array("code" => "device_token_not_found"), 500);

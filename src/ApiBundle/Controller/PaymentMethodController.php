@@ -423,8 +423,8 @@ class PaymentMethodController extends Controller
 
             $baseUrl = $this->getParameter('baseUrl');
 
-            $refreshUrl = $baseUrl.'/auth/refresh-link/'.$refreshToken;
-            $returnUrl = $baseUrl.'/auth/return-link/'.$returnToken;
+            $refreshUrl = $baseUrl.'/auth/refresh-link/'.$refreshToken.'/'.$currentUser->getLang();
+            $returnUrl = $baseUrl.'/auth/return-link/'.$returnToken.'/'.$currentUser->getLang();
 
             $account_links = \Stripe\AccountLink::create([
                 'account' => $stripeAccount->getStripeAccountId(),

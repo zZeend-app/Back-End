@@ -4,12 +4,12 @@
 {% block Content %}
 
     <p>
-        Hello {{ name }}
+        {% trans with {'%name%': name} into lang %} Hello %name% {% endtrans %}
     </p>
-    <h4>Other to verify your account, click on the link bellow: </h4>
-    <h4>Account verification link: </h4>
-    <p> <a href="{{ baseUrl }}/auth/email-check/{{ codeGen }}">{{ baseUrl }}/auth/email-check/{{ codeGen }}</a></p>
+    <h4>{% trans into lang %} Other to verify your account, click on the link bellow {% endtrans %}: </h4>
+    <h4>{% trans into lang %} Account verification link {% endtrans %}: </h4>
+    <p> <a href="{{ baseUrl }}/auth/email-check/{{ codeGen }}">{{ baseUrl }}/auth/email-check/{{ codeGen }}/{{ lang }}</a></p>
     <br>
 
-    <h4>zZeend Team</h4>
+    <h4>{% trans into lang %} zZeend Team {% endtrans %}</h4>
 {% endblock %}

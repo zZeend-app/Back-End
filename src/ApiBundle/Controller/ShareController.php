@@ -182,8 +182,17 @@ class ShareController extends Controller
                         $receiver = $mainUser;
                     }
 
-                    $subject = 'File content';
+                    $translator = $this->get('translator');
+
+                    $translateTo = 'en';
+                    if($receiver->getLang() !== ''){
+                        $translateTo = $receiver->getLang();
+                    }
+
+                    $subject = $translator->trans('File content', [], null, $translateTo);
                     //send notification
+
+                    $userFullname = $currentUser->getFullname();
 
                     $completeChatObject = $this->forward("ApiBundle:Chat:getChatById", [
                         'chatId' => $chat->getId() ]);
@@ -191,7 +200,7 @@ class ShareController extends Controller
                     $pushNotificationManager = $this->get('ionicapi.push.notification.manager');
                     $data = array("type" => 10,
                         "chat" => $chat);
-                    $pushNotificationManager->sendNotification($receiver, $currentUser->getFullname().' sent a chat ', $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
+                    $pushNotificationManager->sendNotification($receiver, $translator->trans('%userFullname% sent a chat', ['%userFullname%' => $userFullname], null, $translateTo), $subject , $data, $currentUser->getPhoto() !== null ? $currentUser->getPhoto()->getFilePath() : null);
 
                 }else{
                     return new JsonResponse(array("code" => "action_not_allowed"));

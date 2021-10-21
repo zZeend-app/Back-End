@@ -4,7 +4,7 @@
 {% block Content %}
 
     <p>
-        Hello {{ name }}
+        {% trans with {'%name%': name} into lang %} Hello %name% {% endtrans %}
     </p>
 
     <p>
@@ -13,192 +13,95 @@
 
     <div>
 
-        <h1>{{ title }}</h1>
-        <table style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
+        <div style="text-align: center; border: 1px solid #ddd;
+  padding: 5px; font-weight: bold;">
+            <span>{{ title }}</span>
+        </div>
+
+        <table id="customers" style="font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;">
             <thead>
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Id</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ id }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} Id {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ id }}</td>
             </tr>
             </thead>
             <tbody>
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Cost</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ cost }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} Cost {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ cost }}</td>
             </tr>
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">From</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ from }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} From {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ from }}</td>
             </tr>
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">To</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ to }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} To {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ to }}</td>
             </tr>
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Payment date limit</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ paymentLimitDate }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} Payment deadline {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ paymentLimitDate }}</td>
             </tr>
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Service owner</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ serviceOwner }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} Service owner {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ serviceOwner }}</td>
             </tr>
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Status</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ status }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} Status {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ status }}</td>
             </tr>
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Paid</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ payment }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} Paid {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ payment }}</td>
             </tr>
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Finalized</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ finalized }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} Finalized {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ finalized }}</td>
             </tr>
             {% if canceled == 'Yes' %}
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Canceled</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ canceled }}</td>
-            </tr>
+                <tr style="text-align: center;
+  height: 80px;">
+                    <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} Canceled {% endtrans %}</th>
+                    <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ canceled }}</td>
+                </tr>
             {% endif %}
-            <tr style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">
-                <th style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px; background-color: rgba(199, 202, 243, 0.836);">Created at</th>
-                <td style="border: 2px solid black;
-            border-collapse: collapse;
-            padding: 5px;
-            border-spacing: 5px;
-            margin: 10px;">{{ createdAt }}</td>
+            <tr style="text-align: center;
+  height: 80px;">
+                <th style="border: 1px solid #ddd;
+  padding: 8px; text-align: center;">{% trans into lang %} Created at {% endtrans %}</th>
+                <td style="border: 1px solid #ddd;
+  padding: 8px;">{{ createdAt }}</td>
             </tr>
             </tbody>
         </table>
@@ -207,5 +110,5 @@
 
     <br>
 
-    <h4>zZeend Team</h4>
+    <h4>{% trans into lang %} zZeend Team {% endtrans %}</h4>
 {% endblock %}
