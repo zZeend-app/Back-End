@@ -116,7 +116,7 @@ swiftmailer:
 #        ssl:
 #            allow_self_signed: true
 #            verify_peer: false
-#            verify_peer_name: false
+#            verify_peer_name: false  ;
 
 sensio_framework_extra:
     router:
