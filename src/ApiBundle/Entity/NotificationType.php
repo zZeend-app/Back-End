@@ -14,7 +14,7 @@ use UserBundle\Entity\User;
  * NotificationType
  * @ORM\Entity
  * @ORM\Table(name="`notification_type`", options={"collate"="utf8mb4_unicode_ci", "charset"="utf8mb4"})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="UserBundle\Repository\NotificationTypeRepository")
  */
 
 
